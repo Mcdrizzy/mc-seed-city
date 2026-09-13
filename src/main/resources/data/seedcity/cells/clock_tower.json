@@ -1,0 +1,12 @@
+{
+  "id": "seedcity:clock_tower",
+  "kind": "logic",
+  "size": [7, 9, 7],
+  "ports": [
+    { "name": "out", "dir": "out", "face": "south", "pos": [3, 1, 6], "bits": 1 }
+  ],
+  "truth": "clock",
+  "weights": { "core": 5, "residential": 0, "forge": 0, "plaza": 3 },
+  "cost": { "redstone": 20, "stone": 120, "wood": 0 },
+  "setpiece": true
+}

@@ -1,2 +1,12 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Gradle wrapper scripts need fixed line endings
+gradlew text eol=lf
+*.bat text eol=crlf
+
+# Binary assets: structure NBT (cells), images, jars
+*.nbt binary
+*.png binary
+*.jar binary
+*.pdf binary

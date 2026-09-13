@@ -1,0 +1,13 @@
+{
+  "id": "seedcity:bus_segment",
+  "kind": "logic",
+  "size": [7, 4, 7],
+  "ports": [
+    { "name": "in", "dir": "in", "face": "north", "pos": [3, 1, 0], "bits": 4 },
+    { "name": "out", "dir": "out", "face": "south", "pos": [3, 1, 6], "bits": 4 }
+  ],
+  "truth": "passthrough",
+  "weights": { "core": 2, "residential": 3, "forge": 8, "plaza": 4 },
+  "cost": { "redstone": 14, "stone": 60, "wood": 0 },
+  "setpiece": true
+}

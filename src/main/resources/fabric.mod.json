@@ -1,0 +1,31 @@
+{
+	"schemaVersion": 1,
+	"id": "seedcity",
+	"version": "${version}",
+	"name": "Seed City",
+	"description": "A working redstone city grows itself from a seed, is built and maintained by mobs, and can be steered by the player.",
+	"authors": [
+		"Tabor"
+	],
+	"contact": {
+		"sources": "https://github.com/taborgreat/mc-seed-city"
+	},
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.tabor.seedcity.SeedCity"
+		],
+		"client": [
+			"net.tabor.seedcity.client.SeedCityClient"
+		]
+	},
+	"mixins": [
+		"seedcity.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "seedcity-gametest",
+	"version": "0.0.1",
+	"name": "Seed City Gametests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"net.tabor.seedcity.gametest.CellVerifyTests"
+		]
+	},
+	"depends": {
+		"seedcity": "*"
+	}
+}

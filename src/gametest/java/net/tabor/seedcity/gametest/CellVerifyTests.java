@@ -1,0 +1,132 @@
+package net.tabor.seedcity.gametest;
+
+import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
+import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
+import net.tabor.seedcity.SeedCity;
+import net.tabor.seedcity.cell.Cell;
+import net.tabor.seedcity.cell.CellLibrary;
+import net.tabor.seedcity.cell.Placement;
+import net.tabor.seedcity.verify.Verifier;
+import net.tabor.seedcity.verify.VerifyResult;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Phase 0 acceptance (design doc 25): every shipped cell places and passes its truth model in a
+ * fresh world. One test per cell so the report names the culprit.
+ */
+public final class CellVerifyTests {
+	private static final String ARENA = "seedcity:arena";
+	private static final int BUDGET = 1600;
+	/** Leaves a ring of air around a 7x7 cell inside the 12x12 arena for probes. */
+	private static final BlockPos CELL_ORIGIN = new BlockPos(2, 1, 2);
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void busSegment(GameTestHelper helper) {
+		verifyCell(helper, "bus_segment", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void busSegmentRotated(GameTestHelper helper) {
+		verifyCell(helper, "bus_segment", Rotation.CLOCKWISE_90);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void inverter(GameTestHelper helper) {
+		verifyCell(helper, "inverter", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void registerBlock(GameTestHelper helper) {
+		verifyCell(helper, "register_block", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void clockTower(GameTestHelper helper) {
+		verifyCell(helper, "clock_tower", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void drawbridge(GameTestHelper helper) {
+		verifyCell(helper, "drawbridge", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void storageCell(GameTestHelper helper) {
+		verifyCell(helper, "storage_cell", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = 40)
+	public void libraryLoadsSixCells(GameTestHelper helper) {
+		helper.assertTrue(CellLibrary.all().size() >= 6, "expected at least six cells loaded, got " + CellLibrary.all().size());
+		helper.assertTrue(CellLibrary.errors().isEmpty(), "library rejected: " + CellLibrary.errors());
+		helper.succeed();
+	}
+
+	/** Design doc 25, phase 0: a deliberately broken cell fails and the failure names a port. */
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void corruptedCellFailsNamingPort(GameTestHelper helper) {
+		Identifier id = SeedCity.id("bus_segment");
+		Cell cell = CellLibrary.get(id).orElse(null);
+		if (cell == null) {
+			helper.fail("cell not loaded: " + id);
+			return;
+		}
+		Placement placement = new Placement(cell, helper.absolutePos(CELL_ORIGIN), Rotation.NONE);
+		placement.place(helper.getLevel());
+		// knock the middle comparator out of the bus
+		helper.setBlock(CELL_ORIGIN.offset(3, 1, 3), Blocks.AIR);
+		VerifyResult[] result = new VerifyResult[1];
+		Verifier.verify(helper.getLevel(), placement, List.of(), r -> result[0] = r);
+		helper.onEachTick(() -> {
+			if (result[0] == null) {
+				return;
+			}
+			if (result[0].pass()) {
+				helper.fail("broken bus verified as passing");
+			} else if (!result[0].message().contains("port out")) {
+				helper.fail("failure did not name the port: " + result[0]);
+			} else {
+				helper.succeed();
+			}
+		});
+	}
+
+	private static void verifyCell(GameTestHelper helper, String name, Rotation rotation) {
+		Identifier id = SeedCity.id(name);
+		Optional<Cell> cell = CellLibrary.get(id);
+		if (cell.isEmpty()) {
+			helper.fail("cell not loaded: " + id + " (library errors: " + CellLibrary.errors() + ")");
+			return;
+		}
+		// Rotating about the origin swings the footprint to negative x or z; shift so it stays in the arena.
+		BlockPos origin = switch (rotation) {
+			case NONE -> CELL_ORIGIN;
+			case CLOCKWISE_90 -> CELL_ORIGIN.offset(6, 0, 0);
+			case CLOCKWISE_180 -> CELL_ORIGIN.offset(6, 0, 6);
+			case COUNTERCLOCKWISE_90 -> CELL_ORIGIN.offset(0, 0, 6);
+		};
+		Placement placement = new Placement(cell.get(), helper.absolutePos(origin), rotation);
+		if (!placement.place(helper.getLevel())) {
+			helper.fail("could not place " + placement);
+			return;
+		}
+		VerifyResult[] result = new VerifyResult[1];
+		Verifier.verify(helper.getLevel(), placement, List.of(), r -> result[0] = r);
+		helper.onEachTick(() -> {
+			if (result[0] == null) {
+				return;
+			}
+			if (result[0].pass()) {
+				helper.succeed();
+			} else {
+				helper.fail(result[0].toString());
+			}
+		});
+	}
+}

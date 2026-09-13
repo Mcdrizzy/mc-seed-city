@@ -1,0 +1,115 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'maven-publish'
+}
+
+version = project.version
+group = project.group
+
+base {
+	archivesName = project.mod_id
+}
+
+repositories {
+	// Loom adds the Minecraft and Fabric repositories automatically.
+	// Only add repositories here when depending on other mods (see DECISIONS.md before doing so).
+}
+
+loom {
+	// src/main = common + server, src/client = client-only (renderers, screens).
+	splitEnvironmentSourceSets()
+
+	mods {
+		"seedcity" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+}
+
+// Cell generator: a plain JVM program (no Minecraft on its classpath) that emits the cell
+// library's structure NBT + sidecar JSON from the DSL in src/cellgen. Run with `gradlew genCells`.
+sourceSets {
+	cellgen {
+		java.srcDir 'src/cellgen/java'
+	}
+}
+
+tasks.register('genCells', JavaExec) {
+	group = 'seedcity'
+	description = 'Regenerates data/seedcity/cells/*.nbt and *.json from src/cellgen'
+	classpath = sourceSets.cellgen.runtimeClasspath
+	mainClass = 'net.tabor.seedcity.cellgen.Main'
+	args = [file('src/main/resources/data/seedcity/cells').absolutePath]
+}
+
+// Gametests: a headless dedicated server that places each cell and runs the verifier.
+// `gradlew runGametest`. Sources live in src/gametest.
+fabricApi {
+	configureTests {
+		createSourceSet = true
+		modId = 'seedcity-gametest'
+		eula = true
+		clearRunDirectory = true
+	}
+}
+
+dependencies {
+	// Versions live in gradle.properties.
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// Plain JUnit 5 for the pure-logic packages (card, grammar, verify models).
+	// In-world checks are Gametests (see docs/ and DECISIONS.md).
+	testImplementation "org.junit.jupiter:junit-jupiter:${project.junit_version}"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 25
+	it.options.encoding = "UTF-8"
+}
+
+java {
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from("LICENSE") {
+		rename { "${it}_$projectName" }
+	}
+}
+
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+	repositories {
+		// Nothing yet. Releases go to Modrinth by hand until a publish task is worth having.
+	}
+}
