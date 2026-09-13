@@ -34,8 +34,11 @@ Rules:
 - `kind` is one of `logic | actuator | sensor | storage | decor | core`.
 - `pos` is relative to the cell origin (min corner) and must lie on the named `face`.
 - Two cells are compatible when an `out` port of one lands exactly on an `in` port of the
-  other with equal `bits` when placed adjacent.
+  other when placed adjacent. Width does not have to match: a 4-bit port reads a 1-bit driver
+  as 15/0, a 1-bit port reads any strength as on. Same-width matings are preferred, not required.
 - `bits: 4` is carried as signal strength 0-15; `bits: 1` is on/off.
+- The grammar never wastes a live output: if a cell that listens to it fits, one is chosen;
+  plazas and warehouses only fill slots nothing points at.
 - `truth` names a verifier model: `passthrough, not, and, or, register, counter, decoder,
   actuator, sensor, clock, none`.
 - `settle` (optional, default 40) is how many game ticks the verifier waits after driving inputs.
@@ -74,16 +77,25 @@ The verifier (`net.tabor.seedcity.verify`) uses the real redstone engine, not a 
 Ports whose outside block belongs to a neighbouring placement are left alone; the neighbour drives
 them. Results are cached by (cell, neighbours, rotation).
 
-## The Phase 0 cells
+## The cell library
 
-| Cell | Truth | Circuit |
-| --- | --- | --- |
-| bus_segment | passthrough | seven comparators in a row under glass |
-| inverter | not | repeater into a block, torch on the far side, dust out; lamp shows the inverted state |
-| register_block | register | four-comparator ring holds a strength; clk gates the ring, NOT clk gates the input |
-| clock_tower | clock | torch-repeater loop, 68 game tick period; lamp beats under the spire |
-| drawbridge | actuator | dust climbs onto blocks that power three sticky pistons under a plank deck |
-| storage_cell | none | brick warehouse with barrels |
+| Cell | Kind | Truth | Ports | Circuit |
+| --- | --- | --- | --- | --- |
+| core | core | none | none | open chamber around the Seed (a structure void keeps the Seed); placed first by force |
+| clock_tower | logic | clock | out S 1b | torch-repeater loop, 68 game tick period; lamp beats under the spire; placed south of the core by force |
+| bus_segment | logic | passthrough | in N 4b, out S 4b | seven comparators in a row under glass |
+| wire_segment | logic | passthrough | in N 1b, out S 1b | repeater, dust, repeater: carries the clock |
+| junction | logic | passthrough | in N 1b; out S, E, W 1b | dust cross feeding three repeaters: fans the clock out |
+| inverter | logic | not | in N 1b, out S 1b | repeater into a block, torch on the far side, dust out; lamp shows the inverted state |
+| register_block | logic | register | in N 4b, clk W 1b, out S 4b | four-comparator ring holds a strength; clk gates the ring, NOT clk gates the input |
+| daylight_plaza | sensor | sensor | out S 4b | daylight detector read by a comparator: a slow 4-bit source |
+| drawbridge | actuator | actuator | in N 1b | dust climbs onto blocks that power three sticky pistons under a plank deck |
+| storage_cell | storage | none | none | brick warehouse with barrels; builders fetch material here |
+| decor_plaza | decor | none | none | paved square with lantern posts; the grammar's always-legal fallback |
+
+Core and clock tower carry zero district weights so the grammar never picks them; the planner
+places them by force at slots (0,0) and (0,1), and forces a junction at (0,2) on the clock's
+output so the signal fans out from the start. Everything else is the grammar's choice.
 
 ### Register timing
 

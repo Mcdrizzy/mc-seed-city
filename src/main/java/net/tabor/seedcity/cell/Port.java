@@ -20,9 +20,17 @@ public record Port(String name, PortDir dir, Direction face, BlockPos pos, int b
 		return new Port(name, dir, rotation.rotate(face), pos.rotate(rotation), bits);
 	}
 
-	/** Two ports mate when one drives and the other listens at the same width. */
+	/**
+	 * Two ports mate when one drives and the other listens. Width is a semantic hint, not a
+	 * physical barrier: a 4-bit comparator port reads a 1-bit repeater as 15/0, and a 1-bit
+	 * repeater port reads any non-zero strength as on. See DECISIONS.md.
+	 */
 	public boolean compatibleWith(Port other) {
-		return dir != other.dir && bits == other.bits;
+		return dir != other.dir;
+	}
+
+	public boolean sameWidth(Port other) {
+		return bits == other.bits;
 	}
 
 	@Override

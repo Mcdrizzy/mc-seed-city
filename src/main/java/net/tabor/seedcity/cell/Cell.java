@@ -5,11 +5,16 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -17,12 +22,31 @@ import java.util.List;
  * The only unit anything in the mod knows how to place.
  */
 public final class Cell {
+	/** One block of the structure in cell-local coordinates. Air and structure voids are omitted. */
+	public record CellBlock(BlockPos pos, BlockState state) {
+	}
+
 	private final CellDefinition definition;
 	private final StructureTemplate template;
+	private final List<CellBlock> blocks;
 
-	public Cell(CellDefinition definition, StructureTemplate template) {
+	public Cell(CellDefinition definition, StructureTemplate template, List<CellBlock> blocks) {
 		this.definition = definition;
 		this.template = template;
+		this.blocks = order(blocks);
+	}
+
+	/**
+	 * Build order for a Builder: full blocks bottom-up first, then everything that needs support
+	 * (dust, torches, diodes, lanterns, glass), also bottom-up. Deterministic.
+	 */
+	private static List<CellBlock> order(List<CellBlock> in) {
+		List<CellBlock> out = new ArrayList<>(in);
+		Comparator<CellBlock> byPos = Comparator.<CellBlock>comparingInt(b -> b.pos().getY())
+				.thenComparingInt(b -> b.pos().getZ())
+				.thenComparingInt(b -> b.pos().getX());
+		out.sort(Comparator.<CellBlock>comparingInt(b -> b.state().canOcclude() ? 0 : 1).thenComparing(byPos));
+		return List.copyOf(out);
 	}
 
 	public Identifier id() {
@@ -41,6 +65,23 @@ public final class Cell {
 		return definition.size();
 	}
 
+	/** Blocks in build order, cell-local, unrotated. */
+	public List<CellBlock> blocks() {
+		return blocks;
+	}
+
+	/** Blocks in build order, rotated about the cell origin. */
+	public List<CellBlock> blocks(Rotation rotation) {
+		if (rotation == Rotation.NONE) {
+			return blocks;
+		}
+		List<CellBlock> out = new ArrayList<>(blocks.size());
+		for (CellBlock b : blocks) {
+			out.add(new CellBlock(b.pos().rotate(rotation), b.state().rotate(rotation)));
+		}
+		return out;
+	}
+
 	/** World-space box the cell occupies when its local origin is placed at {@code origin}. */
 	public BoundingBox footprint(BlockPos origin, Rotation rotation) {
 		Vec3i s = definition.size();
@@ -48,17 +89,34 @@ public final class Cell {
 		return BoundingBox.fromCorners(origin, far);
 	}
 
+	/**
+	 * Offset from a footprint's min corner to the placement origin for a rotation, so a rotated
+	 * cell still fills the same box (rotation about the origin swings it negative).
+	 */
+	public static BlockPos rotationShift(Rotation rotation, Vec3i size) {
+		return switch (rotation) {
+			case NONE -> BlockPos.ZERO;
+			case CLOCKWISE_90 -> new BlockPos(size.getZ() - 1, 0, 0);
+			case CLOCKWISE_180 -> new BlockPos(size.getX() - 1, 0, size.getZ() - 1);
+			case COUNTERCLOCKWISE_90 -> new BlockPos(0, 0, size.getX() - 1);
+		};
+	}
+
 	/** Ports in cell-local coordinates after rotation about the origin. */
 	public List<Port> ports(Rotation rotation) {
 		return definition.ports().stream().map(p -> p.rotated(rotation)).toList();
 	}
 
-	/** Writes the structure into the world. Neighbours get updates so redstone settles on its own. */
+	/**
+	 * Writes the whole structure into the world at once (commands, tests, repairs). Structure
+	 * voids are skipped so a cell can enclose an existing block such as the Seed.
+	 */
 	public boolean place(ServerLevel level, BlockPos origin, Rotation rotation) {
 		StructurePlaceSettings settings = new StructurePlaceSettings()
 				.setRotation(rotation)
 				.setIgnoreEntities(true)
-				.setKnownShape(false);
+				.setKnownShape(false)
+				.addProcessor(new BlockIgnoreProcessor(List.of(Blocks.STRUCTURE_VOID)));
 		return template.placeInWorld(level, origin, origin, settings, level.getRandom(), Block.UPDATE_ALL);
 	}
 

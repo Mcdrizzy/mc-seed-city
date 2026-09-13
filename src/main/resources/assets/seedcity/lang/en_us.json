@@ -1,3 +1,5 @@
 {
-	"itemGroup.seedcity": "Seed City"
+	"block.seedcity.seed": "City Seed",
+	"block.seedcity.probe": "Verifier Probe",
+	"entity.seedcity.builder": "Builder"
 }

@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.tabor.seedcity.SeedCity;
@@ -149,28 +148,20 @@ public final class Verifier {
 			return false;
 		}
 
+		/**
+		 * Every input port gets a probe just outside it, even when that block belongs to a
+		 * neighbour: the probe is directional so it cannot back-feed the neighbour, and the
+		 * neighbour's block is restored afterwards. Output ports are read in place; whatever sits
+		 * outside them is irrelevant to the reading and is left alone.
+		 */
 		private void prepare() {
-			List<BoundingBox> occupied = new ArrayList<>();
-			for (Placement n : neighbours) {
-				occupied.add(n.footprint());
-			}
 			for (Placement.WorldPort wp : placement.ports()) {
-				BlockPos outside = wp.outside();
-				boolean owned = occupied.stream().anyMatch(b -> b.isInside(outside));
-				if (owned) {
-					continue;
-				}
-				saved.putIfAbsent(outside, level.getBlockState(outside));
 				if (wp.port().dir() == PortDir.IN) {
+					BlockPos outside = wp.outside();
+					saved.putIfAbsent(outside, level.getBlockState(outside));
 					probed.add(wp);
 					drive(wp, 0);
 				} else {
-					outputs.add(wp);
-					level.setBlock(outside, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-				}
-			}
-			for (Placement.WorldPort wp : placement.ports()) {
-				if (wp.port().dir() == PortDir.OUT && !outputs.contains(wp)) {
 					outputs.add(wp);
 				}
 			}
@@ -186,7 +177,9 @@ public final class Verifier {
 		}
 
 		private void drive(Placement.WorldPort wp, int level0) {
-			BlockState probe = SeedCityBlocks.PROBE.defaultBlockState().setValue(ProbeBlock.POWER, Math.max(0, Math.min(15, level0)));
+			BlockState probe = SeedCityBlocks.PROBE.defaultBlockState()
+					.setValue(ProbeBlock.POWER, Math.max(0, Math.min(15, level0)))
+					.setValue(ProbeBlock.FACING, wp.face().getOpposite());
 			level.setBlock(wp.outside(), probe, Block.UPDATE_ALL);
 		}
 

@@ -3,10 +3,15 @@ package net.tabor.seedcity.cell;
 import com.google.gson.JsonObject;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.fabric.api.resource.v1.reloader.SimpleReloadListener;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -106,15 +111,38 @@ public final class CellLibrary extends SimpleReloadListener<CellLibrary.Loaded> 
 		Identifier nbtId = jsonId.withPath(DIRECTORY + "/" + base + ".nbt");
 		Resource nbt = rm.getResource(nbtId).orElseThrow(() -> new CellFormatException("missing structure " + nbtId));
 		StructureTemplate template = new StructureTemplate();
+		List<Cell.CellBlock> blocks = new ArrayList<>();
 		try (InputStream in = nbt.open()) {
 			CompoundTag tag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
 			template.load(BuiltInRegistries.BLOCK, tag);
+			readBlocks(tag, blocks);
 		} catch (Exception ex) {
 			throw new CellFormatException("structure " + nbtId + " unreadable: " + ex.getMessage(), ex);
 		}
 		if (!template.getSize().equals(def.size())) {
 			throw new CellFormatException("structure size " + template.getSize() + " differs from sidecar size " + def.size());
 		}
-		return new Cell(def, template);
+		return new Cell(def, template, blocks);
+	}
+
+	/** Reads the single-palette structure format into a flat block list for Builders. */
+	private static void readBlocks(CompoundTag tag, List<Cell.CellBlock> out) {
+		ListTag paletteTag = tag.getListOrEmpty("palette");
+		List<BlockState> palette = new ArrayList<>();
+		for (int i = 0; i < paletteTag.size(); i++) {
+			palette.add(NbtUtils.readBlockState(BuiltInRegistries.BLOCK, paletteTag.getCompoundOrEmpty(i)));
+		}
+		for (CompoundTag b : tag.getListOrEmpty("blocks").compoundStream().toList()) {
+			ListTag pos = b.getListOrEmpty("pos");
+			int idx = b.getIntOr("state", 0);
+			if (idx < 0 || idx >= palette.size()) {
+				continue;
+			}
+			BlockState state = palette.get(idx);
+			if (state.isAir() || state.is(Blocks.STRUCTURE_VOID)) {
+				continue;
+			}
+			out.add(new Cell.CellBlock(new BlockPos(pos.getIntOr(0, 0), pos.getIntOr(1, 0), pos.getIntOr(2, 0)), state));
+		}
 	}
 }

@@ -42,5 +42,9 @@ dated line to `DECISIONS.md`.
   and runs as part of `build`. See `docs/cells.md` for port conventions and the register timing.
 - Verification uses the real redstone engine across server ticks (`verify.Verifier`), not a
   simulator. Truth models live in `verify.TruthModels`.
-- Phase 0 done 2026-09-13. Current phase: 1 (city boat: Seed block, Builder entity, frontier
-  grammar over the 7x7 grid, L0 default card). Acceptance is design doc section 25, phase 1.
+- City model: `core.CityState` plans the layout (deterministic per city seed) and owns the
+  material ledger and the verification queue; `core.CityManager` persists cities per level and
+  ticks them once a second; `entity.BuilderEntity` only claims tasks and places blocks;
+  `grammar.Grammar` is pure. `docs/cells.md` has the port conventions and the cell table.
+- Phase 0 and 1 done 2026-09-13. Current phase: 2 (Wardens, Fault Cells, Sentinels).
+  Acceptance is design doc section 25, phase 2. Phase 2 also needs a placed-by-player flag.

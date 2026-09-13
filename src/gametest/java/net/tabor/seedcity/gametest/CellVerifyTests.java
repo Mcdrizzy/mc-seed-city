@@ -61,9 +61,34 @@ public final class CellVerifyTests {
 		verifyCell(helper, "storage_cell", Rotation.NONE);
 	}
 
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void core(GameTestHelper helper) {
+		verifyCell(helper, "core", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void decorPlaza(GameTestHelper helper) {
+		verifyCell(helper, "decor_plaza", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET, skyAccess = true)
+	public void daylightPlaza(GameTestHelper helper) {
+		verifyCell(helper, "daylight_plaza", Rotation.NONE);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void wireSegment(GameTestHelper helper) {
+		verifyCell(helper, "wire_segment", Rotation.COUNTERCLOCKWISE_90);
+	}
+
+	@GameTest(structure = ARENA, maxTicks = BUDGET)
+	public void junction(GameTestHelper helper) {
+		verifyCell(helper, "junction", Rotation.CLOCKWISE_180);
+	}
+
 	@GameTest(structure = ARENA, maxTicks = 40)
-	public void libraryLoadsSixCells(GameTestHelper helper) {
-		helper.assertTrue(CellLibrary.all().size() >= 6, "expected at least six cells loaded, got " + CellLibrary.all().size());
+	public void libraryLoadsAllCells(GameTestHelper helper) {
+		helper.assertTrue(CellLibrary.all().size() >= 11, "expected at least eleven cells loaded, got " + CellLibrary.all().size());
 		helper.assertTrue(CellLibrary.errors().isEmpty(), "library rejected: " + CellLibrary.errors());
 		helper.succeed();
 	}

@@ -36,11 +36,16 @@ public record Placement(Cell cell, BlockPos origin, Rotation rotation) {
 		return cell.place(level, origin, rotation);
 	}
 
-	/** Replaces the footprint with air, top-down, without dropping items. */
-	public void clear(ServerLevel level) {
+	/**
+	 * Replaces the footprint with air, top-down, without dropping items.
+	 *
+	 * @param keepFloor leave the bottom layer (the cell's floor) in place so the slot stays buildable
+	 */
+	public void clear(ServerLevel level, boolean keepFloor) {
 		BoundingBox box = footprint();
 		int flags = Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS;
-		for (int y = box.maxY(); y >= box.minY(); y--) {
+		int bottom = keepFloor ? box.minY() + 1 : box.minY();
+		for (int y = box.maxY(); y >= bottom; y--) {
 			for (int x = box.minX(); x <= box.maxX(); x++) {
 				for (int z = box.minZ(); z <= box.maxZ(); z++) {
 					level.setBlock(new BlockPos(x, y, z), Blocks.AIR.defaultBlockState(), flags);

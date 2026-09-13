@@ -1,0 +1,10 @@
+{
+  "id": "seedcity:decor_plaza",
+  "kind": "decor",
+  "size": [7, 5, 7],
+  "ports": [],
+  "truth": "none",
+  "weights": { "core": 1, "residential": 2, "forge": 0, "plaza": 2 },
+  "cost": { "redstone": 0, "stone": 30, "wood": 8 },
+  "setpiece": true
+}

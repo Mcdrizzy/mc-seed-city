@@ -37,8 +37,21 @@ You need a JDK 25 with `JAVA_HOME` pointing at it. Nothing else; the Gradle wrap
 
 On Windows use `gradlew.bat`. The first build downloads Minecraft and remaps it; expect several minutes.
 
-In a dev world: `/seedcity list`, `/seedcity place <cell> [rotation]`, `/seedcity verify <cell> [rotation] [keep]`,
-`/seedcity verifyall`. Cells are placed two blocks east of you.
+In a dev world (creative, flat world is easiest):
+
+```
+/seedcity platform 48        # a stone boat under your feet
+/seedcity plant              # a powered Seed where you stand: the city starts growing
+/seedcity city               # status: slots built, stock, what each builder is doing
+/seedcity slots              # every slot of the nearest city and why it is blocked, if it is
+/seedcity list               # the cell library
+/seedcity place <cell> [rotation 0-3]
+/seedcity verify <cell> [rotation 0-3] [keep]
+/seedcity verifyall
+```
+
+Cells placed by hand go two blocks east of you. Breaking the Seed freezes its city. The Seed is
+also craftable: redstone blocks and comparators around an eye of ender.
 
 ## Repo layout
 
@@ -89,5 +102,8 @@ step-by-step are in [docs/cells.md](docs/cells.md).
 | 4 | Player blueprints, Couriers, vault logic, L2 hardware, Forge district | `NEED adder_4bit` gets built and verified |
 | 5 | Terrain blending, containment polish, L3 self-authored programs | A seed on open ground grows a city that fits the land |
 
-Phase 0 is complete (2026-09-13): six generated cells load, place, and pass verification in the
-gametest suite, and a broken cell fails naming its port. Current phase: **1**.
+Phase 0 is complete (2026-09-13): generated cells load, place, and pass verification in the
+gametest suite, and a broken cell fails naming its port. Phase 1 is complete (2026-09-13): a
+powered Seed on a platform spawns Builders that enclose it in a Core and fill the platform with
+verified cells, layout determined by the seed alone, clock pulsing into a drawbridge.
+Current phase: **2**.

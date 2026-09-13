@@ -394,10 +394,10 @@ public final class TruthModels {
 				Sample back = samples.get(i + 2);
 				String port = driven.inputs().keySet().iterator().next();
 				if (sameWorld(rest.snapshot(), driven.snapshot())) {
-					return Optional.of("port " + port + ": nothing moved when driven");
+					return Optional.of("port " + port + ": nothing moved when driven (" + describe(rest.snapshot()) + ")");
 				}
 				if (!sameWorld(rest.snapshot(), back.snapshot())) {
-					return Optional.of("port " + port + ": cell did not return to rest after release");
+					return Optional.of("port " + port + ": cell did not return to rest after release (" + diff(rest.snapshot(), back.snapshot()) + ")");
 				}
 			}
 			return Optional.empty();
@@ -405,6 +405,29 @@ public final class TruthModels {
 
 		private static boolean sameWorld(Map<BlockPos, BlockState> a, Map<BlockPos, BlockState> b) {
 			return a.equals(b);
+		}
+
+		/** The redstone-relevant blocks of a snapshot, for failure messages. */
+		private static String describe(Map<BlockPos, BlockState> snap) {
+			StringBuilder sb = new StringBuilder();
+			snap.entrySet().stream()
+					.filter(e -> e.getValue().isSignalSource() || e.getValue().hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.EXTENDED)
+							|| e.getValue().hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED))
+					.sorted(Map.Entry.comparingByKey())
+					.limit(24)
+					.forEach(e -> sb.append(e.getKey().toShortString()).append('=').append(e.getValue()).append("; "));
+			return sb.toString();
+		}
+
+		private static String diff(Map<BlockPos, BlockState> a, Map<BlockPos, BlockState> b) {
+			StringBuilder sb = new StringBuilder();
+			a.forEach((pos, state) -> {
+				BlockState other = b.get(pos);
+				if (other != state) {
+					sb.append(pos.toShortString()).append(": ").append(state).append(" -> ").append(other).append("; ");
+				}
+			});
+			return sb.toString();
 		}
 	}
 

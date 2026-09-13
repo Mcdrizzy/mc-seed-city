@@ -4,6 +4,9 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import net.tabor.seedcity.cell.CellLibrary;
 import net.tabor.seedcity.command.SeedCityCommands;
+import net.tabor.seedcity.config.SeedCityConfig;
+import net.tabor.seedcity.core.CityManager;
+import net.tabor.seedcity.entity.SeedCityEntities;
 import net.tabor.seedcity.verify.Verifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +29,13 @@ public final class SeedCity implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		SeedCityConfig.load();
 		SeedCityBlocks.init();
+		SeedCityEntities.init();
 		CellLibrary.init();
 		Verifier.init();
+		CityManager.init();
 		SeedCityCommands.init();
-		LOGGER.info("Seed City loaded (phase 0: cell format, loader, port schema, verifier)");
+		LOGGER.info("Seed City loaded (phase 1: city boat)");
 	}
 }

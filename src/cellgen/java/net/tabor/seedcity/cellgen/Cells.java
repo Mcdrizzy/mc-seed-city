@@ -30,7 +30,95 @@ public final class Cells {
 	}
 
 	public static List<CellBuilder> all() {
-		return List.of(busSegment(), inverter(), registerBlock(), clockTower(), drawbridge(), storageCell());
+		return List.of(busSegment(), inverter(), registerBlock(), clockTower(), drawbridge(), storageCell(),
+				core(), decorPlaza(), daylightPlaza(), wireSegment(), junction());
+	}
+
+	/**
+	 * The Core (design doc 13): the first cell, built around the Seed. A structure void at the
+	 * Seed position leaves the Seed in place. Open on all four sides so it is always reachable.
+	 * Never chosen by the grammar (zero weights); the planner places it by force.
+	 */
+	static CellBuilder core() {
+		CellBuilder b = shell("core", 5);
+		b.set(3, 1, 3, "minecraft:structure_void");
+		for (int[] c : new int[][] {{1, 1}, {5, 1}, {1, 5}, {5, 5}}) {
+			b.fill(c[0], 1, c[1], c[0], 3, c[1], "minecraft:chiseled_stone_bricks");
+		}
+		b.fill(0, 4, 0, 6, 4, 6, BRICK);
+		b.set(3, 4, 3, GLASS);
+		b.set(3, 3, 3, BlockSpec.of("minecraft:lantern", "hanging", "true"));
+		b.set(2, 0, 3, "minecraft:chiseled_stone_bricks").set(4, 0, 3, "minecraft:chiseled_stone_bricks")
+				.set(3, 0, 2, "minecraft:chiseled_stone_bricks").set(3, 0, 4, "minecraft:chiseled_stone_bricks");
+		return b.kind("core").truth("none")
+				.weight("core", 0).weight("residential", 0).weight("forge", 0).weight("plaza", 0)
+				.cost(0, 40, 0);
+	}
+
+	/** A paved square with four lantern posts. No ports: the grammar's fallback that always fits. */
+	static CellBuilder decorPlaza() {
+		CellBuilder b = shell("decor_plaza", 5);
+		for (int[] c : new int[][] {{1, 1}, {5, 1}, {1, 5}, {5, 5}}) {
+			b.set(c[0], 1, c[1], "minecraft:oak_fence").set(c[0], 2, c[1], "minecraft:oak_fence");
+			b.set(c[0], 3, c[1], BlockSpec.of("minecraft:lantern", "hanging", "false"));
+		}
+		b.set(3, 0, 3, "minecraft:chiseled_stone_bricks");
+		b.fill(2, 0, 2, 4, 0, 2, BRICK).fill(2, 0, 4, 4, 0, 4, BRICK).set(2, 0, 3, BRICK).set(4, 0, 3, BRICK);
+		return b.kind("decor").truth("none")
+				.weight("core", 1).weight("residential", 2).weight("forge", 0).weight("plaza", 2)
+				.cost(0, 30, 8);
+	}
+
+	/** A daylight detector under open sky read by a comparator: the city's slow breath, 4-bit out. */
+	static CellBuilder daylightPlaza() {
+		CellBuilder b = shell("daylight_plaza", 3);
+		b.set(3, 1, 5, BlockSpec.of("minecraft:daylight_detector", "inverted", "false", "power", "0"));
+		b.comparator(3, 1, 6, SOUTH, false);
+		b.walls(1, 1, 1, 5, 1, 5, "minecraft:stone_brick_slab");
+		b.set(3, 1, 5, BlockSpec.of("minecraft:daylight_detector", "inverted", "false", "power", "0"));
+		b.set(3, 1, 1, "minecraft:air").set(1, 1, 3, "minecraft:air").set(5, 1, 3, "minecraft:air");
+		return b.kind("sensor").truth("sensor")
+				.port("out", "out", SOUTH, 3, 1, 6, 4)
+				.weight("core", 0).weight("residential", 1).weight("forge", 0).weight("plaza", 2)
+				.cost(4, 40, 0);
+	}
+
+	/** A 1-bit street: repeater in, dust, repeater out. Carries the clock across the city. */
+	static CellBuilder wireSegment() {
+		CellBuilder b = shell("wire_segment", 4);
+		b.repeater(3, 1, 0, SOUTH, 1);
+		for (int z = 1; z <= 5; z++) {
+			b.dust(3, 1, z);
+		}
+		b.repeater(3, 1, 6, SOUTH, 1);
+		b.fill(2, 1, 0, 2, 1, 6, BRICK).fill(4, 1, 0, 4, 1, 6, BRICK);
+		b.fill(2, 2, 0, 4, 2, 6, GLASS);
+		return b.kind("logic").truth("passthrough")
+				.port("in", "in", NORTH, 3, 1, 0, 1)
+				.port("out", "out", SOUTH, 3, 1, 6, 1)
+				.weight("core", 3).weight("residential", 4).weight("forge", 4).weight("plaza", 3)
+				.cost(6, 50, 0);
+	}
+
+	/** A 1-bit fan-out: one input from the north, outputs south, east and west. */
+	static CellBuilder junction() {
+		CellBuilder b = shell("junction", 4);
+		b.repeater(3, 1, 0, SOUTH, 1);
+		b.dust(3, 1, 1).dust(3, 1, 2).dust(3, 1, 3).dust(3, 1, 4).dust(3, 1, 5);
+		b.dust(2, 1, 3).dust(1, 1, 3).dust(4, 1, 3).dust(5, 1, 3);
+		b.repeater(0, 1, 3, WEST, 1);
+		b.repeater(6, 1, 3, EAST, 1);
+		b.repeater(3, 1, 6, SOUTH, 1);
+		for (int[] c : new int[][] {{1, 1}, {5, 1}, {1, 5}, {5, 5}}) {
+			b.fill(c[0], 1, c[1], c[0], 3, c[1], BRICK);
+		}
+		return b.kind("logic").truth("passthrough")
+				.port("in", "in", NORTH, 3, 1, 0, 1)
+				.port("out_s", "out", SOUTH, 3, 1, 6, 1)
+				.port("out_w", "out", WEST, 0, 1, 3, 1)
+				.port("out_e", "out", EAST, 6, 1, 3, 1)
+				.weight("core", 3).weight("residential", 2).weight("forge", 3).weight("plaza", 3)
+				.cost(10, 50, 0);
 	}
 
 	private static CellBuilder shell(String id, int height) {
@@ -50,7 +138,7 @@ public final class Cells {
 		return b.kind("logic").truth("passthrough")
 				.port("in", "in", NORTH, 3, 1, 0, 4)
 				.port("out", "out", SOUTH, 3, 1, 6, 4)
-				.weight("core", 2).weight("residential", 3).weight("forge", 8).weight("plaza", 4)
+				.weight("core", 2).weight("residential", 2).weight("forge", 8).weight("plaza", 2)
 				.cost(14, 60, 0);
 	}
 
@@ -148,9 +236,10 @@ public final class Cells {
 		b.walls(2, 3, 1, 4, 7, 3, BRICK);
 		b.fill(2, 8, 1, 4, 8, 3, BRICK);
 		b.set(3, 8, 2, "minecraft:glowstone");
+		// Zero weights: the city has one clock, placed by the planner next to the core.
 		return b.kind("logic").truth("clock")
 				.port("out", "out", SOUTH, 3, 1, 6, 1)
-				.weight("core", 5).weight("residential", 0).weight("forge", 0).weight("plaza", 3)
+				.weight("core", 0).weight("residential", 0).weight("forge", 0).weight("plaza", 0)
 				.cost(20, 120, 0);
 	}
 
