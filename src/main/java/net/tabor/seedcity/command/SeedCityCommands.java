@@ -27,6 +27,8 @@ import net.tabor.seedcity.config.SeedCityConfig;
 import net.tabor.seedcity.core.CityManager;
 import net.tabor.seedcity.core.CityState;
 import net.tabor.seedcity.entity.BuilderEntity;
+import net.tabor.seedcity.entity.SentinelEntity;
+import net.tabor.seedcity.entity.WardenEntity;
 import net.tabor.seedcity.verify.Verifier;
 import net.tabor.seedcity.verify.VerifyResult;
 
@@ -82,7 +84,8 @@ public final class SeedCityCommands {
 								.executes(c -> platform(c.getSource(), IntegerArgumentType.getInteger(c, "size")))))
 				.then(Commands.literal("plant").executes(c -> plant(c.getSource())))
 				.then(Commands.literal("city").executes(c -> city(c.getSource())))
-				.then(Commands.literal("slots").executes(c -> slots(c.getSource()))));
+				.then(Commands.literal("slots").executes(c -> slots(c.getSource())))
+				.then(Commands.literal("graph").executes(c -> graph(c.getSource()))));
 	}
 
 	private static Rotation rotation(CommandContext<CommandSourceStack> c) {
@@ -242,11 +245,80 @@ public final class SeedCityCommands {
 		}
 		CityState c = city.get();
 		source.sendSuccess(() -> Component.literal(c.summary()), false);
-		for (BuilderEntity b : c.builders(level, SeedCityConfig.get())) {
+		for (BuilderEntity b : c.builders(level)) {
 			source.sendSuccess(() -> Component.literal("  builder " + b.blockPosition().toShortString() + ": " + b.status()), false);
+		}
+		for (WardenEntity w : c.wardens(level)) {
+			source.sendSuccess(() -> Component.literal("  warden " + w.blockPosition().toShortString() + ": " + w.status()), false);
+		}
+		for (SentinelEntity s : c.sentinels(level)) {
+			source.sendSuccess(() -> Component.literal("  " + s.status() + " at " + s.blockPosition().toShortString()), false);
+		}
+		for (String d : c.districts()) {
+			if (c.districtHasFault(d)) {
+				source.sendSuccess(() -> Component.literal("  district " + d + " is DARK: open fault, no warden"), false);
+			}
 		}
 		source.sendSuccess(() -> Component.literal("  verifier jobs active: " + Verifier.activeJobs()), false);
 		return 1;
+	}
+
+	/**
+	 * The city as a graph: every built cell is a node, every output-to-input mating is an edge.
+	 * Edges that carry the clock are marked; outputs that dead-end are listed so wasted signal
+	 * is easy to spot.
+	 */
+	private static int graph(CommandSourceStack source) {
+		ServerLevel level = source.getLevel();
+		Optional<CityState> city = CityManager.get(level).nearest(BlockPos.containing(source.getPosition()));
+		if (city.isEmpty()) {
+			source.sendFailure(Component.literal("No city in this dimension."));
+			return 0;
+		}
+		CityState c = city.get();
+		java.util.Set<CityState.SlotKey> clocked = c.clockedSlots(true);
+		java.util.Set<CityState.SlotKey> live = c.liveSlots(true, false);
+		int nodes = 0;
+		int edges = 0;
+		int deadEnds = 0;
+		List<String> lines = new ArrayList<>();
+		for (CityState.Slot s : c.slots()) {
+			if (s.status != CityState.SlotStatus.BUILT && s.status != CityState.SlotStatus.FAULT) {
+				continue;
+			}
+			Optional<Placement> p = c.placement(s);
+			if (p.isEmpty()) {
+				continue;
+			}
+			nodes++;
+			for (Port port : p.get().cell().ports(s.rotation)) {
+				if (port.dir() != net.tabor.seedcity.cell.PortDir.OUT) {
+					continue;
+				}
+				String from = s.key + " " + s.cell.getPath() + "." + port.name();
+				CityState.SlotKey nk = s.key.offset(port.face());
+				Optional<CityState.Slot> n = c.slot(nk);
+				Port theirs = null;
+				if (n.isPresent() && n.get().cell != null && c.placement(n.get()).isPresent()) {
+					theirs = net.tabor.seedcity.grammar.Grammar.portOn(c.placement(n.get()).get().cell().ports(n.get().rotation), port.face().getOpposite());
+				}
+				if (theirs != null && theirs.dir() == net.tabor.seedcity.cell.PortDir.IN) {
+					edges++;
+					String tag = clocked.contains(s.key) ? "  [clock]" : live.contains(s.key) ? "  [live]" : "  [dead]";
+					lines.add(from + " -> " + nk + " " + n.get().cell.getPath() + "." + theirs.name() + tag + (s.status == CityState.SlotStatus.FAULT ? " FAULT" : ""));
+				} else {
+					deadEnds++;
+					lines.add(from + " -> (nothing)");
+				}
+			}
+		}
+		int n = nodes, e = edges, d = deadEnds;
+		source.sendSuccess(() -> Component.literal("graph: " + n + " cells, " + e + " connections, " + d + " dead-end outputs, "
+				+ clocked.size() + " cells on the clock, " + live.size() + " carrying any signal"), false);
+		for (String line : lines) {
+			source.sendSuccess(() -> Component.literal("  " + line), false);
+		}
+		return edges;
 	}
 
 	private static int slots(CommandSourceStack source) {

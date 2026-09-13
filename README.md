@@ -44,6 +44,7 @@ In a dev world (creative, flat world is easiest):
 /seedcity plant              # a powered Seed where you stand: the city starts growing
 /seedcity city               # status: slots built, stock, what each builder is doing
 /seedcity slots              # every slot of the nearest city and why it is blocked, if it is
+/seedcity graph              # the city as a graph: connections, dead ends, what carries the clock
 /seedcity list               # the cell library
 /seedcity place <cell> [rotation 0-3]
 /seedcity verify <cell> [rotation 0-3] [keep]
@@ -52,6 +53,11 @@ In a dev world (creative, flat world is easiest):
 
 Cells placed by hand go two blocks east of you. Breaking the Seed freezes its city. The Seed is
 also craftable: redstone blocks and comparators around an eye of ender.
+
+Things to try once a city has grown: break a block inside a wire and watch the district's
+Warden come and put it back; find the dark district (`/seedcity city` names it), find the one
+missing block in its wire, and place it; stand near a register vault while its value is high and
+see what the Sentinel on the roof does.
 
 ## Repo layout
 
@@ -105,5 +111,8 @@ step-by-step are in [docs/cells.md](docs/cells.md).
 Phase 0 is complete (2026-09-13): generated cells load, place, and pass verification in the
 gametest suite, and a broken cell fails naming its port. Phase 1 is complete (2026-09-13): a
 powered Seed on a platform spawns Builders that enclose it in a Core and fill the platform with
-verified cells, layout determined by the seed alone, clock pulsing into a drawbridge.
-Current phase: **2**.
+verified cells, layout determined by the seed alone, clock pulsing into a drawbridge. Phase 2 is
+complete (2026-09-13): Wardens patrol each district and rebuild anything that differs from the
+blueprint, every city plants a Fault Cell whose district stays dark until a player fixes the
+break, and Sentinels guard register vaults, asleep at 0 and hostile at 15.
+Current phase: **3**, designed to [docs/city-as-computer.md](docs/city-as-computer.md).

@@ -35,6 +35,16 @@ public final class SeedCityConfig {
 	public int maxChunks = 64;
 	/** Testing only: when non-zero, every new city uses this seed instead of deriving one. */
 	public long citySeedOverride = 0;
+	/** Fault Cells planted per city (doc 7: every generated city ships with faults). */
+	public int faultsPerCity = 1;
+	/** Live cells the clock must reach before the planner plants the first fault. */
+	public int faultAfterLiveCells = 6;
+	/** Seconds after a Warden dies before the Core sends another (doc 24: 5 minutes). */
+	public int wardenRespawnSeconds = 300;
+	/** Ticks between a Warden's integrity sweeps of its district (doc 24: 100). */
+	public int wardenSweepTicks = 100;
+	/** Spawn a Sentinel on every built register block. */
+	public boolean sentinelsOnRegisters = true;
 
 	private static SeedCityConfig current = new SeedCityConfig();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

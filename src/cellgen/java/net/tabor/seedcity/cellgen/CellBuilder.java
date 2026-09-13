@@ -33,6 +33,7 @@ public final class CellBuilder {
 	private final Map<String, Integer> weights = new LinkedHashMap<>();
 	private final Map<String, Integer> cost = new LinkedHashMap<>();
 	private boolean setpiece = true;
+	private int[] fault;
 
 	public CellBuilder(String id, int sx, int sy, int sz) {
 		this.id = id;
@@ -72,6 +73,13 @@ public final class CellBuilder {
 
 	public CellBuilder setpiece(boolean s) {
 		this.setpiece = s;
+		return this;
+	}
+
+	/** The one block the planner may leave out to plant this cell as a Fault Cell. */
+	public CellBuilder fault(int x, int y, int z) {
+		check(x, y, z);
+		this.fault = new int[] {x, y, z};
 		return this;
 	}
 
@@ -319,6 +327,9 @@ public final class CellBuilder {
 		sb.append("  \"truth\": \"").append(truth).append("\",\n");
 		sb.append("  \"weights\": ").append(mapJson(weights)).append(",\n");
 		sb.append("  \"cost\": ").append(mapJson(cost)).append(",\n");
+		if (fault != null) {
+			sb.append("  \"fault\": [").append(fault[0]).append(", ").append(fault[1]).append(", ").append(fault[2]).append("],\n");
+		}
 		sb.append("  \"setpiece\": ").append(setpiece).append("\n");
 		sb.append("}\n");
 		return sb.toString();

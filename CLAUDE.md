@@ -46,5 +46,15 @@ dated line to `DECISIONS.md`.
   material ledger and the verification queue; `core.CityManager` persists cities per level and
   ticks them once a second; `entity.BuilderEntity` only claims tasks and places blocks;
   `grammar.Grammar` is pure. `docs/cells.md` has the port conventions and the cell table.
-- Phase 0 and 1 done 2026-09-13. Current phase: 2 (Wardens, Fault Cells, Sentinels).
-  Acceptance is design doc section 25, phase 2. Phase 2 also needs a placed-by-player flag.
+- `docs/city-as-computer.md` is a decided addendum that governs Phases 3+: honesty rule (no
+  value without a register, no op without hardware; a card is a plan until its hardware is
+  built), analog words everywhere with a saturating comparator ALU, random-per-city zoning
+  that must be readable from the air.
+- Mobs: `entity.FlyingCityMob` is the base for Builder and Warden (hovering, city-bound);
+  `SentinelEntity` walks. Wardens repair by blueprint comparison (`verify.Integrity`), then
+  re-queue port verification. Faults are planned slots built minus their `fault` block.
+  Config is per city: always read it through `CityState.cfg()`, never the global in city code.
+- Phases 0, 1 and 2 done 2026-09-13. Current phase: 3 (the Core, punch cards, L1 behaviour
+  scripts, the Reader wall), designed to `docs/city-as-computer.md`: analog words, saturating
+  comparator ALU, registers read and written through their ports, a card is a plan until its
+  hardware exists. Acceptance is design doc section 25, phase 3.

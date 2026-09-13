@@ -22,6 +22,8 @@ import java.util.Set;
  *
  * @param settleTicks game ticks to wait after driving inputs before sampling outputs; optional
  *                    "settle" field, default 40
+ * @param fault       optional "fault" field: the one block the planner may leave out to plant a
+ *                    Fault Cell (doc 5.1, 7); null when the cell cannot be faulted
  */
 public record CellDefinition(
 		Identifier id,
@@ -32,8 +34,13 @@ public record CellDefinition(
 		Map<String, Integer> weights,
 		Map<String, Integer> cost,
 		boolean setpiece,
-		int settleTicks
+		int settleTicks,
+		BlockPos fault
 ) {
+	public boolean faultable() {
+		return fault != null;
+	}
+
 	public static final int DEFAULT_SETTLE_TICKS = 40;
 
 	public CellDefinition {
@@ -90,7 +97,15 @@ public record CellDefinition(
 			if (kind == CellKind.DECOR && !ports.isEmpty()) {
 				throw new CellFormatException("decor cells must have no ports");
 			}
-			return new CellDefinition(id, kind, size, ports, truth, weights, cost, setpiece, settle);
+			BlockPos fault = null;
+			if (json.has("fault")) {
+				Vec3i f = vec(GsonHelper.getAsJsonArray(json, "fault"), "fault");
+				fault = new BlockPos(f.getX(), f.getY(), f.getZ());
+				if (f.getX() < 0 || f.getY() < 0 || f.getZ() < 0 || f.getX() >= size.getX() || f.getY() >= size.getY() || f.getZ() >= size.getZ()) {
+					throw new CellFormatException("fault " + fault + " outside size " + size);
+				}
+			}
+			return new CellDefinition(id, kind, size, ports, truth, weights, cost, setpiece, settle, fault);
 		} catch (JsonSyntaxException | IllegalStateException | IllegalArgumentException e) {
 			throw new CellFormatException(e.getMessage(), e);
 		}

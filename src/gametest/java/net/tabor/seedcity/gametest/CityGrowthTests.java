@@ -49,13 +49,11 @@ public final class CityGrowthTests {
 
 	@GameTest(structure = BOAT, maxTicks = 9000)
 	public void seedGrowsCityBoat(GameTestHelper helper) {
-		SeedCityConfig previous = SeedCityConfig.get();
-		SeedCityConfig.override(fastConfig());
 		buildPlatform(helper);
-		// power from below so nothing sits inside the core's footprint
-		helper.setBlock(SEED.below(), Blocks.REDSTONE_BLOCK);
+		// an unpowered Seed, rooted through the API so the city gets the test's own config
 		helper.setBlock(SEED, SeedCityBlocks.SEED);
 		BlockPos seedAbs = helper.absolutePos(SEED);
+		CityManager.get(helper.getLevel()).activate(helper.getLevel(), seedAbs, fastConfig());
 
 		helper.onEachTick(() -> {
 			Optional<CityState> city = CityManager.get(helper.getLevel()).city(seedAbs);
@@ -92,7 +90,6 @@ public final class CityGrowthTests {
 				for (String line : c.describeSlots()) {
 					SeedCity.LOGGER.info("  {}", line);
 				}
-				SeedCityConfig.override(previous);
 				helper.succeed();
 			}
 		});

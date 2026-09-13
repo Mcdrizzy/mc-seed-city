@@ -96,6 +96,7 @@ public final class Cells {
 		return b.kind("logic").truth("passthrough")
 				.port("in", "in", NORTH, 3, 1, 0, 1)
 				.port("out", "out", SOUTH, 3, 1, 6, 1)
+				.fault(3, 1, 3)
 				.weight("core", 3).weight("residential", 4).weight("forge", 4).weight("plaza", 3)
 				.cost(6, 50, 0);
 	}
@@ -117,6 +118,7 @@ public final class Cells {
 				.port("out_s", "out", SOUTH, 3, 1, 6, 1)
 				.port("out_w", "out", WEST, 0, 1, 3, 1)
 				.port("out_e", "out", EAST, 6, 1, 3, 1)
+				.fault(3, 1, 3)
 				.weight("core", 3).weight("residential", 2).weight("forge", 3).weight("plaza", 3)
 				.cost(10, 50, 0);
 	}
@@ -138,6 +140,7 @@ public final class Cells {
 		return b.kind("logic").truth("passthrough")
 				.port("in", "in", NORTH, 3, 1, 0, 4)
 				.port("out", "out", SOUTH, 3, 1, 6, 4)
+				.fault(3, 1, 3)
 				.weight("core", 2).weight("residential", 2).weight("forge", 8).weight("plaza", 2)
 				.cost(14, 60, 0);
 	}

@@ -9,5 +9,7 @@ public final class SeedCityClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(SeedCityEntities.BUILDER, BuilderRenderer::new);
+		EntityRendererRegistry.register(SeedCityEntities.WARDEN, WardenRenderer::new);
+		EntityRendererRegistry.register(SeedCityEntities.SENTINEL, SentinelRenderer::new);
 	}
 }

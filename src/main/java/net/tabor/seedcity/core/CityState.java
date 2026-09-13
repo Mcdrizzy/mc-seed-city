@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -24,15 +23,19 @@ import net.tabor.seedcity.cell.PortDir;
 import net.tabor.seedcity.config.SeedCityConfig;
 import net.tabor.seedcity.entity.BuilderEntity;
 import net.tabor.seedcity.entity.SeedCityEntities;
+import net.tabor.seedcity.entity.SentinelEntity;
+import net.tabor.seedcity.entity.WardenEntity;
 import net.tabor.seedcity.grammar.Choice;
 import net.tabor.seedcity.grammar.Constraint;
 import net.tabor.seedcity.grammar.FrontierSlot;
 import net.tabor.seedcity.grammar.Goal;
 import net.tabor.seedcity.grammar.Grammar;
+import net.tabor.seedcity.verify.Integrity;
 import net.tabor.seedcity.verify.Verifier;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -42,16 +45,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 
 /**
  * One city (design doc 13, 20.3, 23): the seed origin, the slot grid and what is planned or built
- * in it, the material stock, and the frontier. Entities only ever consume tasks from here.
+ * in it, the material stock, the frontier, and the roster of mobs that serve it. Entities only
+ * ever consume tasks from here.
  *
- * <p>The layout is decided by a planner that walks the frontier in a fixed order (distance from
- * the core, then x, then z) and seeds the grammar per slot from the city seed, so the city that
- * grows depends only on (world seed, seed block position), never on builder timing.
+ * <p>The layout is decided by a planner that walks the frontier in a fixed order and seeds the
+ * grammar per slot from the city seed, so the city that grows depends only on (world seed, seed
+ * block position), never on builder timing.
  */
 public final class CityState {
 	public static final int SLOT = 7;
@@ -59,6 +64,7 @@ public final class CityState {
 	public static final Identifier CLOCK_CELL = SeedCity.id("clock_tower");
 	public static final Identifier JUNCTION_CELL = SeedCity.id("junction");
 	private static final int LOOKAHEAD = 2;
+	private static final Direction[] SIDES = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 
 	public record SlotKey(int x, int z) {
 		public SlotKey offset(Direction d) {
@@ -83,6 +89,8 @@ public final class CityState {
 		/** All blocks placed; waiting for, or undergoing, verification. */
 		VERIFY,
 		BUILT,
+		/** Built deliberately broken (doc 5.1 Fault Cell). Dark until a player fixes it. */
+		FAULT,
 		BLOCKED;
 
 		static SlotStatus parse(String s) {
@@ -102,6 +110,10 @@ public final class CityState {
 		public final Set<String> rejected = new LinkedHashSet<>();
 		public long since;
 		public String note = "";
+		/** Planned as a Fault Cell: built with its fault block left out. */
+		public boolean faulted;
+		/** A Sentinel has been posted here once; it is not replaced if killed. */
+		public boolean guarded;
 		/** Builder currently working here. Not persisted; a reload re-queues the slot. */
 		public UUID builder;
 		/** Verification attempts spent on the current cell. Not persisted. */
@@ -112,17 +124,21 @@ public final class CityState {
 			this.status = status;
 		}
 
+		/** Counts as part of the city for planning purposes (has, or will have, a cell). */
 		boolean occupies() {
-			return status == SlotStatus.PLANNED || status == SlotStatus.BUILDING || status == SlotStatus.VERIFY || status == SlotStatus.BUILT;
+			return status == SlotStatus.PLANNED || status == SlotStatus.BUILDING || status == SlotStatus.VERIFY
+					|| status == SlotStatus.BUILT || status == SlotStatus.FAULT;
 		}
 
 		@Override
 		public String toString() {
-			return key + " " + status + (cell == null ? "" : " " + cell.getPath() + "/" + rotation.getSerializedName());
+			return key + " " + status + (cell == null ? "" : " " + cell.getPath() + "/" + rotation.getSerializedName())
+					+ (faulted ? " [fault]" : "");
 		}
 	}
 
-	private record SlotData(int x, int z, String status, Optional<Identifier> cell, Rotation rotation, List<String> rejected, long since, String note) {
+	private record SlotData(int x, int z, String status, Optional<Identifier> cell, Rotation rotation, List<String> rejected,
+							long since, String note, boolean faulted, boolean guarded) {
 		static final Codec<SlotData> CODEC = RecordCodecBuilder.create(i -> i.group(
 				Codec.INT.fieldOf("x").forGetter(SlotData::x),
 				Codec.INT.fieldOf("z").forGetter(SlotData::z),
@@ -131,11 +147,14 @@ public final class CityState {
 				Rotation.CODEC.optionalFieldOf("rotation", Rotation.NONE).forGetter(SlotData::rotation),
 				Codec.STRING.listOf().optionalFieldOf("rejected", List.of()).forGetter(SlotData::rejected),
 				Codec.LONG.optionalFieldOf("since", 0L).forGetter(SlotData::since),
-				Codec.STRING.optionalFieldOf("note", "").forGetter(SlotData::note)
+				Codec.STRING.optionalFieldOf("note", "").forGetter(SlotData::note),
+				Codec.BOOL.optionalFieldOf("faulted", false).forGetter(SlotData::faulted),
+				Codec.BOOL.optionalFieldOf("guarded", false).forGetter(SlotData::guarded)
 		).apply(i, SlotData::new));
 
 		static SlotData of(Slot s) {
-			return new SlotData(s.key.x(), s.key.z(), s.status.name(), Optional.ofNullable(s.cell), s.rotation, List.copyOf(s.rejected), s.since, s.note);
+			return new SlotData(s.key.x(), s.key.z(), s.status.name(), Optional.ofNullable(s.cell), s.rotation,
+					List.copyOf(s.rejected), s.since, s.note, s.faulted, s.guarded);
 		}
 
 		Slot toSlot() {
@@ -145,6 +164,8 @@ public final class CityState {
 			s.rejected.addAll(rejected);
 			s.since = since;
 			s.note = note;
+			s.faulted = faulted;
+			s.guarded = guarded;
 			if (s.status == SlotStatus.BUILDING || s.status == SlotStatus.VERIFY) {
 				s.status = SlotStatus.PLANNED;   // re-run the task after a reload; correct blocks are skipped
 			}
@@ -174,6 +195,10 @@ public final class CityState {
 	/** Finished cells waiting for their turn under the verifier. Not persisted. */
 	private final List<BuildTask> pendingVerify = new ArrayList<>();
 	private SlotKey verifyingSlot;
+	/** District name to game time before which the Core will not send a replacement Warden. */
+	private final Map<String, Long> wardenCooldown = new HashMap<>();
+	/** Per-city config, set by tests or tools; null means the global config. Not persisted. */
+	private SeedCityConfig configOverride;
 
 	private CityState(BlockPos seedPos, long citySeed, boolean frozen, int builtCount, int redstone, int stone, int wood, List<SlotData> slotData) {
 		this.seedPos = seedPos;
@@ -207,7 +232,7 @@ public final class CityState {
 		force(new SlotKey(0, 2), JUNCTION_CELL, Rotation.NONE);
 	}
 
-	/** A throwaway city used to prove the planner is deterministic. */
+	/** A throwaway city used to prove the planner is deterministic and plants faults. */
 	public static List<String> previewPlan(long citySeed, int count, SeedCityConfig cfg) {
 		CityState c = new CityState(BlockPos.ZERO, citySeed, false, 0, cfg.initialRedstone, cfg.initialStone, cfg.initialWood, List.of());
 		c.forceRoot();
@@ -233,6 +258,14 @@ public final class CityState {
 	}
 
 	// ---- geometry ---------------------------------------------------------------------------
+
+	public SeedCityConfig cfg() {
+		return configOverride != null ? configOverride : SeedCityConfig.get();
+	}
+
+	public void overrideConfig(SeedCityConfig cfg) {
+		this.configOverride = cfg;
+	}
 
 	public BlockPos seedPos() {
 		return seedPos;
@@ -280,6 +313,12 @@ public final class CityState {
 		});
 	}
 
+	public Optional<Placement> placement(SlotKey k) {
+		Slot s = slots.get(k);
+		return s == null ? Optional.empty() : placement(s);
+	}
+
+	/** Districts are distance bands until Phase 4 makes them functional zones. */
 	public String district(SlotKey k) {
 		int d = k.chebyshev();
 		if (d <= 1) {
@@ -288,9 +327,48 @@ public final class CityState {
 		return d == 2 ? "plaza" : "residential";
 	}
 
-	// ---- planning ---------------------------------------------------------------------------
+	/** Built slots of a district, nearest the core first. */
+	public List<Slot> districtSlots(String district) {
+		List<Slot> out = new ArrayList<>();
+		for (Slot s : slots.values()) {
+			if (s.status == SlotStatus.BUILT && district.equals(district(s.key))) {
+				out.add(s);
+			}
+		}
+		out.sort(Comparator.comparingInt((Slot s) -> s.key.chebyshev()).thenComparingInt(s -> s.key.x()).thenComparingInt(s -> s.key.z()));
+		return out;
+	}
 
-	private static final Direction[] SIDES = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+	public Set<String> districts() {
+		Set<String> out = new TreeSet<>();
+		for (Slot s : slots.values()) {
+			if (s.status == SlotStatus.BUILT || s.status == SlotStatus.FAULT) {
+				out.add(district(s.key));
+			}
+		}
+		return out;
+	}
+
+	/** A district with an open Fault Cell has no Warden: that is what makes it dark (doc 7). */
+	public boolean districtHasFault(String district) {
+		for (Slot s : slots.values()) {
+			if (s.status == SlotStatus.FAULT && district.equals(district(s.key))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Reads a port of a built cell: the strength its port block emits. -1 when unavailable. */
+	public int readPort(SlotKey k, String port) {
+		Optional<Placement> p = placement(k);
+		if (p.isEmpty()) {
+			return -1;
+		}
+		return -1;
+	}
+
+	// ---- planning ---------------------------------------------------------------------------
 
 	private Port portFacing(Slot n, Direction sideFromUs) {
 		Optional<Cell> cell = CellLibrary.get(n.cell);
@@ -305,10 +383,20 @@ public final class CityState {
 		return constraints(k, liveSlots(false, false));
 	}
 
-	private List<Constraint> constraints(SlotKey k, Set<SlotKey> clocked) {
+	/**
+	 * Blocked neighbours and the world beyond the radius count as walls, so a rotation that
+	 * points an output into the void is not mistaken for one with room to grow.
+	 */
+	private List<Constraint> constraints(SlotKey k, Set<SlotKey> live) {
+		int maxRadius = cfg().maxRadiusSlots;
 		List<Constraint> out = new ArrayList<>();
 		for (Direction side : SIDES) {
-			Slot n = slots.get(k.offset(side));
+			SlotKey nk = k.offset(side);
+			Slot n = slots.get(nk);
+			if (nk.chebyshev() > maxRadius || (n != null && n.status == SlotStatus.BLOCKED)) {
+				out.add(Constraint.wall(side));
+				continue;
+			}
 			if (n == null || !n.occupies() || n.cell == null) {
 				continue;
 			}
@@ -316,8 +404,8 @@ public final class CityState {
 			if (facingUs == null) {
 				out.add(Constraint.wall(side));
 			} else {
-				boolean live = facingUs.dir() == PortDir.OUT && clocked.contains(n.key);
-				out.add(new Constraint(side, facingUs, live));
+				boolean isLive = facingUs.dir() == PortDir.OUT && live.contains(n.key);
+				out.add(new Constraint(side, facingUs, isLive));
 			}
 		}
 		return out;
@@ -330,11 +418,12 @@ public final class CityState {
 
 	/**
 	 * Slots that carry a signal: sources (the clock; sensors too unless {@code clockOnly}) and any
-	 * cell with an input mated to the output of a live cell. A fixpoint over the planned city, so
-	 * the planner can prefer placements that will actually do something.
+	 * cell with an input mated to the output of a live cell. A fixpoint over the planned city.
+	 * Fault Cells conduct for planning (the dark district is wired, just broken) but never count
+	 * when {@code builtOnly}.
 	 */
 	public Set<SlotKey> liveSlots(boolean builtOnly, boolean clockOnly) {
-		Set<SlotKey> clocked = new HashSet<>();
+		Set<SlotKey> live = new HashSet<>();
 		List<Slot> eligible = new ArrayList<>();
 		for (Slot s : slots.values()) {
 			boolean ok = builtOnly ? s.status == SlotStatus.BUILT : s.occupies();
@@ -342,7 +431,7 @@ public final class CityState {
 				eligible.add(s);
 				CellDefinition def = CellLibrary.get(s.cell).get().definition();
 				if ("clock".equals(def.truth()) || (!clockOnly && def.kind() == CellKind.SENSOR)) {
-					clocked.add(s.key);
+					live.add(s.key);
 				}
 			}
 		}
@@ -350,7 +439,7 @@ public final class CityState {
 		while (changed) {
 			changed = false;
 			for (Slot s : eligible) {
-				if (clocked.contains(s.key)) {
+				if (live.contains(s.key)) {
 					continue;
 				}
 				Cell cell = CellLibrary.get(s.cell).get();
@@ -360,19 +449,19 @@ public final class CityState {
 						continue;
 					}
 					Slot n = slots.get(s.key.offset(side));
-					if (n == null || !clocked.contains(n.key)) {
+					if (n == null || !live.contains(n.key)) {
 						continue;
 					}
 					Port theirs = portFacing(n, side);
 					if (theirs != null && theirs.dir() == PortDir.OUT && ours.compatibleWith(theirs)) {
-						clocked.add(s.key);
+						live.add(s.key);
 						changed = true;
 						break;
 					}
 				}
 			}
 		}
-		return clocked;
+		return live;
 	}
 
 	private boolean hasClockedActuator(boolean builtOnly) {
@@ -399,14 +488,14 @@ public final class CityState {
 	 * network grows like a root system before the quiet districts fill in), then pending re-plans,
 	 * then the rest by distance from the core, x, z. Deterministic.
 	 */
-	private Optional<SlotKey> nextFrontier(int maxRadius, Set<SlotKey> clocked) {
+	private Optional<SlotKey> nextFrontier(int maxRadius, Set<SlotKey> live) {
 		SlotKey bestLive = null;
 		SlotKey bestPending = null;
 		SlotKey bestAny = null;
 		for (Slot s : slots.values()) {
 			if (s.status == SlotStatus.PENDING) {
 				bestPending = better(bestPending, s.key);
-				if (fedByLive(s.key, clocked)) {
+				if (fedByLive(s.key, live)) {
 					bestLive = better(bestLive, s.key);
 				}
 			}
@@ -421,7 +510,7 @@ public final class CityState {
 					continue;
 				}
 				bestAny = better(bestAny, k);
-				if (fedByLive(k, clocked)) {
+				if (fedByLive(k, live)) {
 					bestLive = better(bestLive, k);
 				}
 			}
@@ -435,11 +524,11 @@ public final class CityState {
 		return Optional.ofNullable(bestAny);
 	}
 
-	/** True when a clocked neighbour has an output port on the face shared with this slot. */
-	private boolean fedByLive(SlotKey k, Set<SlotKey> clocked) {
+	/** True when a live neighbour has an output port on the face shared with this slot. */
+	private boolean fedByLive(SlotKey k, Set<SlotKey> live) {
 		for (Direction side : SIDES) {
 			Slot n = slots.get(k.offset(side));
-			if (n == null || !clocked.contains(n.key)) {
+			if (n == null || !live.contains(n.key)) {
 				continue;
 			}
 			Port p = portFacing(n, side);
@@ -468,6 +557,16 @@ public final class CityState {
 		int n = 0;
 		for (Slot s : slots.values()) {
 			if (s.status == SlotStatus.PLANNED && s.builder == null) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	private int faultsPlanted() {
+		int n = 0;
+		for (Slot s : slots.values()) {
+			if (s.faulted) {
 				n++;
 			}
 		}
@@ -511,6 +610,44 @@ public final class CityState {
 			s.cell = choice.get().cell().id();
 			s.rotation = choice.get().rotation();
 			s.note = "";
+			// Plant a fault once the clock reaches enough of the city (doc 7: every city ships with faults).
+			CellDefinition def = choice.get().cell().definition();
+			if (!s.faulted && faultsPlanted() < cfg.faultsPerCity && clocked.size() >= cfg.faultAfterLiveCells
+					&& def.faultable() && fedByLive(k, clocked)) {
+				s.faulted = true;
+			}
+			revisitQuietNeighbours(s);
+		}
+	}
+
+	/**
+	 * A freshly planned cell that points an output at a neighbour which is planned but not yet
+	 * started, and which would not listen, sends that neighbour back to planning so the signal
+	 * is not wasted on a cell chosen before anything pointed at it.
+	 */
+	private void revisitQuietNeighbours(Slot s) {
+		Optional<Cell> cell = CellLibrary.get(s.cell);
+		if (cell.isEmpty()) {
+			return;
+		}
+		for (Direction side : SIDES) {
+			Port ours = Grammar.portOn(cell.get().ports(s.rotation), side);
+			if (ours == null || ours.dir() != PortDir.OUT) {
+				continue;
+			}
+			Slot n = slots.get(s.key.offset(side));
+			if (n == null || n.status != SlotStatus.PLANNED || n.builder != null || n.cell == null) {
+				continue;
+			}
+			if (n.cell.equals(CORE_CELL) || n.cell.equals(CLOCK_CELL)) {
+				continue;
+			}
+			Port theirs = portFacing(n, side);
+			if (theirs == null || theirs.dir() != PortDir.IN) {
+				n.status = SlotStatus.PENDING;
+				n.cell = null;
+				n.faulted = false;
+			}
 		}
 	}
 
@@ -559,6 +696,11 @@ public final class CityState {
 		wood += sign * -c.wood();
 	}
 
+	private BuildTask taskFor(Slot s, Placement p) {
+		BlockPos omit = s.faulted ? p.cell().definition().fault() : null;
+		return new BuildTask(p, s.key, omit);
+	}
+
 	/**
 	 * Hands the next task to a builder in priority order, or nothing if the city is frozen, the
 	 * frontier is spent, or the stock cannot cover the next cell (growth stalls).
@@ -567,7 +709,7 @@ public final class CityState {
 		if (frozen) {
 			return Optional.empty();
 		}
-		SeedCityConfig cfg = SeedCityConfig.get();
+		SeedCityConfig cfg = cfg();
 		if (chunkSpan() >= cfg.maxChunks) {
 			return Optional.empty();
 		}
@@ -593,7 +735,7 @@ public final class CityState {
 				pick.note = "cell " + pick.cell + " not in library";
 				continue;
 			}
-			BuildTask task = new BuildTask(placement.get(), pick.key);
+			BuildTask task = taskFor(pick, placement.get());
 			if (!affordable(task.cost(), cfg)) {
 				return Optional.empty();
 			}
@@ -615,13 +757,30 @@ public final class CityState {
 		}
 	}
 
-	/** A builder has placed every block. The cell now queues for verification; the builder moves on. */
+	/** A builder has placed every block. Normal cells queue for verification; faults stay dark. */
 	public void onBuildComplete(BuildTask task) {
 		Slot s = slots.get(task.slot());
-		if (s != null && s.status == SlotStatus.BUILDING) {
+		if (s == null || s.status != SlotStatus.BUILDING) {
+			return;
+		}
+		s.builder = null;
+		if (s.faulted) {
+			s.status = SlotStatus.FAULT;
+			SeedCity.LOGGER.info("City {}: fault planted at {} ({})", seedPos.toShortString(), s.key, s.cell);
+		} else {
 			s.status = SlotStatus.VERIFY;
-			s.builder = null;
 			pendingVerify.add(task);
+		}
+	}
+
+	/** A Warden has re-placed a damaged cell; it must prove itself again before it counts as live. */
+	public void onRepaired(BuildTask task) {
+		Slot s = slots.get(task.slot());
+		if (s != null && s.status == SlotStatus.BUILT) {
+			s.status = SlotStatus.VERIFY;
+			s.retries = 0;
+			builtCount--;
+			pendingVerify.add(BuildTask.repair(task.placement(), task.slot()));
 		}
 	}
 
@@ -633,7 +792,7 @@ public final class CityState {
 	}
 
 	private boolean neighbourUnderConstruction(SlotKey k) {
-		for (Direction d : new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+		for (Direction d : SIDES) {
 			Slot n = slots.get(k.offset(d));
 			if (n != null && n.status == SlotStatus.BUILDING) {
 				return true;
@@ -666,7 +825,6 @@ public final class CityState {
 				if (result.pass()) {
 					onBuilt(task);
 				} else if (s.retries++ < 1) {
-					// one more try: a neighbour may have been mid-change when we sampled
 					SeedCity.LOGGER.info("City {}: {} at {} failed once ({}); retrying", seedPos.toShortString(), s.cell, s.key, result.message());
 					pendingVerify.add(task);
 				} else {
@@ -699,8 +857,9 @@ public final class CityState {
 		s.cell = null;
 		s.builder = null;
 		s.retries = 0;
+		s.faulted = false;
 		spend(task.cost(), -1);
-		for (Direction d : new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+		for (Direction d : SIDES) {
 			Slot n = slots.get(s.key.offset(d));
 			if (n != null && n.status == SlotStatus.PLANNED && n.builder == null) {
 				n.status = SlotStatus.PENDING;
@@ -711,9 +870,9 @@ public final class CityState {
 
 	public List<Placement> builtNeighbours(SlotKey k) {
 		List<Placement> out = new ArrayList<>();
-		for (Direction d : new Direction[] {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+		for (Direction d : SIDES) {
 			Slot n = slots.get(k.offset(d));
-			if (n != null && n.status == SlotStatus.BUILT) {
+			if (n != null && (n.status == SlotStatus.BUILT || n.status == SlotStatus.FAULT)) {
 				placement(n).ifPresent(out::add);
 			}
 		}
@@ -757,10 +916,39 @@ public final class CityState {
 		return chunks.size();
 	}
 
-	// ---- per-tick upkeep --------------------------------------------------------------------
+	/**
+	 * Dev and test shortcut: place a cell instantly and record it as built (or as a planted fault).
+	 * Skips verification.
+	 */
+	public Slot adopt(ServerLevel level, SlotKey k, Identifier cellId, Rotation rotation, boolean faulted) {
+		Slot s = slots.computeIfAbsent(k, key -> new Slot(key, SlotStatus.PLANNED));
+		s.cell = cellId;
+		s.rotation = rotation;
+		s.faulted = faulted;
+		s.builder = null;
+		Placement p = placement(s).orElseThrow(() -> new IllegalArgumentException("unknown cell " + cellId));
+		BuildTask t = taskFor(s, p);
+		while (!t.step(level)) {
+			// place everything now
+		}
+		if (faulted) {
+			s.status = SlotStatus.FAULT;
+		} else {
+			if (s.status != SlotStatus.BUILT) {
+				builtCount++;
+			}
+			s.status = SlotStatus.BUILT;
+		}
+		return s;
+	}
 
-	/** Called once a second by the manager. Re-queues orphaned slots and keeps builders spawned. */
+	// ---- per-second upkeep -------------------------------------------------------------------
+
+	/** Called once a second by the manager. Re-queues orphans, watches faults, keeps the mobs posted. */
 	public void upkeep(ServerLevel level) {
+		if (!level.isPositionEntityTicking(seedPos)) {
+			return;   // unloaded districts do not tick (doc 26), and spawning into unloaded chunks leaks mobs
+		}
 		if (!level.getBlockState(seedPos).is(SeedCityBlocks.SEED)) {
 			if (!frozen) {
 				SeedCity.LOGGER.info("City {}: seed destroyed, freezing", seedPos.toShortString());
@@ -770,8 +958,8 @@ public final class CityState {
 		if (frozen) {
 			return;
 		}
-		SeedCityConfig cfg = SeedCityConfig.get();
-		List<BuilderEntity> builders = builders(level, cfg);
+		SeedCityConfig cfg = cfg();
+		List<BuilderEntity> builders = builders(level);
 		Set<UUID> alive = new HashSet<>();
 		for (BuilderEntity b : builders) {
 			alive.add(b.getUUID());
@@ -783,15 +971,48 @@ public final class CityState {
 			}
 		}
 		processVerification(level);
+		watchFaults(level);
 		int desired = Math.min(cfg.maxBuilders, 1 + builtCount / cfg.cellsPerBuilder);
 		if (builders.size() < desired) {
 			spawnBuilder(level);
 		}
+		keepWardensPosted(level);
+		if (cfg.sentinelsOnRegisters) {
+			postSentinels(level);
+		}
 	}
 
-	public List<BuilderEntity> builders(ServerLevel level, SeedCityConfig cfg) {
-		AABB box = new AABB(seedPos).inflate(cfg.maxRadiusSlots * SLOT + 24.0);
-		return level.getEntities(SeedCityEntities.BUILDER, box, b -> seedPos.equals(b.cityPos()));
+	/** A player who restores a Fault Cell's missing block gets the district back: verify, then the Warden comes. */
+	private void watchFaults(ServerLevel level) {
+		for (Slot s : slots.values()) {
+			if (s.status != SlotStatus.FAULT) {
+				continue;
+			}
+			Optional<Placement> p = placement(s);
+			if (p.isPresent() && Integrity.damaged(level, p.get()).isEmpty()) {
+				SeedCity.LOGGER.info("City {}: fault at {} repaired by hand; verifying", seedPos.toShortString(), s.key);
+				s.faulted = false;
+				s.status = SlotStatus.VERIFY;
+				s.retries = 0;
+				pendingVerify.add(new BuildTask(p.get(), s.key));
+			}
+		}
+	}
+
+	public List<BuilderEntity> builders(ServerLevel level) {
+		return level.getEntities(SeedCityEntities.BUILDER, bounds(), b -> seedPos.equals(b.cityPos()));
+	}
+
+	public List<WardenEntity> wardens(ServerLevel level) {
+		return level.getEntities(SeedCityEntities.WARDEN, bounds(), w -> seedPos.equals(w.cityPos()));
+	}
+
+	public List<SentinelEntity> sentinels(ServerLevel level) {
+		return level.getEntities(SeedCityEntities.SENTINEL, bounds(), s -> seedPos.equals(s.cityPos()));
+	}
+
+	private AABB bounds() {
+		return new AABB(seedPos).inflate(cfg().maxRadiusSlots * SLOT + 24.0);
 	}
 
 	public void spawnBuilder(ServerLevel level) {
@@ -801,20 +1022,80 @@ public final class CityState {
 		}
 	}
 
+	/** One Warden per district with built cells, unless the district has an open fault or one died recently. */
+	private void keepWardensPosted(ServerLevel level) {
+		Set<String> posted = new HashSet<>();
+		for (WardenEntity w : wardens(level)) {
+			posted.add(w.district());
+		}
+		long now = level.getGameTime();
+		for (String district : districts()) {
+			if (posted.contains(district) || districtHasFault(district) || districtSlots(district).isEmpty()) {
+				continue;
+			}
+			if (wardenCooldown.getOrDefault(district, 0L) > now) {
+				continue;
+			}
+			spawnWarden(level, district);
+		}
+	}
+
+	public void spawnWarden(ServerLevel level, String district) {
+		WardenEntity w = SeedCityEntities.WARDEN.spawn(level, seedPos.above(5), EntitySpawnReason.MOB_SUMMONED);
+		if (w != null) {
+			w.assign(seedPos, district);
+			SeedCity.LOGGER.info("City {}: Warden posted to {}", seedPos.toShortString(), district);
+		}
+	}
+
+	public void noteWardenDeath(String district, long gameTime) {
+		wardenCooldown.put(district, gameTime + cfg().wardenRespawnSeconds * 20L);
+	}
+
+	/** Every built register vault gets a Sentinel once, reading the vault's output. */
+	private void postSentinels(ServerLevel level) {
+		for (Slot s : slots.values()) {
+			if (s.status != SlotStatus.BUILT || s.guarded || s.cell == null) {
+				continue;
+			}
+			Optional<Cell> cell = CellLibrary.get(s.cell);
+			if (cell.isEmpty() || !"register".equals(cell.get().definition().truth())) {
+				continue;
+			}
+			s.guarded = true;
+			spawnSentinel(level, s.key, "out");
+		}
+	}
+
+	public Optional<SentinelEntity> spawnSentinel(ServerLevel level, SlotKey k, String port) {
+		Optional<Placement> p = placement(k);
+		if (p.isEmpty()) {
+			return Optional.empty();
+		}
+		BlockPos post = p.get().footprint().getCenter().atY(p.get().footprint().maxY() + 1);
+		SentinelEntity e = SeedCityEntities.SENTINEL.spawn(level, post, EntitySpawnReason.MOB_SUMMONED);
+		if (e == null) {
+			return Optional.empty();
+		}
+		e.bind(seedPos, k, port, post);
+		return Optional.of(e);
+	}
+
 	public String summary() {
-		int planned = 0, building = 0, verify = 0, built = 0, blocked = 0, pending = 0;
+		int planned = 0, building = 0, verify = 0, built = 0, fault = 0, blocked = 0, pending = 0;
 		for (Slot s : slots.values()) {
 			switch (s.status) {
 				case PLANNED -> planned++;
 				case BUILDING -> building++;
 				case VERIFY -> verify++;
 				case BUILT -> built++;
+				case FAULT -> fault++;
 				case BLOCKED -> blocked++;
 				case PENDING -> pending++;
 			}
 		}
 		return "city@" + seedPos.toShortString() + (frozen ? " FROZEN" : "") + " seed=" + Long.toHexString(citySeed)
-				+ " built=" + built + " verifying=" + verify + " building=" + building + " planned=" + planned
+				+ " built=" + built + " faults=" + fault + " verifying=" + verify + " building=" + building + " planned=" + planned
 				+ " pending=" + pending + " blocked=" + blocked
 				+ " stock=" + redstone + "r/" + stone + "s/" + wood + "w";
 	}
@@ -827,9 +1108,5 @@ public final class CityState {
 			out.add(s + (s.note.isEmpty() ? "" : " [" + s.note + "]"));
 		}
 		return out;
-	}
-
-	public Vec3i size() {
-		return new Vec3i(SLOT, 0, SLOT);
 	}
 }

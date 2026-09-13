@@ -63,10 +63,19 @@ public final class CityManager extends SavedData {
 
 	/** Roots a new city at a powered Seed. Idempotent. */
 	public Optional<CityState> activate(ServerLevel level, BlockPos seedPos) {
+		return activate(level, seedPos, null);
+	}
+
+	/** Roots a city with its own config (tests and tools); null uses the global config. */
+	public Optional<CityState> activate(ServerLevel level, BlockPos seedPos, SeedCityConfig cfg) {
 		if (cities.containsKey(seedPos)) {
 			return Optional.of(cities.get(seedPos));
 		}
-		CityState city = CityState.create(level.getSeed(), seedPos, SeedCityConfig.get());
+		SeedCityConfig effective = cfg != null ? cfg : SeedCityConfig.get();
+		CityState city = CityState.create(level.getSeed(), seedPos, effective);
+		if (cfg != null) {
+			city.overrideConfig(cfg);
+		}
 		cities.put(seedPos, city);
 		city.spawnBuilder(level);
 		setDirty();

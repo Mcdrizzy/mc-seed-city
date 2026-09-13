@@ -42,6 +42,8 @@ Rules:
 - `truth` names a verifier model: `passthrough, not, and, or, register, counter, decoder,
   actuator, sensor, clock, none`.
 - `settle` (optional, default 40) is how many game ticks the verifier waits after driving inputs.
+- `fault` (optional) names the one cell-local block the planner may leave out to plant this cell
+  as a Fault Cell. Wires, junctions and bus segments declare their middle block.
 - `setpiece` is `false` only for forge and decor cells.
 
 ## Footprint and port conventions

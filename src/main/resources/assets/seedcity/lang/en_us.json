@@ -1,5 +1,7 @@
 {
 	"block.seedcity.seed": "City Seed",
 	"block.seedcity.probe": "Verifier Probe",
-	"entity.seedcity.builder": "Builder"
+	"entity.seedcity.builder": "Builder",
+	"entity.seedcity.warden": "Warden",
+	"entity.seedcity.sentinel": "Sentinel"
 }
