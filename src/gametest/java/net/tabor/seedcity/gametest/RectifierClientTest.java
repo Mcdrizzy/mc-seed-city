@@ -21,9 +21,18 @@ public final class RectifierClientTest implements FabricClientGameTest {
             state.yRot=30;
             model.setupAnim(state);
             var body=root.getChild("body");
-            if(body.getChild("left_arm").xRot>=-.5F) throw new AssertionError("Repair tool must lift");
-            if(Math.abs(body.getChild("head").yRot-(float)Math.PI/6)>.001F)
+            float low=0,high=-10,side=0;
+            for(int frame=0;frame<=24;frame++) {
+                state.ageInTicks=frame*.25F;
+                model.setupAnim(state);
+                var arm=body.getChild("left_arm");
+                low=Math.min(low,arm.xRot); high=Math.max(high,arm.xRot);
+                side=Math.max(side,Math.abs(arm.yRot));
+            }
+            if(high-low<.8F || side<.1F) throw new AssertionError("Repair must have a full stroke, recovery and cross-body sweep");
+            if(Math.abs(body.yRot+body.getChild("head").yRot-(float)Math.PI/6)>.001F)
                 throw new AssertionError("Head must follow independent look direction");
+            state.ageInTicks=12;
             state.repairing=false; state.grounded=true; state.walkAnimationSpeed=.6F; state.walkAnimationPos=2;
             model.setupAnim(state);
             if(body.getChild("right_leg").xRot*body.getChild("left_leg").xRot>=0)

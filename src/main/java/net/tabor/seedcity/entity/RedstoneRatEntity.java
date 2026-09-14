@@ -9,8 +9,13 @@ import net.minecraft.world.level.Level;
 /** Cat AI is intentional: vanilla creepers' Cat.class avoidance includes this mob. */
 public final class RedstoneRatEntity extends Cat {
     public RedstoneRatEntity(EntityType<? extends RedstoneRatEntity> type,Level level) {
-        super(type,level);setPersistenceRequired();
+        super(type,level);setPersistenceRequired();ambientSoundTime=-2400;
     }
+    @Override public int getAmbientSoundInterval() { return 2400; }
+    @Override protected net.minecraft.sounds.SoundEvent getAmbientSound() { return net.minecraft.sounds.SoundEvents.SILVERFISH_AMBIENT; }
+    @Override protected net.minecraft.sounds.SoundEvent getHurtSound(net.minecraft.world.damagesource.DamageSource source) { return net.minecraft.sounds.SoundEvents.SILVERFISH_HURT; }
+    @Override protected net.minecraft.sounds.SoundEvent getDeathSound() { return net.minecraft.sounds.SoundEvents.SILVERFISH_DEATH; }
+    @Override protected float getSoundVolume() { return .25F; }
     @Override public EntityDimensions getDefaultDimensions(Pose pose) {
         return EntityDimensions.scalable(.55F,.3F).scale(isBaby()?.5F:1F);
     }

@@ -8,11 +8,17 @@ and tail while moving; idle movement is subtle. Collider: 0.55 wide, 0.30 high.
 
 ## Creeper deterrence
 
-RedstoneRatEntity subclasses Cat so the existing vanilla Creeper AvoidEntityGoal
-for Cat.class recognizes it. No creeper mixin, forced navigation or attack damage
-hack is needed. Vanilla avoidance starts within six blocks when a flee path exists.
-This is ordinary cat avoidance, not explosion immunity or cancellation of an already
-ignited creeper. The rat has no combat goal and no silverfish infestation behavior.
+RedstoneRatEntity subclasses Cat. Java additionally requires `AvoidRedstoneRatGoal`,
+`CreeperRatAvoidanceMixin` and its entry in `seedcity.mixins.json`: priority 1 avoidance
+starts within ten blocks and outranks ordinary chasing and natural swelling. It
+uses vanilla flee-path navigation and unwinds natural swelling while fleeing.
+Manually ignited creepers still explode. Escape space is required. Bedrock retains
+native six-block cat-family avoidance without replacing the vanilla creeper JSON.
+The rat has no combat goal or silverfish infestation behavior.
+
+Ambient, hurt and death sounds use vanilla silverfish events, at 25% volume. Java
+ambient timing is 2,400 ticks plus the engine's random delay; Bedrock uses 120–180
+seconds. Taming, sitting and breeding remain disabled.
 
 ## Taming is intentionally not implemented
 

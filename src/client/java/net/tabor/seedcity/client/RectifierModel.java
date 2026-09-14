@@ -36,7 +36,14 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
             rightArm.xRot=-.22F-stride*.10F; leftArm.xRot=stride*.45F;
         }
         if(state.repairing) {
-            leftArm.xRot=-.8F+(float)Math.sin(t*1.2566371F)*.25F;
+            float p=(t%6F)/6F;
+            float sweep=-(float)Math.sin(Math.sqrt(p)*Math.PI*2)*.12F;
+            float stroke=(float)Math.sin((1-Math.pow(1-p,4))*Math.PI);
+            body.yRot=sweep;
+            head.yRot-=sweep;
+            leftArm.xRot=-.15F-stroke*1.05F-(float)Math.sin(p*Math.PI)*.3F;
+            leftArm.yRot=sweep*2;
+            leftArm.zRot=-.035F+(float)Math.sin(p*Math.PI)*.25F;
             head.xRot=Math.max(head.xRot,.2F);
         }
         lantern.xRot=-rightArm.xRot-forearm.xRot+(float)Math.sin(t*.09F)*.04F;

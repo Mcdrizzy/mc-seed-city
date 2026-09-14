@@ -52,10 +52,11 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.head.rotation.y=document.getElementById('looking').checked?Math.sin(time*.035)*.6:0;
  groups.head.rotation.x=repair?.2:0;
  groups.right_arm.rotation.set(-.22+Math.sin(time*.075)*.015,0,.035);groups.right_forearm.rotation.x=-.65;
- groups.left_arm.rotation.set(repair?-.8+Math.sin(time*1.2566371)*.25:-.15,0,-.035);
+ groups.left_arm.rotation.set(-.15,0,-.035);groups.body.rotation.y=0;
  groups.right_leg.rotation.x=.035+flight*.1+bob*.02;groups.left_leg.rotation.x=.035+flight*.1-bob*.02;
  if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=20-23*Math.cos(stride)-4.5*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
  if(grounded&&!walk){groups.body.position.y=-3;groups.body.rotation.x=0;groups.right_leg.rotation.x=0;groups.left_leg.rotation.x=0;}
+ if(repair){const p=(time%6)/6,sweep=-Math.sin(Math.sqrt(p)*Math.PI*2)*.12,stroke=Math.sin((1-Math.pow(1-p,4))*Math.PI);groups.body.rotation.y=sweep;groups.head.rotation.y-=sweep;groups.left_arm.rotation.set(-.15-stroke*1.05-Math.sin(p*Math.PI)*.3,sweep*2,-.035+Math.sin(p*Math.PI)*.25);}
  groups.lantern.rotation.x=-groups.right_arm.rotation.x-groups.right_forearm.rotation.x+Math.sin(time*.09)*.04;
  groups.hammer.rotation.z=0;groups.hammer.rotation.x=Math.PI/2;groups.left_forearm.rotation.x=-.70;
  material.emissiveIntensity=1;

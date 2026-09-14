@@ -47,7 +47,15 @@ public final class BuilderModel extends EntityModel<BuilderRenderState> {
             leftArm.xRot = stride * 0.65F;
         }
         if (state.building) {
-            rightArm.xRot = -0.55F + (float) Math.sin(t * 1.2566371F) * 0.28F;
+            float p = (t % 6F) / 6F;
+            float sweep = (float)Math.sin(Math.sqrt(p) * Math.PI * 2) * .16F;
+            float stroke = (float)Math.sin((1 - Math.pow(1-p, 4)) * Math.PI);
+            body.yRot = sweep;
+            head.yRot -= sweep;
+            rightArm.xRot = -.12F - stroke * 1.2F
+                    - (float)Math.sin(p*Math.PI) * (.7F-head.xRot) * .75F;
+            rightArm.yRot = sweep * 2;
+            rightArm.zRot = .04F - (float)Math.sin(p*Math.PI) * .4F;
             head.xRot = Math.max(head.xRot, 0.12F);
             leftArm.xRot = 0.03F;
         }

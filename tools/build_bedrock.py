@@ -45,14 +45,22 @@ for name,poses in POSES.items():
     animbones['head']={'rotation':[f"q.property('seedcity:pose') == {look} ? 48 + math.sin(q.anim_time*45)*8 : -math.clamp(q.target_x_rotation,-60,30)",'-math.clamp(q.target_y_rotation,-35,35)',0]}
     if name=='builder':
         animbones['cargo']={'scale':f"q.property('seedcity:pose') == {poseidx['carry']} ? 1 : 0"}
-        animbones['right_arm']['rotation'][0]=f"q.property('seedcity:pose') == {poseidx['build']} ? 32 + math.sin(q.anim_time*1440)*16 : math.sin(q.anim_time*380)*-18*v.walk"
+        work=f"q.property('seedcity:pose') == {poseidx['build']}"
+        animbones['right_arm']['rotation']=[f'({work}) ? 7+v.stroke*69+v.arc*23 : math.sin(q.anim_time*380)*-18*v.walk',f'({work}) ? v.sweep*18 : 0',f'({work}) ? v.arc*23-2 : -2']
         animbones['body']={'position':[0,"q.property('seedcity:pose') == 0 || q.property('seedcity:pose') == %d ? math.sin(q.anim_time*115)*0.22 : 0"%poseidx['fly'],0]}
+        animbones['body']['rotation']=[0,f'({work}) ? v.sweep*9 : 0',0]
     if name=='warden':
-        animbones['right_forearm']={'rotation':[18,0,0]}
+        animbones['right_arm']['rotation'][0]='12.6+math.sin(q.anim_time*380)*-3*v.walk'
+        animbones['right_forearm']={'rotation':[37.2,0,0]}
+        animbones['lantern']={'rotation':['-49.8+math.sin(q.anim_time*380)*3*v.walk',0,0]}
+        animbones['left_forearm']={'rotation':[40.1,0,0]}
         animbones['hammer']={'rotation':[-90,0,0]}
-        animbones['left_arm']['rotation'][0]=f"q.property('seedcity:pose') == {poseidx['repair']} ? 32+math.sin(q.anim_time*1440)*16 : math.sin(q.anim_time*380)*18*v.walk"
-        animbones['cape']={'rotation':['-3-math.sin(q.anim_time*140)*(1+v.walk*4)',0,'math.sin(q.anim_time*110)*1.5']}
-        animbones['tabard']={'rotation':['math.sin(q.anim_time*180)*(1+v.walk*4)',0,0]}
+        work=f"q.property('seedcity:pose') == {poseidx['repair']}"
+        animbones['left_arm']['rotation']=[f'({work}) ? 8.6+v.stroke*60+v.arc*17 : math.sin(q.anim_time*380)*18*v.walk',f'({work}) ? -v.sweep*14 : 0',f'({work}) ? 2-v.arc*14 : 2']
+        animbones['body']={'rotation':[0,f'({work}) ? -v.sweep*7 : 0',0]}
+        # Native hinged cloth: speed lifts the cape; both pieces retain independent sway.
+        animbones['cape']={'rotation':['-3-v.walk*7-math.sin(q.anim_time*140)*(1+v.walk*3)',0,'math.sin(q.anim_time*110)*(1+v.walk)']}
+        animbones['tabard']={'rotation':['4+v.walk*2+math.sin(q.anim_time*180)*(1.4+v.walk*3)',0,'math.sin(q.anim_time*103)*2.5']}
     if name=='collector':
         act=f"q.property('seedcity:pose') == {poseidx['mine']} || q.property('seedcity:pose') == {poseidx['chop']}"
         animbones['right_arm']['rotation']=[f'({act}) ? 45+math.sin(q.anim_time*1200)*40 : math.sin(q.anim_time*380)*-18*v.walk',f'({act}) ? math.sin(q.anim_time*1200)*15 : 0',f'({act}) ? math.sin(q.anim_time*1200)*-12 : 0']
@@ -76,6 +84,8 @@ for name,poses in POSES.items():
     put(RP/f'animations/{name}.animation.json',{'format_version':'1.8.0','animations':{f'animation.seedcity.{name}':{'loop':True,'bones':animbones}}})
     colors={'builder':['59776D','53E7ED'],'warden':['56595C','FFB238'],'courier':['526D65','FFD46C'],'collector':['596E61','FFB33C'],'sentinel':['4B5055','E83830'],'redstone_rat':['604139','E83D32']}
     client={'identifier':f'seedcity:{name}','materials':{'default':'entity_alphatest','glow':'entity_emissive_alpha'},'textures':{'default':f'textures/entity/{name}','glow':f'textures/entity/{name}_glow'},'geometry':{'default':f'geometry.seedcity.{name}'},'animations':{'main':f'animation.seedcity.{name}'},'scripts':{'pre_animation':['v.walk = '+walk+';'],'animate':['main']},'render_controllers':['controller.render.seedcity','controller.render.seedcity_glow'],'spawn_egg':{'base_color':'#'+colors[name][0],'overlay_color':'#'+colors[name][1]},'enable_attachables':name=='collector'}
+    if name in ('builder','warden'):
+        client['scripts']['pre_animation'] += ['v.p = math.mod(q.anim_time,0.3)/0.3;', 'v.stroke = math.sin((1-math.pow(1-v.p,4))*180);', 'v.arc = math.sin(v.p*180);', 'v.sweep = math.sin(math.sqrt(v.p)*360);']
     if name=='sentinel':
         for i in range(16):
             shutil.copy2(ROOT/f'src/main/resources/assets/seedcity/textures/entity/sentinel_glow_{i}.png',RP/f'textures/entity/sentinel_glow_{i}.png')
@@ -86,6 +96,8 @@ for name,poses in POSES.items():
     put(RP/f'entity/{name}.entity.json',{'format_version':'1.10.0','minecraft:client_entity':{'description':client}})
     w,h={'builder':(.8,1.5),'warden':(1.4,2.95),'courier':(.48,.48),'collector':(.95,1.8),'sentinel':(1.1,2.63),'redstone_rat':(.55,.3)}[name]
     components={'minecraft:type_family':{'family':[name,'mob']+(['cat'] if name=='redstone_rat' else [])},'minecraft:health':{'value':30,'max':30},'minecraft:collision_box':{'width':w,'height':h},'minecraft:movement':{'value':.25 if name!='courier' else .30},'minecraft:movement.basic':{},'minecraft:navigation.walk':{'avoid_water':True,'can_path_over_water':False},'minecraft:jump.static':{},'minecraft:physics':{},'minecraft:pushable':{'is_pushable':True,'is_pushable_by_piston':True},'minecraft:persistent':{},'minecraft:nameable':{},'minecraft:behavior.random_stroll':{'priority':6,'speed_multiplier':1},'minecraft:behavior.look_at_player':{'priority':7,'look_distance':8},'minecraft:behavior.random_look_around':{'priority':8}}
+    if name=='redstone_rat':
+        components['minecraft:ambient_sound_interval']={'value':120,'range':60,'event_name':'ambient'}
     if name=='builder':
         for k in ['minecraft:movement.basic','minecraft:navigation.walk','minecraft:behavior.random_stroll']:components.pop(k)
         components.update({'minecraft:can_fly':{},'minecraft:flying_speed':{'value':.1},'minecraft:movement.hover':{},'minecraft:navigation.hover':{'can_path_from_air':True,'can_path_over_water':True,'avoid_water':True},'minecraft:physics':{'has_gravity':False},'minecraft:behavior.random_hover':{'priority':6,'hover_height':[1,3],'xz_dist':8,'y_dist':4,'interval':1}})
@@ -107,6 +119,7 @@ for name,poses in POSES.items():
 put(RP/'render_controllers/mobs.json',{'format_version':'1.8.0','render_controllers':{f'controller.render.{n}':{'geometry':'Geometry.default','materials':[{'*':f'Material.{mat}'}],'textures':[f'Texture.{tex}']} for n,mat,tex in [('seedcity','default','default'),('seedcity_glow','glow','glow')]}})
 put(RP/'texts/languages.json',['en_US']);(RP/'texts/en_US.lang').write_text('\n'.join(langs)+'\n')
 print('Exported six Bedrock entities, Creative spawn eggs, geometry and looping animations.')
+put(RP/'sounds.json',{'entity_sounds':{'entities':{'seedcity:redstone_rat':{'events':{'ambient':'mob.silverfish.say','hurt':'mob.silverfish.hit','death':'mob.silverfish.kill'},'volume':.25,'pitch':[.9,1.1]}}}})
 manifest=json.loads((BP/'manifest.json').read_text())
 manifest['modules'].append({'type':'script','language':'javascript','uuid':uid('script'),'version':[1,0,0],'entry':'scripts/main.js'})
 manifest['dependencies'].append({'module_name':'@minecraft/server','version':'2.0.0'})

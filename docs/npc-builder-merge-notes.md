@@ -123,3 +123,6 @@ in place of the original Seed City JAR, not alongside it. Target remains Minecra
 changed. The portable Java runtime and Gradle cache used for these checks are outside
 the repository and are not part of this merge.
 The later shared animation update accelerates construction arm motion to four cycles per second (five game ticks per cycle), matching the Rectifier repair cadence. This is visual motion; placement timing remains configuration-driven.
+
+
+Playtest revision: the build loop now uses a six-tick eased forward stroke, cross-body arm sweep and recovery, with head aim compensated for body twist. Flight is unchanged. Java and Bedrock showcase work loops and the offline preview are updated.

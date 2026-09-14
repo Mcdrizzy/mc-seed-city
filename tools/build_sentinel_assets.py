@@ -74,6 +74,11 @@ box('spear_pommel','spear',[6,-14,-1],[2,2,2],'joint')
 box('spear_head','spear',[5.25,-23,-1.25],[3,9,2],'stone')
 box('spear_tip','spear',[6.25,-26,-1.25],[1,3,2],'stone')
 box('spear_channel','spear',[6.25,-22,-1.45],[1,7,1],'redglow')
+for c in cubes:
+    # Keep the approved silhouette, but give every body part 35% more depth.
+    if c['part'] != 'spear':
+        c['pos'][2] *= 1.35
+        c['size'][2] = max(1, round(c['size'][2] * 1.35))
 for i,c in enumerate(cubes):
     c['inflate']=.012+i*.0005
     if c['name'] in ('left_gauntlet','left_arm_signal','left_fist'):

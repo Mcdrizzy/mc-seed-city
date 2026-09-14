@@ -131,5 +131,13 @@ Client checks exercise bounded cape lift, lateral sway, return to rest and indep
 front cloth sway, and capture the
 cape from behind as well as the usual day/night views.
 The hammer shaft is inset through the fist so its rotated face cannot coincide with the hand bottom and cause z-fighting.
-Grounded poses are the preview default: Rest and Repair plant both feet, Patrol uses the walking cycle, and Walk remains available. Uncheck Grounded poses to preview flight. In-game RectifierModel already uses the grounded render-state flag for planted feet and composes repair/head/cloth animation over that stance. Tabor must change navigation separately if he wants the entity to walk by default; existing flight AI is preserved.
+Grounded poses are the preview default: Rest and Repair plant both feet, Patrol uses the walking cycle, and Walk remains available. Uncheck Grounded poses to preview optional flight. Java gameplay now uses PathfinderMob, ground navigation, gravity, movement attribute 0.25 and a 0.6 walking multiplier. This matches the iron golem's strolling pace without inheriting its protector behavior. Existing saved flight flags migrate on load.
+
+Playtest fixes: both arm assemblies move inward one model unit and connect through
+visible shoulder axles. The hip no longer shares outer faces with the moving thighs;
+greave bands meet the lower armor at a seam rather than overlaying it. Repair uses
+a six-tick player-style eased stroke, cross-body sweep and recovery, with the hammer
+remaining rigid in its grip. Pull the regenerated mesh, texture and model together.
+Bedrock uses native Molang hinge animation for the cape and separate tabard sway;
+no external cloth mod is required. This is not a cloth collision simulation.
 Validation note: the existing city_growth_tests_seed_grows_city_boat test intermittently timed out at 9000 ticks during this pass; the unchanged full rerun passed. No city-growth gameplay was modified.

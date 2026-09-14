@@ -45,3 +45,6 @@ Tabor can set the sprint flag in his movement controller or choose another condi
 in extractRenderState. This revision does not alter movement attributes, navigation
 speed or attack goals. Preview walk/jog demonstrate approximately 2 and 3 blocks/sec;
 those are preview pacing choices, not new gameplay speeds.
+
+
+Playtest revision: body, head, arms and legs have approximately 35% more front-to-back depth (rounded to whole texture pixels). Height, width, four chest indicators, separate walk/jog and signal behavior are unchanged. The spear retains its approved dimensions.

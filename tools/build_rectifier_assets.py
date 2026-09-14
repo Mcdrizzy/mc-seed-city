@@ -130,9 +130,23 @@ box('cape_cloth', 'cape', [-6, -13, 6], [12, 28, 1], 'cloth')
 box('cape_clasp_right', 'body', [-4.8, -13.5, 3.5], [2, 2, 4], 'brass')
 box('cape_clasp_left', 'body', [2.8, -13.5, 3.5], [2, 2, 4], 'brass')
 
+# Seat the shoulder assemblies into visible axles rather than leaving air at the torso.
+for g in groups:
+    if g['name'] in ('right_arm','right_forearm','lantern'): g['pivot'][0] += 1
+    if g['name'] in ('left_arm','left_forearm','hammer'): g['pivot'][0] -= 1
+for c in cubes:
+    if c['part'] in ('right_arm','right_forearm','lantern'): c['pos'][0] += 1
+    if c['part'] in ('left_arm','left_forearm','hammer'): c['pos'][0] -= 1
+    if c['name']=='hip': c['pos']=[-3,1.2,-2.4]; c['size']=[6,2,5]
+    # Adjacent greave materials meet at a seam, with no coincident overlay faces.
+    if c['name'] in ('right_greave','left_greave'): c['pos'][1]=17; c['size'][1]=5
+box('right_shoulder_axle','body',[-10.5,-11.5,-1.5],[5,3,3],'joint')
+box('left_shoulder_axle','body',[5.5,-11.5,-1.5],[5,3,3],'joint')
+
 shells = {'chest_socket': 0.02, 'chest_left': 0.04, 'chest_right': 0.04, 'belt': 0.04, 'buckle': 0.06, 'crown': 0.04, 'vertical_visor': 0.04, 'cheek_right': 0.06, 'cheek_left': 0.06, 'right_greave_band': 0.04, 'left_greave_band': 0.04, 'hammer_grip': 0.04, 'hammer_collar': 0.06, 'hammer_striking_left': 0.04, 'hammer_striking_right': 0.04, 'brow_lip': 0.03, 'visor_inner': 0.02, 'helmet_left_seam': 0.01, 'helmet_right_seam': 0.015, 'core_top_lip': 0.03, 'core_lower_lip': 0.05, 'chest_plate_inner_right': 0.01, 'chest_plate_inner_left': 0.015, 'rib_right': 0.015, 'rib_left': 0.025, 'waist_right': 0.035, 'waist_left': 0.045, 'waist_pin_right': 0.005, 'waist_pin_left': 0.008, 'belt_clasp_top': 0.02, 'cloth_tail': 0.01, 'right_shoulder_socket': 0.01, 'right_upper_arm_plate': 0.02, 'right_gauntlet_ridge': 0.03, 'right_thumb': 0.02, 'right_finger_0': 0.005, 'right_finger_1': 0.01, 'right_finger_2': 0.015, 'right_shin_panel': 0.01, 'right_ankle_trim': 0.03, 'right_toe_cap': 0.02, 'left_shoulder_socket': 0.01, 'left_upper_arm_plate': 0.02, 'left_gauntlet_ridge': 0.03, 'left_thumb': 0.02, 'left_finger_0': 0.005, 'left_finger_1': 0.01, 'left_finger_2': 0.015, 'left_shin_panel': 0.01, 'left_ankle_trim': 0.03, 'left_toe_cap': 0.02}
 for c in cubes:
     c['inflate'] = -.04 if c['name']=='hammer_handle' else shells.get(c['name'], 0)
+    if c['name'] in ('right_greave_band','left_greave_band'): c['inflate']=0
 
 def bounds(c):
     return ([v-c['inflate'] for v in c['pos']],

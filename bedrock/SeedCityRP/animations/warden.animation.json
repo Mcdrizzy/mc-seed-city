@@ -20,16 +20,16 @@
         },
         "right_arm": {
           "rotation": [
-            "math.sin(q.anim_time * 380) * -18 * v.walk",
+            "12.6+math.sin(q.anim_time*380)*-3*v.walk",
             0,
             0
           ]
         },
         "left_arm": {
           "rotation": [
-            "q.property('seedcity:pose') == 3 ? 32+math.sin(q.anim_time*1440)*16 : math.sin(q.anim_time*380)*18*v.walk",
-            0,
-            0
+            "(q.property('seedcity:pose') == 3) ? 8.6+v.stroke*60+v.arc*17 : math.sin(q.anim_time*380)*18*v.walk",
+            "(q.property('seedcity:pose') == 3) ? -v.sweep*14 : 0",
+            "(q.property('seedcity:pose') == 3) ? 2-v.arc*14 : 2"
           ]
         },
         "head": {
@@ -41,7 +41,21 @@
         },
         "right_forearm": {
           "rotation": [
-            18,
+            37.2,
+            0,
+            0
+          ]
+        },
+        "lantern": {
+          "rotation": [
+            "-49.8+math.sin(q.anim_time*380)*3*v.walk",
+            0,
+            0
+          ]
+        },
+        "left_forearm": {
+          "rotation": [
+            40.1,
             0,
             0
           ]
@@ -53,18 +67,25 @@
             0
           ]
         },
+        "body": {
+          "rotation": [
+            0,
+            "(q.property('seedcity:pose') == 3) ? -v.sweep*7 : 0",
+            0
+          ]
+        },
         "cape": {
           "rotation": [
-            "-3-math.sin(q.anim_time*140)*(1+v.walk*4)",
+            "-3-v.walk*7-math.sin(q.anim_time*140)*(1+v.walk*3)",
             0,
-            "math.sin(q.anim_time*110)*1.5"
+            "math.sin(q.anim_time*110)*(1+v.walk)"
           ]
         },
         "tabard": {
           "rotation": [
-            "math.sin(q.anim_time*180)*(1+v.walk*4)",
+            "4+v.walk*2+math.sin(q.anim_time*180)*(1.4+v.walk*3)",
             0,
-            0
+            "math.sin(q.anim_time*103)*2.5"
           ]
         }
       }

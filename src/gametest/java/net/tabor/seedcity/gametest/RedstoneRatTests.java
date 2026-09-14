@@ -15,8 +15,17 @@ public final class RedstoneRatTests {
         }
         var rat=h.spawn(SeedCityEntities.REDSTONE_RAT,new BlockPos(17,2,17));rat.setNoAi(true);
         var creeper=h.spawn(EntityTypes.CREEPER,new BlockPos(20,2,17));
+        var player=h.makeMockPlayer(net.minecraft.world.level.GameType.SURVIVAL);
+        player.setPos(creeper.getX()+2,creeper.getY(),creeper.getZ());
+        creeper.setTarget(player);
+        creeper.setSwellDir(1);
+        h.runAtTickTime(20,()->{
+            h.assertTrue(creeper.isAlive(),"Rat must interrupt natural swelling near a player");
+            h.assertTrue(creeper.getSwellDir()<0,"Rat avoidance must outrank the swelling goal");
+        });
+        h.assertTrue(rat.getAmbientSoundInterval()==2400,"Rat ambience must wait about two minutes");
         h.assertFalse(rat.isFood(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COD)),"Rat must not accept taming food");
-        h.succeedWhen(()->h.assertTrue(creeper.distanceToSqr(rat)>64,"Native creeper goal must flee the rat beyond eight blocks"));
+        h.succeedWhen(()->{h.assertTrue(h.getTick()>20,"Wait for fuse-priority check");h.assertTrue(creeper.isAlive()&&creeper.distanceToSqr(rat)>100,"Creeper must flee the rat beyond ten blocks even with a player target");});
     }
     @GameTest(structure="seedcity:boat",maxTicks=40)
     public void spawningHonorsCapAndDisable(GameTestHelper h) {

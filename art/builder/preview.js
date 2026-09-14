@@ -37,7 +37,8 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  const bob=Math.sin(time*.1),flight=pose==='carry'?1:0;
  groups.body.position.y=10+bob*.22;groups.body.rotation.x=flight*.08;
  groups.head.rotation.x=pose==='build'?.16:0;
- groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*1.2566371)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
+ groups.right_arm.rotation.set(pose==='carry'?-.32:.03+bob*.035,0,.04);groups.body.rotation.y=0;groups.head.rotation.y=0;
+ if(pose==='build'){const p=(time%6)/6,sweep=Math.sin(Math.sqrt(p)*Math.PI*2)*.16,stroke=Math.sin((1-Math.pow(1-p,4))*Math.PI);groups.body.rotation.y=sweep;groups.head.rotation.y=-sweep;groups.right_arm.rotation.set(-.12-stroke*1.2-Math.sin(p*Math.PI)*(.7-groups.head.rotation.x)*.75,sweep*2,.04-Math.sin(p*Math.PI)*.4);}
  groups.left_arm.rotation.set(.03+bob*.035,0,-.05);
  groups.right_leg.rotation.x=.08+flight*.22+bob*.04;groups.left_leg.rotation.x=.08+flight*.22-bob*.04;
  groups.cargo.visible=pose==='carry'||pose==='build';

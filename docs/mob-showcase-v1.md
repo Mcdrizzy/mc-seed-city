@@ -66,7 +66,7 @@ builder. Resource and behavior packs must both be enabled.
 ## Validation and limits
 
 - Java assembly, unit tests, seven client tests and inspected world screenshots passed.
-- All 33 Java server tests passed on recheck. An earlier run failed the random flee-path
+- All 34 Java server tests passed for this update, including player-target creeper avoidance. An earlier run failed the random flee-path
   Rat test and timed out in city growth; no tests were weakened or unrelated city code changed.
 - Official Bedrock Dedicated Server 1.26.45.1 loaded the pack, generated the world,
   and found all 37 actors. Six spawn-egg ItemStack IDs resolved. Native mainhand tool
@@ -80,3 +80,6 @@ builder. Resource and behavior packs must both be enabled.
 The worlds and install files are packaged as local user-facing deliverables; source,
 the PDF and screenshots live in the fork for review. No full vanilla server binaries
 are distributed in the handoff.
+
+
+Playtest update: Rectifier shoulder connections and leg seams repaired; Sentinel body depth increased; Builder/Rectifier work strokes now use fast player-style sweeps. Java Rats use quiet silverfish sounds about two minutes apart and a ten-block, priority-1 creeper avoidance goal. Pull CreeperRatAvoidanceMixin, its mixin registration and AvoidRedstoneRatGoal with the Rat class. Bedrock keeps native cat-family avoidance and native Molang cloth animation, with no extra cloth mod. The updated Bedrock server test measured 16.93 blocks of creeper separation after eight seconds. Client rendering on Bedrock still needs playtesting.

@@ -20,9 +20,9 @@
         },
         "right_arm": {
           "rotation": [
-            "q.property('seedcity:pose') == 4 ? 32 + math.sin(q.anim_time*1440)*16 : math.sin(q.anim_time*380)*-18*v.walk",
-            0,
-            0
+            "(q.property('seedcity:pose') == 4) ? 7+v.stroke*69+v.arc*23 : math.sin(q.anim_time*380)*-18*v.walk",
+            "(q.property('seedcity:pose') == 4) ? v.sweep*18 : 0",
+            "(q.property('seedcity:pose') == 4) ? v.arc*23-2 : -2"
           ]
         },
         "left_arm": {
@@ -46,6 +46,11 @@
           "position": [
             0,
             "q.property('seedcity:pose') == 0 || q.property('seedcity:pose') == 3 ? math.sin(q.anim_time*115)*0.22 : 0",
+            0
+          ],
+          "rotation": [
+            0,
+            "(q.property('seedcity:pose') == 4) ? v.sweep*9 : 0",
             0
           ]
         }
