@@ -28,3 +28,7 @@ though the visual reference shows a wrench.
 
 Revision 5: hammer explicitly held head-up, ready to strike. Add reference-inspired
 armor fittings, articulated-looking hands, boot trim and patterned tabard; 89 cuboids.
+
+The current version includes a matching back cape using Minecraft avatar cloak
+lag and movement-driven lift/sway. View Back or Side, and switch Patrol/Walk to Rest
+to see it settle. Current mesh: 86 cuboids in eleven parts.

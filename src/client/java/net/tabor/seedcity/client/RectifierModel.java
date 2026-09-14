@@ -5,11 +5,11 @@ import net.minecraft.client.model.geom.ModelPart;
 
 /** Heavy repair guardian; head follows the mob's existing look control. */
 public final class RectifierModel extends EntityModel<RectifierRenderState> {
-    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm, toolForearm;
+    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm, toolForearm, cape;
 
     public RectifierModel(ModelPart root) {
         super(root);
-        body=root.getChild("body"); head=body.getChild("head");
+        body=root.getChild("body"); cape=body.getChild("cape"); head=body.getChild("head");
         rightArm=body.getChild("right_arm"); leftArm=body.getChild("left_arm");
         rightLeg=body.getChild("right_leg"); leftLeg=body.getChild("left_leg");
         forearm=rightArm.getChild("right_forearm"); lantern=forearm.getChild("lantern"); toolForearm=leftArm.getChild("left_forearm"); hammer=toolForearm.getChild("hammer");
@@ -35,11 +35,15 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
             rightArm.xRot=-.22F-stride*.10F; leftArm.xRot=stride*.45F;
         }
         if(state.repairing) {
-            leftArm.xRot=-.8F+(float)Math.sin(t*.5F)*.25F;
+            leftArm.xRot=-.8F+(float)Math.sin(t*1.2566371F)*.25F;
             head.xRot=Math.max(head.xRot,.2F);
         }
         lantern.xRot=-rightArm.xRot-forearm.xRot+(float)Math.sin(t*.09F)*.04F;
+        // Vanilla cape lean/flap angles, adapted to our forward-facing model axes.
+        cape.xRot=(float)Math.toRadians(6+state.capeLean/2+state.capeFlap);
+        cape.zRot=(float)Math.toRadians(state.capeSide/2);
+        cape.yRot=(float)Math.toRadians(-state.capeSide/2);
         hammer.zRot=0;
-        hammer.xRot=1.10F;
+        hammer.xRot=(float)Math.PI/2;
     }
 }

@@ -28,6 +28,7 @@ def box(name, part, pos, size, material):
     cubes.append(dict(name=name, part=part, pos=pos, size=size, material=material))
 
 group('body', [0, -3, 0], None)
+group('cape', [0, -13, 6], 'body')
 group('head', [0, -14, 0], 'body')
 group('right_arm', [-11, -10, 0], 'body')
 group('left_arm', [11, -10, 0], 'body')
@@ -79,9 +80,7 @@ box('left_knee', 'left_leg', [2.5, 12, -2.5], [5, 2, 5], 'joint')
 box('left_greave', 'left_leg', [1.5, 14, -3.5], [7, 8, 7], 'stone')
 box('left_greave_band', 'left_leg', [1.5, 14, -3.5], [7, 3, 7], 'copper')
 box('left_boot', 'left_leg', [1, 22, -4.5], [8, 2, 8], 'stone')
-box('lantern_handle_top', 'lantern', [-12.5, 7, -0.5], [3, 1, 1], 'joint')
-box('lantern_handle_left', 'lantern', [-12.5, 8, -0.5], [1, 2, 1], 'joint')
-box('lantern_handle_right', 'lantern', [-10.5, 8, -0.5], [1, 2, 1], 'joint')
+box('lantern_handle', 'lantern', [-11.5, 7, -0.5], [1, 3, 1], 'joint')
 box('lantern_cap', 'lantern', [-13.5, 10, -2.5], [5, 1, 5], 'brass')
 box('lantern_light', 'lantern', [-12.5, 11, -1.5], [3, 4, 3], 'eye')
 box('lantern_base', 'lantern', [-13.5, 15, -2.5], [5, 1, 5], 'brass')
@@ -89,7 +88,7 @@ box('lantern_post_-11.5_-2.5', 'lantern', [-13.5, 11, -2.5], [1, 4, 1], 'joint')
 box('lantern_post_-11.5_1.5', 'lantern', [-13.5, 11, 1.5], [1, 4, 1], 'joint')
 box('lantern_post_-7.5_-2.5', 'lantern', [-9.5, 11, -2.5], [1, 4, 1], 'joint')
 box('lantern_post_-7.5_1.5', 'lantern', [-9.5, 11, 1.5], [1, 4, 1], 'joint')
-box('hammer_handle', 'hammer', [10, 0, -2], [2, 8, 2], 'wood')
+box('hammer_handle', 'hammer', [10, 0, -2], [2, 16, 2], 'wood')
 box('hammer_grip', 'hammer', [9.5, 3, -2.5], [3, 4, 3], 'leather')
 box('hammer_collar', 'hammer', [9.5, 2, -2.5], [3, 1, 3], 'brass')
 box('hammer_head', 'hammer', [8.5, -2, -5], [5, 4, 8], 'stone')
@@ -111,10 +110,6 @@ box('belt_clasp_top', 'body', [-2, -2, -5.2], [4, 1, 1], 'stone')
 box('cloth_tail', 'body', [-1.5, 15, -4.5], [3, 1, 1], 'brass')
 box('right_upper_arm_plate', 'right_arm', [-13, -7, -2.5], [4, 4, 1], 'stone')
 box('right_gauntlet_ridge', 'right_forearm', [-14, -1, -3.5], [6, 2, 1], 'stone')
-box('right_thumb', 'right_forearm', [-13.5, 4, -2.7], [1, 3, 2], 'stone')
-box('right_finger_0', 'right_forearm', [-12.75, 6, -2.4], [1, 2, 1], 'joint')
-box('right_finger_1', 'right_forearm', [-11.5, 6, -2.4], [1, 2, 1], 'joint')
-box('right_finger_2', 'right_forearm', [-10.25, 6, -2.4], [1, 2, 1], 'joint')
 box('right_shin_panel', 'right_leg', [-7.5, 17.5, -3.7], [5, 4, 1], 'stone')
 box('right_ankle_trim', 'right_leg', [-8.5, 21, -3.6], [7, 1, 1], 'joint')
 box('right_toe_cap', 'right_leg', [-9, 22, -4.7], [8, 1, 1], 'stone')
@@ -127,6 +122,10 @@ box('left_finger_2', 'left_forearm', [11.75, 6, -2.4], [1, 2, 1], 'joint')
 box('left_shin_panel', 'left_leg', [2.5, 17.5, -3.7], [5, 4, 1], 'stone')
 box('left_ankle_trim', 'left_leg', [1.5, 21, -3.6], [7, 1, 1], 'joint')
 box('left_toe_cap', 'left_leg', [1, 22, -4.7], [8, 1, 1], 'stone')
+
+box('cape_cloth', 'cape', [-6, -13, 6], [12, 28, 1], 'cloth')
+box('cape_clasp_right', 'body', [-5, -14, 5.5], [2, 2, 2], 'brass')
+box('cape_clasp_left', 'body', [3, -14, 5.5], [2, 2, 2], 'brass')
 
 shells = {'chest_socket': 0.02, 'chest_left': 0.04, 'chest_right': 0.04, 'belt': 0.04, 'buckle': 0.06, 'crown': 0.04, 'vertical_visor': 0.04, 'cheek_right': 0.06, 'cheek_left': 0.06, 'right_greave_band': 0.04, 'left_greave_band': 0.04, 'hammer_grip': 0.04, 'hammer_collar': 0.06, 'hammer_striking_left': 0.04, 'hammer_striking_right': 0.04, 'brow_lip': 0.03, 'visor_inner': 0.02, 'helmet_left_seam': 0.01, 'helmet_right_seam': 0.015, 'core_top_lip': 0.03, 'core_lower_lip': 0.05, 'chest_plate_inner_right': 0.01, 'chest_plate_inner_left': 0.015, 'rib_right': 0.015, 'rib_left': 0.025, 'waist_right': 0.035, 'waist_left': 0.045, 'waist_pin_right': 0.005, 'waist_pin_left': 0.008, 'belt_clasp_top': 0.02, 'cloth_tail': 0.01, 'right_shoulder_socket': 0.01, 'right_upper_arm_plate': 0.02, 'right_gauntlet_ridge': 0.03, 'right_thumb': 0.02, 'right_finger_0': 0.005, 'right_finger_1': 0.01, 'right_finger_2': 0.015, 'right_shin_panel': 0.01, 'right_ankle_trim': 0.03, 'right_toe_cap': 0.02, 'left_shoulder_socket': 0.01, 'left_upper_arm_plate': 0.02, 'left_gauntlet_ridge': 0.03, 'left_thumb': 0.02, 'left_finger_0': 0.005, 'left_finger_1': 0.01, 'left_finger_2': 0.015, 'left_shin_panel': 0.01, 'left_ankle_trim': 0.03, 'left_toe_cap': 0.02}
 for c in cubes:
@@ -214,8 +213,12 @@ for c in cubes:
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(181,66,16,255))
             draw.rectangle((fx+1,fy+1,fx+fw-2,fy+fh-2),fill=(255,154,47,255))
             draw.line([(fx+1,fy+1),(fx+1,fy+fh-3)],fill=(255,233,155,255))
-        if mat=='cloth' and face=='north':
+        if mat=='cloth' and face in ('north','south'):
             # Stepped, worn gold embroidery copied in spirit from the reference tabard.
+            target=(fx,fy,fw,fh)
+            panel=Image.new('RGBA',(12,52))
+            draw=ImageDraw.Draw(panel)
+            fx,fy,fw,fh=0,0,12,52
             dark=(100,43,32,255); gold=(174,116,60,255); light=(193,143,78,255)
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=dark)
             draw.line((fx+1,fy,fx+1,fy+fh-1),fill=gold,width=1)
@@ -223,6 +226,9 @@ for c in cubes:
             for k,(xa,ya,xb,yb) in enumerate([(4,5,7,11),(5,11,8,17),(3,17,6,23),(5,23,8,29),(4,29,7,36),(3,36,6,42),(5,42,8,47)]):
                 draw.rectangle((fx+xa,fy+ya,fx+xb,fy+min(yb,fh-2)),fill=gold if k%2 else light)
             draw.line((fx+2,fy+fh-3,fx+fw-3,fy+fh-3),fill=gold,width=2)
+            tx,ty,tw,th=target
+            image.paste(panel.resize((tw,th),Image.Resampling.NEAREST),(tx,ty))
+            draw=ImageDraw.Draw(image)
 image.save(TEX/'rectifier.png')
 image.save(ART/'rectifier.png')
 glow = Image.new('RGBA', image.size, (0,0,0,0))

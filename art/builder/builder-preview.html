@@ -51,7 +51,7 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  const bob=Math.sin(time*.1),flight=pose==='carry'?1:0;
  groups.body.position.y=10+bob*.22;groups.body.rotation.x=flight*.08;
  groups.head.rotation.x=pose==='build'?.16:0;
- groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*.65)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
+ groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*1.2566371)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
  groups.left_arm.rotation.set(.03+bob*.035,0,-.05);
  groups.right_leg.rotation.x=.08+flight*.22+bob*.04;groups.left_leg.rotation.x=.08+flight*.22-bob*.04;
  groups.cargo.visible=pose==='carry'||pose==='build';

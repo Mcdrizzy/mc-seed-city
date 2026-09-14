@@ -30,7 +30,7 @@ before merging that prerequisite. Use matching client/server builds for the new 
 
 ## Model and animation
 
-89 cuboids in ten parts, approximately 2.94 blocks tall. Revision 4 follows the
+86 cuboids in eleven parts, approximately 2.94 blocks tall. Revision 4 follows the
 close-up reference silhouette: long armored legs, compact inset chest/core with
 thick flanking plates, exposed copper shoulder blocks, larger gauntlets and a
 narrow tabard. Earlier broad slab-like chest and shoulder lids have been removed.
@@ -76,3 +76,32 @@ The packaged JAR is the whole Seed City mod with Builder and Rectifier, replacin
 the original JAR. It is not a standalone resource pack. Versions remain Minecraft
 26.2, Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
 `build runClientGameTest` passed for revision 4 on rerun. The first run timed out in the existing city-growth test; the unchanged rerun passed all 25 server tests and both NPC client checks. Day/night captures were inspected.
+Revision 6 sets the hammer to exactly 90 degrees relative to the hand/forearm and speeds repair arm motion to four cycles per second (five game ticks per cycle). Builder construction uses the same visual cadence. Actual block-placement timing and task scheduling are unchanged.
+
+Revision 6 also removes the added fingers/thumb from the lantern hand and extends
+the wooden hammer shaft eight model units below its previous end, producing a
+long sledgehammer-style handle below the fist. The lantern uses one plain central metal handle rather than the old fork-like loop.
+
+
+## Cape and shared animation update
+
+The matching red-brown/gold back cape attaches at two shoulder clasps and has its
+own model part. Integrate **RectifierCapeMotion.java**, the new cape render-state
+fields and the ClientTickEvents registration in SeedCityClient together with the
+model/renderer and regenerated assets. This is client-only; no mob task or server
+physics changes are involved.
+
+RectifierCapeMotion reuses Minecraft 26.2 ClientAvatarState directly for cloak lag
+(25% position catch-up per tick and vanilla teleport reset) and walking bob.
+AvatarRenderer's flap/forward/lateral factors and clamps feed the model; the cape
+uses the vanilla six-degree resting tilt plus movement-driven lift/sway, adapted
+to this model's axes. Tick updates are independent of frame rate, and state is
+separate for each entity, cleared on world change/removal. Stationary capes settle.
+Like vanilla, this is a hinged cape panel, not a multi-segment cloth simulation or
+cloth collision solver. There is no extra wind loop or cape mod dependency.
+
+The standalone preview uses a virtual movement path with the same 20 Hz catch-up
+and angle equations. Patrol/Walk demonstrate movement; Rest/Repair allow it to settle.
+Its motion is illustrative because the preview character remains in place.
+Client checks exercise cape lift, lateral sway and return to rest, and capture the
+cape from behind as well as the usual day/night views.

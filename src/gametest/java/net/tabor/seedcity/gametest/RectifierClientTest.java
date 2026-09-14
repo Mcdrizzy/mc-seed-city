@@ -28,8 +28,16 @@ public final class RectifierClientTest implements FabricClientGameTest {
             model.setupAnim(state);
             if(body.getChild("right_leg").xRot*body.getChild("left_leg").xRot>=0)
                 throw new AssertionError("Walking legs must alternate");
+            state.capeLean=60; state.capeSide=12;
+            model.setupAnim(state);
+            float movingCape=body.getChild("cape").xRot;
+            if(movingCape<=.5F || body.getChild("cape").zRot<=0)
+                throw new AssertionError("Cape must lift and sway with movement state");
+            state.capeLean=0; state.capeSide=0;
             state.walkAnimationSpeed=0;
             model.setupAnim(state);
+            if(body.getChild("cape").xRot>=movingCape)
+                throw new AssertionError("Cape must settle after motion ends");
             if(body.y!=-3) throw new AssertionError("Grounded boots must rest at floor level");
         });
         try (var world=context.worldBuilder().create()) {
@@ -49,6 +57,10 @@ public final class RectifierClientTest implements FabricClientGameTest {
             world.getConnection().waitForChunksRender();
             context.waitTicks(10);
             context.takeScreenshot(TestScreenshotOptions.of("rectifier-day").withSize(1280,900));
+            server.runCommand("tp @p 3 65 6 153.435 0");
+            context.waitTicks(10);
+            context.takeScreenshot(TestScreenshotOptions.of("rectifier-cape").withSize(1280,900));
+            server.runCommand("tp @p -3 65 -6 -26.565 0");
             server.runCommand("time set midnight");
             context.waitTicks(10);
             context.takeScreenshot(TestScreenshotOptions.of("rectifier-night").withSize(1280,900));

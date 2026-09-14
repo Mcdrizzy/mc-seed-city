@@ -122,3 +122,4 @@ in place of the original Seed City JAR, not alongside it. Target remains Minecra
 26.2, Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25. No pinned version was
 changed. The portable Java runtime and Gradle cache used for these checks are outside
 the repository and are not part of this merge.
+The later shared animation update accelerates construction arm motion to four cycles per second (five game ticks per cycle), matching the Rectifier repair cadence. This is visual motion; placement timing remains configuration-driven.
