@@ -37,6 +37,12 @@ public final class CourierClientTest implements FabricClientGameTest {
             context.runOnClient(mc->{if(!mc.gui.hud.isHidden()) mc.gui.hud.toggle();mc.options.fov().set(35);});
             world.getConnection().waitForChunksRender(); context.waitTicks(10);
             context.takeScreenshot(TestScreenshotOptions.of("courier-day").withSize(1280,900));
+            // Normal standing player eye height, close enough to see the upward look.
+            server.runCommand("tp @p 0 65 -1.6 0 42");
+            server.runCommand("data merge entity @e[type=seedcity:courier,limit=1] {NoAI:0b}");
+            context.runOnClient(mc->mc.options.fov().set(70));
+            context.waitTicks(60);
+            context.takeScreenshot(TestScreenshotOptions.of("courier-player-height").withSize(1280,900));
         }
     }
 }
