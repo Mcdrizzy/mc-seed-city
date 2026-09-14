@@ -33,8 +33,8 @@ an explicit extension of that existing contract.
 | Files | Purpose |
 | --- | --- |
 | `client/BuilderMesh.java` | Generated cuboid geometry and UV layout |
-| `client/BuilderModel.java` | Idle hover, carrying pose and construction arm motion |
-| `client/BuilderRenderState.java` | Render snapshot with work/cargo flags and speed |
+| `client/BuilderModel.java` | Hover, carrying, construction and optional grounded walking animation |
+| `client/BuilderRenderState.java` | Render snapshot with work/cargo flags, grounded state and speed |
 | `client/BuilderRenderer.java` | Custom texture and selectively emissive layer |
 | `client/SeedCityClient.java` | Registers the Builder model layer before its renderer |
 | `assets/seedcity/textures/entity/builder.png`, `builder_glow.png` | Base and emission textures |
@@ -61,12 +61,21 @@ new sound pack or particle system in this version. Emission stays visible in the
 dark but does not cast dynamic light or require shaders. No other mob was redesigned
 or renamed; the replacement name for Warden is still undecided.
 
+The second revision moves the blueprint into the hand and adds a visible stone
+grip. An optional alternating-leg walking cycle runs only when the render snapshot
+is grounded, using Minecraft's walk position and speed. Flight AI is unchanged;
+the preview's Walk button demonstrates the cycle independently so Tabor can choose
+whether to use it. The grounded pose removes the hover bob and keeps the feet at
+floor level. No ground navigation or walking behavior has been added.
+
 ## Editable source and reproduction
 
 - `art/builder/builder.bbmodel`: editable Blockbench model with embedded base texture.
 - `art/builder/builder.geometry.json`: shared cuboids, pivots and face UVs.
-- `art/builder/builder-preview.html`: offline, rotatable preview with idle/carry/build
-  poses, front/side/back controls and night lighting. Uses the same geometry and UVs.
+- `art/builder/builder-preview.html`: offline, rotatable preview with hover/carry/build/
+  walk poses, front/side/back controls and night lighting. Uses the same geometry and
+  UVs. Send this single HTML file to a friend; Download viewer saves a portable copy,
+  and Save image exports the current view as a PNG. No Minecraft installation needed.
 - `tools/build_builder_assets.py`: authoritative geometry/texture authoring source.
   Run `python tools/build_builder_assets.py` with Pillow installed to regenerate
   the Java mesh, two textures, geometry JSON, Blockbench file and offline preview.
@@ -75,7 +84,7 @@ or renamed; the replacement name for Warden is still undecided.
   no added Minecraft mod dependency and no runtime network requests from the preview.
 
 The texture has 1024 x 1024 pixels with a logical 256 x 256 UV grid (four texels per
-model unit). It is deliberately pixel-filtered. The model has 54 cuboids in eight
+model unit). It is deliberately pixel-filtered. The model has 55 cuboids in eight
 groups. Blockbench edits are not automatically imported into Java: mirror geometry
 changes back into the authoring script before regenerating. Animations live in
 BuilderModel.java; the Blockbench file is an editable mesh, not an animation export.
@@ -91,7 +100,8 @@ preview files so GitHub can collapse them during review.
 - `gradlew.bat build`: compiles both environments, builds the mod, and runs the
   existing unit test plus 25 server game tests, including four new BuildTask tests.
 - `gradlew.bat runClientGameTest`: added Builder client test bakes the actual model,
-  asserts construction and idle cargo visibility, spawns `seedcity:builder` in a
+  asserts construction/idle cargo visibility, opposing walking legs and the grounded
+  resting pose, spawns `seedcity:builder` in a
   disposable world, and captures daylight/night screenshots. Requires a graphics
   device; it is separate from the normal headless build.
 - Client screenshots: `build/run/clientGameTest/screenshots/`.

@@ -34,7 +34,7 @@ group('left_arm', [6, 8, 0], 'body')
 group('right_leg', [-2.4, 16, 0], 'body')
 group('left_leg', [2.4, 16, 0], 'body')
 group('cargo', [-6, 15, -4], 'right_arm')
-group('blueprint', [8, 13, -4], 'left_arm')
+group('blueprint', [7, 16.5, -1.5], 'left_arm')
 
 box('neck_joint', 'body', [-2, 5, -2], [4, 3, 4], 'joint')
 box('torso', 'body', [-4, 8, -2.5], [8, 7, 5], 'copper')
@@ -85,8 +85,9 @@ for side, sign in [('right', -1), ('left', 1)]:
     box(side+'_boot_cuff', part, [x-1.5, 20, -2.2], [3, 1, 4], 'brass')
 
 box('carried_stone', 'cargo', [-8.5, 12.5, -6.5], [5, 5, 5], 'rough_stone')
-box('blueprint_frame', 'blueprint', [7, 10, -4.5], [6, 8, 1], 'blue_frame')
-box('blueprint_surface', 'blueprint', [7.5, 10.5, -4.65], [5, 7, 1], 'blueprint')
+box('blueprint_frame', 'blueprint', [7, 10, -2.5], [6, 8, 1], 'blue_frame')
+box('blueprint_surface', 'blueprint', [7.5, 10.5, -2.65], [5, 7, 1], 'blueprint')
+box('blueprint_grip', 'left_arm', [6.5, 16, -2.8], [1, 1, 2], 'stone')
 
 palette = {
     'stone': (115,119,114), 'rough_stone': (106,112,110),

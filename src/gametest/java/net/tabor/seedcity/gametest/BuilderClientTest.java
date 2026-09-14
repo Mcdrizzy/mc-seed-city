@@ -26,6 +26,17 @@ public final class BuilderClientTest implements FabricClientGameTest {
             state.building=false;
             model.setupAnim(state);
             if (arm.getChild("cargo").visible) throw new AssertionError("Idle Builder retained cargo");
+            state.grounded=true;
+            state.walkAnimationSpeed=0.6F;
+            state.walkAnimationPos=2.0F;
+            model.setupAnim(state);
+            var body=root.getChild("body");
+            if (body.getChild("right_leg").xRot * body.getChild("left_leg").xRot >= 0)
+                throw new AssertionError("Walking legs must alternate");
+            state.walkAnimationSpeed=0;
+            model.setupAnim(state);
+            if (body.y!=10 || body.getChild("right_leg").xRot!=0)
+                throw new AssertionError("Grounded rest pose must plant its feet");
         });
         try (var world=context.worldBuilder().create()) {
             var server=world.getServer();

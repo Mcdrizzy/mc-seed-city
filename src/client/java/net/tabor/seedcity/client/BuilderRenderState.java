@@ -7,4 +7,5 @@ public final class BuilderRenderState extends LivingEntityRenderState {
     public boolean building;
     public boolean carrying;
     public float flightSpeed;
+    public boolean grounded;
 }

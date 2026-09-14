@@ -10,6 +10,12 @@ It runs offline. `builder.bbmodel` is the editable Blockbench mesh and embeds it
 texture. The preview approximates lighting; the Fabric client-test captures are
 actual Minecraft screenshots.
 
+Use Walk to preview the optional walking animation. The mod still uses its existing
+flight navigation. The blueprint now meets the left hand with a visible grip.
+Send the HTML file directly to a friend, or use Download viewer to save a copy.
+It includes its model, textures and renderer; no server or Minecraft is required.
+Save image downloads the current camera view as a PNG.
+
 See `docs/npc-builder-merge-notes.md` at the repository root for required Java and
 asset files, the restored upstream BuildTask source, tests, and limitations.
 

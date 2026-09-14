@@ -1,4 +1,5 @@
 import * as THREE from '__THREE__';
+const standaloneDocument='<!doctype html>\n'+document.documentElement.outerHTML;
 const spec=__GEOMETRY__;
 const canvas=document.getElementById('view');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,preserveDrawingBuffer:true});
@@ -22,12 +23,15 @@ const grid=new THREE.GridHelper(96,24,0x49666c,0x294149);grid.position.y=25;scen
 const shadowCanvas=document.createElement('canvas');shadowCanvas.width=128;shadowCanvas.height=128;const sh=shadowCanvas.getContext('2d'),gradient=sh.createRadialGradient(64,64,0,64,64,64);gradient.addColorStop(0,'#00000070');gradient.addColorStop(1,'#00000000');sh.fillStyle=gradient;sh.fillRect(0,0,128,128);const shadow=new THREE.Mesh(new THREE.PlaneGeometry(25,17),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(shadowCanvas),transparent:true,depthWrite:false,side:THREE.DoubleSide}));shadow.rotation.x=Math.PI/2;shadow.position.set(0,24.9,0);scene.add(shadow);
 const play=document.getElementById('playing'),spin=document.getElementById('turntable'),night=document.getElementById('night');
 let yaw=-.45,pitch=.15,zoom=1,pose='carry',time=0,previous=0,drag=null;
-document.querySelectorAll('[data-pose]').forEach(b=>b.onclick=()=>{pose=b.dataset.pose;document.querySelectorAll('[data-pose]').forEach(x=>x.classList.toggle('active',x===b));document.getElementById('poseLabel').textContent={idle:'Waiting for a blueprint task',carry:'Carrying materials',build:'Building from the blueprint'}[pose]});
+document.querySelectorAll('[data-pose]').forEach(b=>b.onclick=()=>{pose=b.dataset.pose;document.querySelectorAll('[data-pose]').forEach(x=>x.classList.toggle('active',x===b));document.getElementById('poseLabel').textContent={idle:'Hovering · waiting for a task',carry:'Flying · carrying materials',build:'Building from the blueprint',walk:'Walking cycle · optional animation'}[pose]});
 document.querySelectorAll('[data-angle]').forEach(b=>b.onclick=()=>{yaw=+b.dataset.angle;pitch=.15;spin.checked=false});
 canvas.onpointerdown=e=>{drag=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId)};
 canvas.onpointerup=()=>drag=null;canvas.onpointercancel=()=>drag=null;
 canvas.onpointermove=e=>{if(drag){yaw-=(e.clientX-drag[0])*.009;pitch=Math.max(-.65,Math.min(.85,pitch+(e.clientY-drag[1])*.006));drag=[e.clientX,e.clientY]}};
 canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.65,Math.min(1.5,zoom-e.deltaY*.0007))},{passive:false});
+function save(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+document.getElementById('saveViewer').onclick=()=>save(new Blob([standaloneDocument],{type:'text/html'}),'Seed-City-Builder.html');
+document.getElementById('saveImage').onclick=()=>canvas.toBlob(b=>{if(b)save(b,'Builder-'+pose+'-preview.png')});
 function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(play.checked)time+=dt*20;if(spin.checked&&!drag)yaw+=dt*.3;
  const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);let half=Math.max(16,18*h/w)/zoom;camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();camera.position.set(Math.sin(yaw)*55,12-Math.sin(pitch)*55,-Math.cos(yaw)*55);camera.lookAt(1.5,12,0);
  const bob=Math.sin(time*.1),flight=pose==='carry'?1:0;
@@ -36,7 +40,9 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*.65)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
  groups.left_arm.rotation.set(pose==='build'?-.25:-.12,0,-.05);
  groups.right_leg.rotation.x=.08+flight*.22+bob*.04;groups.left_leg.rotation.x=.08+flight*.22-bob*.04;
- groups.blueprint.rotation.y=-.16;groups.cargo.visible=pose!=='idle';
+ groups.blueprint.rotation.y=-.16;groups.cargo.visible=pose==='carry'||pose==='build';
+ const walk=pose==='walk';grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
+ if(walk){const stride=Math.sin(time*.32)*.55;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=18-8*Math.cos(stride)-3*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-stride*.65;groups.left_arm.rotation.x=-.12+stride*.22;}
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;
  renderer.render(scene,camera);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);
