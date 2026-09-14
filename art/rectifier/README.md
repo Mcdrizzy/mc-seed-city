@@ -13,3 +13,7 @@ with Python and Pillow. Animations live in RectifierModel.java and preview.js.
 
 See `docs/npc-rectifier-merge-notes.md` for required code changes and compatibility.
 The in-game registry ID remains `seedcity:warden`; its display name is Rectifier.
+
+Revision 2: taller legs, wider/deeper chest, a smaller helmet proportion, rebuilt
+wrench and an articulated elbow holding the lantern forward. Model height is
+about 2.81 blocks; the preview includes a player-height comparison marker.

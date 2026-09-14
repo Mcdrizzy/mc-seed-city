@@ -30,7 +30,7 @@ public final class RectifierClientTest implements FabricClientGameTest {
                 throw new AssertionError("Walking legs must alternate");
             state.walkAnimationSpeed=0;
             model.setupAnim(state);
-            if(body.y!=2) throw new AssertionError("Grounded boots must rest at floor level");
+            if(body.y!=-3) throw new AssertionError("Grounded boots must rest at floor level");
         });
         try (var world=context.worldBuilder().create()) {
             var server=world.getServer();

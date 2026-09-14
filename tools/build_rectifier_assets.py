@@ -81,13 +81,70 @@ box('lantern_base','lantern',[-11.5,20,-2.5],[5,1,5],'brass')
 for x in (-11.5,-7.5):
     for z in (-2.5,1.5):
         box('lantern_post_'+str(x)+'_'+str(z),'lantern',[x,16,z],[1,4,1],'joint')
-box('wrench_handle','wrench',[8.5,11,-1.5],[1,7,1],'wood')
-box('wrench_neck','wrench',[8,17,-2],[2,2,2],'brass')
-box('wrench_base','wrench',[7,19,-2],[4,1,2],'stone')
-box('wrench_jaw_left','wrench',[7,20,-2],[1,3,2],'stone')
-box('wrench_jaw_right','wrench',[10,20,-2],[1,3,2],'stone')
+box('wrench_shaft','wrench',[8,10,-2],[2,9,2],'stone')
+box('wrench_grip','wrench',[7.5,11,-2.5],[3,5,3],'wood')
+box('wrench_collar','wrench',[7.5,16,-2.5],[3,1,3],'brass')
+box('wrench_neck','wrench',[7.5,18,-2.5],[3,2,3],'stone')
+box('wrench_head_base','wrench',[5.5,20,-2.5],[7,2,3],'stone')
+box('wrench_jaw_left','wrench',[5.5,22,-2.5],[2,3,3],'stone')
+box('wrench_jaw_right','wrench',[10.5,22,-2.5],[2,3,3],'stone')
+box('wrench_tooth_left','wrench',[6.5,25,-2.5],[2,1,3],'stone')
+box('wrench_tooth_right','wrench',[9.5,25,-2.5],[2,1,3],'stone')
+
+# Longer legs support a broader, deeper upper body. Keep the boot floor at y=24.
+for g in groups:
+    if g['name'] in ('right_leg','left_leg'):
+        g['pivot'][0] += -1 if g['name']=='right_leg' else 1
+    elif g['name'] in ('right_arm','lantern'):
+        g['pivot'][0]-=2
+    elif g['name'] in ('left_arm','wrench'):
+        g['pivot'][0]+=2
+    g['pivot'][1]-=5
+for c in cubes:
+    name,part=c['name'],c['part']
+    if part.endswith('_leg'):
+        c['pos'][0] += -1 if part=='right_leg' else 1
+        if name.endswith('_thigh'):
+            c['pos'][1]=5; c['size'][1]=9
+        elif name.endswith('_knee'):
+            c['pos'][1]=14
+        elif name.endswith('_greave'):
+            c['pos'][1]=15; c['size'][1]=7
+        elif name.endswith('_greave_band'):
+            c['pos'][1]=15
+        continue
+    c['pos'][1]-=5
+    if part in ('right_arm','lantern'):
+        c['pos'][0]-=2
+    elif part in ('left_arm','wrench'):
+        c['pos'][0]+=2
+    if part=='head' and name!='neck':
+        c['pos'][1]+=2
+        if name!='crown': c['size'][1]-=2
+    if part=='body':
+        if name=='torso': c['pos'][0]=-7; c['size'][0]=14; c['pos'][2]=-4.5; c['size'][2]=9
+        elif name in ('chest_rim','chest_socket'):
+            c['pos'][0]-=1; c['size'][0]+=2; c['pos'][2]-=2
+        elif name in ('core','core_center','buckle','tabard_trim','tabard','tabard_mark'):
+            c['pos'][2]-=2
+        elif name in ('chest_left','chest_right'):
+            c['pos'][0]+=2 if name=='chest_left' else -2; c['pos'][2]-=2
+        elif name=='back_plate': c['pos'][0]-=2; c['size'][0]+=4; c['pos'][2]+=1.5
+        elif name=='back_spine': c['pos'][2]+=1.5
+        elif name in ('belt','hip'):
+            c['pos'][0]-=1; c['size'][0]+=2; c['pos'][2]-=1; c['size'][2]+=2
+
+# A real elbow bend carries the lantern ahead of the chest without rotating it flat.
+at=next(i for i,g in enumerate(groups) if g['name']=='lantern')
+groups.insert(at,dict(name='right_forearm',pivot=[-11,0,0],parent='right_arm'))
+for g in groups:
+    if g['name']=='lantern':g['parent']='right_forearm'
+for c in cubes:
+    if c['name'] in ('right_forearm','right_wrist_band','right_hand'):
+        c['part']='right_forearm'
+
 shells={'crown':.04,'chest_left':.04,'chest_right':.04,'belt':.04,
-        'vertical_visor':.04,'wrench_neck':.04,'buckle':.06,'cheek_right':.06,'cheek_left':.06}
+        'vertical_visor':.04,'wrench_neck':.04,'wrench_grip':.04,'buckle':.06,'cheek_right':.06,'cheek_left':.06}
 for side in ('right','left'):
     for suffix,amount in (('shoulder_cap',.04),('wrist_band',.04),('greave_band',.04)):
         shells[side+'_'+suffix]=amount
