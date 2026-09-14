@@ -1,6 +1,7 @@
 # Seed City
 
 NPC fork handoff: [mob showcase V1 integration notes](docs/mob-showcase-v1.md),
+[installable mod files](distribution),
 [five-page integration guide](docs/Tabor-Integration-Guide.pdf), and
 [showcase screenshots](art/showcase). Six Creative spawn eggs are included.
 The separate [Bedrock add-on](bedrock) is a server-tested integration candidate;
