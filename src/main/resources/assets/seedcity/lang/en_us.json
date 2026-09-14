@@ -2,6 +2,7 @@
 	"block.seedcity.seed": "City Seed",
 	"block.seedcity.probe": "Verifier Probe",
 	"entity.seedcity.builder": "Builder",
+	"entity.seedcity.courier": "Courier",
 	"entity.seedcity.warden": "Rectifier",
 	"entity.seedcity.sentinel": "Sentinel"
 }
