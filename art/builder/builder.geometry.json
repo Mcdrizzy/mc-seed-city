@@ -90,6 +90,7 @@
         4
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         0,
         0
@@ -147,6 +148,7 @@
         5
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         18,
         0
@@ -204,6 +206,7 @@
         1
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         46,
         0
@@ -261,6 +264,7 @@
         1
       ],
       "material": "patina",
+      "inflate": 0,
       "uv": [
         62,
         0
@@ -318,6 +322,7 @@
         1
       ],
       "material": "cyan",
+      "inflate": 0,
       "uv": [
         74,
         0
@@ -375,6 +380,7 @@
         1
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         80,
         0
@@ -432,6 +438,7 @@
         6
       ],
       "material": "leather",
+      "inflate": 0.04,
       "uv": [
         96,
         0
@@ -489,6 +496,7 @@
         1
       ],
       "material": "brass",
+      "inflate": 0,
       "uv": [
         128,
         0
@@ -546,6 +554,7 @@
         1
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         138,
         0
@@ -603,6 +612,7 @@
         4
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         144,
         0
@@ -660,6 +670,7 @@
         1
       ],
       "material": "leather",
+      "inflate": 0.04,
       "uv": [
         168,
         0
@@ -717,6 +728,7 @@
         1
       ],
       "material": "leather",
+      "inflate": 0.04,
       "uv": [
         174,
         0
@@ -774,6 +786,7 @@
         6
       ],
       "material": "leather",
+      "inflate": 0,
       "uv": [
         180,
         0
@@ -831,6 +844,7 @@
         1
       ],
       "material": "brass",
+      "inflate": 0.08,
       "uv": [
         196,
         0
@@ -888,6 +902,7 @@
         2
       ],
       "material": "leather",
+      "inflate": 0,
       "uv": [
         204,
         0
@@ -945,6 +960,7 @@
         2
       ],
       "material": "leather",
+      "inflate": 0,
       "uv": [
         216,
         0
@@ -1002,6 +1018,7 @@
         1
       ],
       "material": "brass",
+      "inflate": 0.04,
       "uv": [
         228,
         0
@@ -1059,6 +1076,7 @@
         1
       ],
       "material": "brass",
+      "inflate": 0.04,
       "uv": [
         238,
         0
@@ -1116,6 +1134,7 @@
         1
       ],
       "material": "wood",
+      "inflate": 0,
       "uv": [
         248,
         0
@@ -1173,6 +1192,7 @@
         2
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         0,
         14
@@ -1230,6 +1250,7 @@
         6
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         12,
         14
@@ -1287,6 +1308,7 @@
         7
       ],
       "material": "stone",
+      "inflate": 0.04,
       "uv": [
         40,
         14
@@ -1344,6 +1366,7 @@
         1
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         72,
         14
@@ -1401,6 +1424,7 @@
         1
       ],
       "material": "eye",
+      "inflate": 0,
       "uv": [
         88,
         14
@@ -1458,6 +1482,7 @@
         1
       ],
       "material": "eye",
+      "inflate": 0,
       "uv": [
         94,
         14
@@ -1515,6 +1540,7 @@
         1
       ],
       "material": "stone",
+      "inflate": 0.04,
       "uv": [
         100,
         14
@@ -1572,6 +1598,7 @@
         6
       ],
       "material": "stone",
+      "inflate": 0.04,
       "uv": [
         106,
         14
@@ -1629,6 +1656,7 @@
         3
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         134,
         14
@@ -1686,6 +1714,7 @@
         3
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         144,
         14
@@ -1743,6 +1772,7 @@
         5
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         154,
         14
@@ -1800,6 +1830,7 @@
         5
       ],
       "material": "patina",
+      "inflate": 0.04,
       "uv": [
         174,
         14
@@ -1857,6 +1888,7 @@
         3
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         194,
         14
@@ -1914,6 +1946,7 @@
         4
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         206,
         14
@@ -1971,6 +2004,7 @@
         4
       ],
       "material": "brass",
+      "inflate": 0.04,
       "uv": [
         222,
         14
@@ -2028,6 +2062,7 @@
         3
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         238,
         14
@@ -2085,6 +2120,7 @@
         3
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         0,
         28
@@ -2142,6 +2178,7 @@
         3
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         14,
         28
@@ -2199,6 +2236,7 @@
         4
       ],
       "material": "stone",
+      "inflate": 0.04,
       "uv": [
         28,
         28
@@ -2256,6 +2294,7 @@
         5
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         44,
         28
@@ -2313,6 +2352,7 @@
         4
       ],
       "material": "brass",
+      "inflate": 0.08,
       "uv": [
         64,
         28
@@ -2370,6 +2410,7 @@
         5
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         80,
         28
@@ -2427,6 +2468,7 @@
         5
       ],
       "material": "patina",
+      "inflate": 0.04,
       "uv": [
         100,
         28
@@ -2484,6 +2526,7 @@
         3
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         120,
         28
@@ -2541,6 +2584,7 @@
         4
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         132,
         28
@@ -2598,6 +2642,7 @@
         4
       ],
       "material": "brass",
+      "inflate": 0.04,
       "uv": [
         148,
         28
@@ -2655,6 +2700,7 @@
         3
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         164,
         28
@@ -2712,6 +2758,7 @@
         3
       ],
       "material": "copper",
+      "inflate": 0,
       "uv": [
         178,
         28
@@ -2769,6 +2816,7 @@
         3
       ],
       "material": "joint",
+      "inflate": 0,
       "uv": [
         192,
         28
@@ -2826,6 +2874,7 @@
         4
       ],
       "material": "stone",
+      "inflate": 0.04,
       "uv": [
         206,
         28
@@ -2883,6 +2932,7 @@
         5
       ],
       "material": "stone",
+      "inflate": 0,
       "uv": [
         222,
         28
@@ -2940,6 +2990,7 @@
         4
       ],
       "material": "brass",
+      "inflate": 0.08,
       "uv": [
         0,
         39
@@ -2997,6 +3048,7 @@
         5
       ],
       "material": "rough_stone",
+      "inflate": 0,
       "uv": [
         16,
         39
@@ -3054,6 +3106,7 @@
         1
       ],
       "material": "blue_frame",
+      "inflate": 0,
       "uv": [
         38,
         39
@@ -3111,6 +3164,7 @@
         1
       ],
       "material": "blueprint",
+      "inflate": 0,
       "uv": [
         54,
         39
@@ -3168,6 +3222,7 @@
         2
       ],
       "material": "stone",
+      "inflate": 0.06,
       "uv": [
         68,
         39

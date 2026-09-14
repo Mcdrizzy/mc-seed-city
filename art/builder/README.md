@@ -16,6 +16,10 @@ Send the HTML file directly to a friend, or use Download viewer to save a copy.
 It includes its model, textures and renderer; no server or Minecraft is required.
 Save image downloads the current camera view as a PNG.
 
+Revision 3 separates overlapping armor faces to fix depth flicker, and holds the
+blueprint in front with the schematic facing the Builder. The geometry generator
+checks for coplanar overlapping outward faces in each rigid part before exporting.
+
 See `docs/npc-builder-merge-notes.md` at the repository root for required Java and
 asset files, the restored upstream BuildTask source, tests, and limitations.
 

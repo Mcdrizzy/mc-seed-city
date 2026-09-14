@@ -10,6 +10,7 @@ import json
 import math
 import random
 import uuid
+from itertools import combinations
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,6 +90,37 @@ box('blueprint_frame', 'blueprint', [7, 10, -2.5], [6, 8, 1], 'blue_frame')
 box('blueprint_surface', 'blueprint', [7.5, 10.5, -2.65], [5, 7, 1], 'blueprint')
 box('blueprint_grip', 'left_arm', [6.5, 16, -2.8], [1, 1, 2], 'stone')
 
+# Separate armor/decorative shells from the faces beneath them. Deformation keeps
+# the authored box UVs intact and is exported identically to all three viewers.
+shells = {
+    'strap_front': .04, 'strap_back': .04, 'strap_clasp': .08,
+    'belt': .04, 'pouch_flap_left': .04, 'pouch_flap_right': .04,
+    'brow': .04, 'jaw': .04, 'nose_bridge': .04, 'blueprint_grip': .06,
+}
+for side in ('right', 'left'):
+    for suffix, amount in (('shoulder_band', .04), ('cuff', .04),
+                           ('shin', .04), ('boot_cuff', .08)):
+        shells[f'{side}_{suffix}'] = amount
+for c in cubes:
+    c['inflate'] = shells.get(c['name'], 0)
+
+def bounds(c):
+    return ([v-c['inflate'] for v in c['pos']],
+            [v+s+c['inflate'] for v,s in zip(c['pos'],c['size'])])
+
+# Coplanar, overlapping outward faces in one rigid part are always a geometry
+# error. Touching opposite faces at a seam are valid and are deliberately excluded.
+for a,b in combinations(cubes, 2):
+    if a['part'] != b['part']:
+        continue
+    aa,bb = bounds(a),bounds(b)
+    for axis in range(3):
+        for side in (0,1):
+            coplanar = abs(aa[side][axis]-bb[side][axis]) < 1e-6
+            overlap = all(min(aa[1][j],bb[1][j])-max(aa[0][j],bb[0][j]) > 1e-6
+                          for j in range(3) if j != axis)
+            assert not (coplanar and overlap), f'Z-fighting: {a["name"]} / {b["name"]}'
+
 palette = {
     'stone': (115,119,114), 'rough_stone': (106,112,110),
     'joint': (44,49,47), 'copper': (111,111,81), 'patina': (77,119,106),
@@ -132,7 +164,7 @@ for c in cubes:
                 image.putpixel((fx+px,fy+py),tuple(max(0,min(255,k+delta)) for k in color)+(255,))
         if mat == 'blueprint':
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(15,62,98,255))
-            if fw>=5 and fh>=7:
+            if face=='north' and fw>=5 and fh>=7:
                 draw.line([(fx+1,fy+1),(fx+3,fy+1),(fx+3,fy+4),(fx+1,fy+4),(fx+1,fy+1)], fill=(108,224,237,255))
                 draw.point((fx+2,fy+2),fill=(195,255,255,255))
                 draw.line([(fx+2,fy+4),(fx+2,fy+5),(fx+4,fy+5)], fill=(73,173,205,255))
@@ -145,7 +177,7 @@ image=image.resize((1024,1024),Image.Resampling.NEAREST)
 draw=ImageDraw.Draw(image)
 for c in cubes:
     mat=c['material']
-    for u,v,w,h in c['faces'].values():
+    for face,(u,v,w,h) in c['faces'].items():
         fx,fy,fw,fh=[n*DENSITY for n in (u,v,w,h)]
         for y in range(fy,fy+fh):
             for x in range(fx,fx+fw):
@@ -162,7 +194,7 @@ for c in cubes:
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(24,151,180,255))
             draw.rectangle((fx+1,fy+1,fx+fw-2,fy+fh-2),fill=(89,240,248,255))
             draw.line([(fx+1,fy+1),(fx+1,fy+fh-3)],fill=(206,255,255,255))
-        if mat=='blueprint' and fw>=20 and fh>=28:
+        if mat=='blueprint' and face=='north' and fw>=20 and fh>=28:
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(16,57,88,255))
             for gx in range(fx+2,fx+fw,4): draw.line((gx,fy,gx,fy+fh-1),fill=(23,75,104,255))
             for gy in range(fy+2,fy+fh,4): draw.line((fx,gy,fx+fw-1,gy),fill=(23,75,104,255))
@@ -200,12 +232,14 @@ for g in groups:
     lines.append(f'\t\tPartDefinition {g["name"]} = {g["parent"] or "root"}.addOrReplaceChild("{g["name"]}", CubeListBuilder.create()')
     for c in (c for c in cubes if c['part']==g['name']):
         pos = [a-b for a,b in zip(c['pos'],g['pivot'])]
-        lines.append(f'\t\t\t\t.texOffs({c["uv"][0]}, {c["uv"][1]}).addBox({vector(pos+c["size"])}) // {c["name"]}')
+        deformation = f', new CubeDeformation({f(c["inflate"])})' if c['inflate'] else ''
+        lines.append(f'\t\t\t\t.texOffs({c["uv"][0]}, {c["uv"][1]}).addBox({vector(pos+c["size"])}{deformation}) // {c["name"]}')
     lines.append(f'\t\t\t\t, PartPose.offset({vector(pivot)}));')
 java = '''package net.tabor.seedcity.client;
 
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
@@ -226,7 +260,8 @@ public final class BuilderMesh {
 def uid(name): return str(uuid.uuid5(uuid.NAMESPACE_URL,'seedcity/builder/'+name))
 elements=[]
 for c in cubes:
-    x,y,z = c['pos']; w,h,d = c['size']
+    lo,hi = bounds(c)
+    x,y,z = lo; w,h,d = [b-a for a,b in zip(lo,hi)]
     # Java models face -Z and have downward-positive Y. Blockbench uses up-positive Y.
     faces={}
     for face,(u,v,fw,fh) in c['faces'].items():

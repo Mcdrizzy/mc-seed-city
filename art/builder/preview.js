@@ -16,9 +16,9 @@ const ambient=new THREE.AmbientLight(0xc7e4ec,1.6);scene.add(ambient);
 const sun=new THREE.DirectionalLight(0xffeccf,2.4);sun.position.set(-15,-30,-25);scene.add(sun);
 const fill=new THREE.DirectionalLight(0x8dc5d2,.45);fill.position.set(20,0,15);scene.add(fill);
 const groups={},specGroups=Object.fromEntries(spec.groups.map(g=>[g.name,g]));
-for(const g of spec.groups){const obj=new THREE.Group();obj.name=g.name;const parent=g.parent?specGroups[g.parent].pivot:[0,0,0];obj.position.set(...g.pivot.map((v,i)=>v-parent[i]));(g.parent?groups[g.parent]:scene).add(obj);groups[g.name]=obj}
+for(const g of spec.groups){const obj=new THREE.Group();obj.name=g.name;obj.rotation.order='ZYX';const parent=g.parent?specGroups[g.parent].pivot:[0,0,0];obj.position.set(...g.pivot.map((v,i)=>v-parent[i]));(g.parent?groups[g.parent]:scene).add(obj);groups[g.name]=obj}
 const faceDefs={north:{n:[0,0,-1],v:[[0,0,0],[1,0,0],[1,1,0],[0,1,0]]},south:{n:[0,0,1],v:[[1,0,1],[0,0,1],[0,1,1],[1,1,1]]},east:{n:[-1,0,0],v:[[0,0,1],[0,0,0],[0,1,0],[0,1,1]]},west:{n:[1,0,0],v:[[1,0,0],[1,0,1],[1,1,1],[1,1,0]]},up:{n:[0,-1,0],v:[[0,0,1],[1,0,1],[1,0,0],[0,0,0]]},down:{n:[0,1,0],v:[[0,1,0],[1,1,0],[1,1,1],[0,1,1]]}};
-for(const c of spec.cubes){const pos=[],normals=[],uv=[];for(const[f,d]of Object.entries(faceDefs)){let[u,v,w,h]=c.faces[f];let tex=[[u,v],[u+w,v],[u+w,v+h],[u,v+h]];if(f==='down')tex=tex.map(([x,y])=>[x,2*v+h-y]);for(const j of [0,2,1,0,3,2]){pos.push(...d.v[j].map((x,i)=>c.pos[i]+x*c.size[i]-specGroups[c.part].pivot[i]));normals.push(...d.n);uv.push(tex[j][0]/256,1-tex[j][1]/256)}}const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geom.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const mesh=new THREE.Mesh(geom,material);mesh.name=c.name;groups[c.part].add(mesh)}
+for(const c of spec.cubes){const pos=[],normals=[],uv=[];for(const[f,d]of Object.entries(faceDefs)){let[u,v,w,h]=c.faces[f];let tex=[[u,v],[u+w,v],[u+w,v+h],[u,v+h]];if(f==='down')tex=tex.map(([x,y])=>[x,2*v+h-y]);for(const j of [0,2,1,0,3,2]){pos.push(...d.v[j].map((x,i)=>c.pos[i]-(c.inflate||0)+x*(c.size[i]+2*(c.inflate||0))-specGroups[c.part].pivot[i]));normals.push(...d.n);uv.push(tex[j][0]/256,1-tex[j][1]/256)}}const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geom.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geom.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));const mesh=new THREE.Mesh(geom,material);mesh.name=c.name;groups[c.part].add(mesh)}
 const grid=new THREE.GridHelper(96,24,0x49666c,0x294149);grid.position.y=25;scene.add(grid);
 const shadowCanvas=document.createElement('canvas');shadowCanvas.width=128;shadowCanvas.height=128;const sh=shadowCanvas.getContext('2d'),gradient=sh.createRadialGradient(64,64,0,64,64,64);gradient.addColorStop(0,'#00000070');gradient.addColorStop(1,'#00000000');sh.fillStyle=gradient;sh.fillRect(0,0,128,128);const shadow=new THREE.Mesh(new THREE.PlaneGeometry(25,17),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(shadowCanvas),transparent:true,depthWrite:false,side:THREE.DoubleSide}));shadow.rotation.x=Math.PI/2;shadow.position.set(0,24.9,0);scene.add(shadow);
 const play=document.getElementById('playing'),spin=document.getElementById('turntable'),night=document.getElementById('night');
@@ -38,11 +38,11 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.body.position.y=10+bob*.22;groups.body.rotation.x=flight*.08;
  groups.head.rotation.x=pose==='build'?.16:0;
  groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*.65)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
- groups.left_arm.rotation.set(pose==='build'?-.25:-.12,0,-.05);
+ groups.left_arm.rotation.set(pose==='build'?-.65:-.60,0,-.05);
  groups.right_leg.rotation.x=.08+flight*.22+bob*.04;groups.left_leg.rotation.x=.08+flight*.22-bob*.04;
- groups.blueprint.rotation.y=-.16;groups.cargo.visible=pose==='carry'||pose==='build';
+ groups.blueprint.rotation.y=Math.PI;groups.blueprint.rotation.x=-.90;groups.cargo.visible=pose==='carry'||pose==='build';
  const walk=pose==='walk';grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
- if(walk){const stride=Math.sin(time*.32)*.55;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=18-8*Math.cos(stride)-3*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-stride*.65;groups.left_arm.rotation.x=-.12+stride*.22;}
+ if(walk){const stride=Math.sin(time*.32)*.55;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=18-8*Math.cos(stride)-3*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-stride*.65;groups.left_arm.rotation.x=-.60+stride*.08;}
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;
  renderer.render(scene,camera);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);

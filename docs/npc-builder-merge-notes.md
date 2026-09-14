@@ -68,6 +68,14 @@ the preview's Walk button demonstrates the cycle independently so Tabor can choo
 whether to use it. The grounded pose removes the hover bob and keeps the feet at
 floor level. No ground navigation or walking behavior has been added.
 
+Revision 3 fixes coplanar armor/detail faces that could cause depth flicker in both
+the preview and Minecraft. Small CubeDeformation offsets preserve the original UVs;
+the same offsets are exported to the viewer and Blockbench mesh. Regeneration now
+rejects overlapping coplanar outward faces within each rigid part. The left arm holds
+the blueprint in front of the body, with its schematic facing inward and tilted up
+for reading. Only the inward face has schematic lines; the back is plain. Take the
+updated model animation, generated mesh and both textures together for this revision.
+
 ## Editable source and reproduction
 
 - `art/builder/builder.bbmodel`: editable Blockbench model with embedded base texture.
@@ -87,7 +95,9 @@ The texture has 1024 x 1024 pixels with a logical 256 x 256 UV grid (four texels
 model unit). It is deliberately pixel-filtered. The model has 55 cuboids in eight
 groups. Blockbench edits are not automatically imported into Java: mirror geometry
 changes back into the authoring script before regenerating. Animations live in
-BuilderModel.java; the Blockbench file is an editable mesh, not an animation export.
+BuilderModel.java; the Blockbench file is an editable mesh, not an animation export
+(including the held blueprint's reading pose). The preview uses Minecraft's ZYX
+part rotation order to match poses involving more than one axis.
 
 ## Validation and trying it
 

@@ -33,10 +33,11 @@ public final class BuilderModel extends EntityModel<BuilderRenderState> {
         leftLeg.xRot = 0.08F + flight * 0.22F - bob * 0.04F;
         rightArm.zRot = 0.04F;
         leftArm.zRot = -0.05F;
-        leftArm.xRot = -0.12F;
+        leftArm.xRot = -0.60F;
         rightArm.xRot = state.carrying ? -0.32F : 0.03F + bob * 0.035F;
         cargo.visible = state.carrying;
-        blueprint.yRot = -0.16F;
+        blueprint.yRot = (float) Math.PI;
+        blueprint.xRot = -0.90F;
         if (state.grounded) {
             float stride = (float) Math.sin(state.walkAnimationPos * 0.6662F)
                     * Math.min(state.walkAnimationSpeed * 1.8F, 1.0F) * 0.55F;
@@ -46,12 +47,12 @@ public final class BuilderModel extends EntityModel<BuilderRenderState> {
             // Keep the lowest boot corner on the floor, including the forward toe.
             body.y = 10 + 8 - 8 * (float) Math.cos(stride) - 3 * Math.abs((float) Math.sin(stride));
             if (!state.carrying) rightArm.xRot = -stride * 0.65F;
-            leftArm.xRot = -0.12F + stride * 0.22F;
+            leftArm.xRot = -0.60F + stride * 0.08F;
         }
         if (state.building) {
             rightArm.xRot = -0.55F + (float) Math.sin(t * 0.65F) * 0.28F;
             head.xRot = Math.max(head.xRot, 0.12F);
-            leftArm.xRot = -0.25F;
+            leftArm.xRot = -0.65F;
         }
     }
 }
