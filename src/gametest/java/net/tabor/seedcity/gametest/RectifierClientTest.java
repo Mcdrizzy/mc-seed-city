@@ -31,7 +31,7 @@ public final class RectifierClientTest implements FabricClientGameTest {
             state.capeLean=60; state.capeSide=12;
             model.setupAnim(state);
             float movingCape=body.getChild("cape").xRot;
-            if(movingCape<=.5F || body.getChild("cape").zRot<=0)
+            if(movingCape<=.1F || movingCape>Math.toRadians(18) || body.getChild("cape").zRot<=0)
                 throw new AssertionError("Cape must lift and sway with movement state");
             state.capeLean=0; state.capeSide=0;
             state.walkAnimationSpeed=0;
@@ -39,6 +39,11 @@ public final class RectifierClientTest implements FabricClientGameTest {
             if(body.getChild("cape").xRot>=movingCape)
                 throw new AssertionError("Cape must settle after motion ends");
             if(body.y!=-3) throw new AssertionError("Grounded boots must rest at floor level");
+            float clothSway=body.getChild("tabard").zRot;
+            state.ageInTicks+=20;
+            model.setupAnim(state);
+            if(Math.abs(body.getChild("tabard").zRot-clothSway)<.01F)
+                throw new AssertionError("Front cloth must sway independently even at rest");
         });
         try (var world=context.worldBuilder().create()) {
             var server=world.getServer();

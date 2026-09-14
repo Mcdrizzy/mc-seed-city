@@ -62,3 +62,6 @@ that keeps every phase independently shippable wins, and it gets a line here.
 - 2026-09-13 (NPC fork, animation polish): Set Rectifier hammer to a 90-degree hand-relative bend. Accelerate Rectifier repair and Builder construction arm animation to four cycles per second; leave task and block-placement timing unchanged.
 - 2026-09-13 (NPC fork, Rectifier revision 6): Remove added lantern-hand fingers/thumb and lengthen hammer shaft from 8 to 16 model units, extending below the fist for a sledgehammer look. Keep 90-degree grip and fast shared work cadence.
 - 2026-09-13 (NPC fork, Rectifier cape): Add a red-brown/gold cape matching the tabard. Reuse client-only Minecraft ClientAvatarState cloak lag with AvatarRenderer cape factors/clamps and resting angle; register independent per-entity client tick state. Vanilla-style hinged panel, with no server physics changes or external cape dependencies. Mirror motion in the offline viewer and add cape pose checks/back capture.
+
+## 2026-09-13: Rectifier cloth refinement
+Reduced the back cape's angle gains while retaining native cloak lag. Added circuit-board embroidery, embedded the clasps into the armor, and separated the front tabard into its own animated waist part. Preview and in-game animation match. Full build and client game tests passed.

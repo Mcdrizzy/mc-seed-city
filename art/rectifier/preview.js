@@ -39,14 +39,15 @@ document.getElementById('saveViewer').onclick=()=>save(new Blob([standaloneDocum
 document.getElementById('saveImage').onclick=()=>canvas.toBlob(b=>{if(b)save(b,'Rectifier-'+pose+'-preview.png')});
 // Preview a virtual walk/flight path using vanilla's 20 Hz, 25% cloak catch-up.
 let capeAccumulator=0,capeWalk=0,capeBob=0,virtualPos=[0,0,0],cloak=[0,0,0],oldPos=[0,0,0],oldCloak=[0,0,0];
-function capeTick(){oldPos=[...virtualPos];oldCloak=[...cloak];const moving=pose==='carry'||pose==='walk';const speed=moving?(pose==='walk'?.09:.16):0;virtualPos[2]-=speed;virtualPos[0]+=moving?Math.sin(time*.06)*.025:0;virtualPos[1]=pose==='carry'?Math.sin(time*.05)*.08:0;cloak=cloak.map((v,i)=>v+(virtualPos[i]-v)*.25);capeWalk+=speed*.6;capeBob+=((pose==='walk'?Math.min(speed,.1):0)-capeBob)*.4;}
+function capeTick(){oldPos=[...virtualPos];oldCloak=[...cloak];const grounded=document.getElementById('grounded').checked;const moving=pose==='carry'||pose==='walk';const speed=moving?((pose==='walk'||grounded)?.09:.16):0;virtualPos[2]-=speed;virtualPos[0]+=moving?Math.sin(time*.06)*.025:0;virtualPos[1]=pose==='carry'&&!grounded?Math.sin(time*.05)*.08:0;cloak=cloak.map((v,i)=>v+(virtualPos[i]-v)*.25);capeWalk+=speed*.6;capeBob+=(((pose==='walk'||grounded)?Math.min(speed,.1):0)-capeBob)*.4;}
 function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(play.checked)time+=dt*20;if(spin.checked&&!drag)yaw+=dt*.3;
  const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);let half=Math.max(29,30*h/w)/zoom;camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();camera.position.set(Math.sin(yaw)*70,-Math.sin(pitch)*70,-Math.cos(yaw)*70);camera.lookAt(0,0,0);
  if(play.checked){capeAccumulator+=dt;while(capeAccumulator>=.05){capeTick();capeAccumulator-=.05;}}
  const cf=capeAccumulator/.05,cd=cloak.map((v,i)=>oldCloak[i]+(v-oldCloak[i])*cf-(oldPos[i]+(virtualPos[i]-oldPos[i])*cf));
  const lean=Math.max(0,Math.min(150,cd[2]*100)),flap=Math.max(-6,Math.min(32,cd[1]*10))+Math.sin(capeWalk*6)*32*capeBob,side=Math.max(-20,Math.min(20,cd[0]*100));
- groups.cape.rotation.set((6+lean/2+flap)*Math.PI/180,-side/2*Math.PI/180,side/2*Math.PI/180);
- const bob=Math.sin(time*.075),flight=pose==='carry'?1:0,repair=pose==='build',walk=pose==='walk';
+ groups.cape.rotation.set(Math.max(1,Math.min(18,3+lean*.15+flap*.3))*Math.PI/180,-side*.25*Math.PI/180,side*.25*Math.PI/180);
+ groups.tabard.rotation.set(-(4+lean*.04+Math.abs(flap)*.12)*Math.PI/180+Math.sin(time*.12)*.025,0,side*.2*Math.PI/180+Math.sin(time*.09)*.045);
+ const grounded=document.getElementById('grounded').checked||pose==='walk';const bob=Math.sin(time*.075),flight=pose==='carry'&&!grounded?1:0,repair=pose==='build',walk=pose==='walk'||(grounded&&pose==='carry');
  groups.body.position.y=-3+bob*.14;groups.body.rotation.x=flight*.035;
  groups.head.rotation.y=document.getElementById('looking').checked?Math.sin(time*.035)*.6:0;
  groups.head.rotation.x=repair?.2:0;
@@ -54,10 +55,11 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.left_arm.rotation.set(repair?-.8+Math.sin(time*1.2566371)*.25:-.15,0,-.035);
  groups.right_leg.rotation.x=.035+flight*.1+bob*.02;groups.left_leg.rotation.x=.035+flight*.1-bob*.02;
  if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=20-23*Math.cos(stride)-4.5*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
+ if(grounded&&!walk){groups.body.position.y=-3;groups.body.rotation.x=0;groups.right_leg.rotation.x=0;groups.left_leg.rotation.x=0;}
  groups.lantern.rotation.x=-groups.right_arm.rotation.x-groups.right_forearm.rotation.x+Math.sin(time*.09)*.04;
  groups.hammer.rotation.z=0;groups.hammer.rotation.x=Math.PI/2;groups.left_forearm.rotation.x=-.70;
  material.emissiveIntensity=1;
- grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
+ grid.position.y=grounded?24:25;shadow.position.y=grid.position.y-.1;
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;
  scaleMarker.visible=document.getElementById("scaleRef").checked;renderer.render(scene,camera);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);

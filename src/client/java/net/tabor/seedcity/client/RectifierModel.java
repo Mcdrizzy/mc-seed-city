@@ -5,11 +5,12 @@ import net.minecraft.client.model.geom.ModelPart;
 
 /** Heavy repair guardian; head follows the mob's existing look control. */
 public final class RectifierModel extends EntityModel<RectifierRenderState> {
-    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm, toolForearm, cape;
+    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm, toolForearm, cape, tabard;
 
     public RectifierModel(ModelPart root) {
         super(root);
         body=root.getChild("body"); cape=body.getChild("cape"); head=body.getChild("head");
+        tabard=body.getChild("tabard");
         rightArm=body.getChild("right_arm"); leftArm=body.getChild("left_arm");
         rightLeg=body.getChild("right_leg"); leftLeg=body.getChild("left_leg");
         forearm=rightArm.getChild("right_forearm"); lantern=forearm.getChild("lantern"); toolForearm=leftArm.getChild("left_forearm"); hammer=toolForearm.getChild("hammer");
@@ -39,10 +40,14 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
             head.xRot=Math.max(head.xRot,.2F);
         }
         lantern.xRot=-rightArm.xRot-forearm.xRot+(float)Math.sin(t*.09F)*.04F;
-        // Vanilla cape lean/flap angles, adapted to our forward-facing model axes.
-        cape.xRot=(float)Math.toRadians(6+state.capeLean/2+state.capeFlap);
-        cape.zRot=(float)Math.toRadians(state.capeSide/2);
-        cape.yRot=(float)Math.toRadians(-state.capeSide/2);
+        // Vanilla cloak motion with reduced lift for this heavy embroidered cloth.
+        cape.xRot=(float)Math.toRadians(Math.max(1,Math.min(18,3+state.capeLean*.15F+state.capeFlap*.3F)));
+        cape.zRot=(float)Math.toRadians(state.capeSide*.25F);
+        cape.yRot=(float)Math.toRadians(-state.capeSide*.25F);
+        // Waist-mounted cloth has its own soft sway, including a little idle motion.
+        tabard.xRot=-(float)Math.toRadians(4+state.capeLean*.04F+Math.abs(state.capeFlap)*.12F)
+                +(float)Math.sin(t*.12F)*.025F;
+        tabard.zRot=(float)Math.toRadians(state.capeSide*.2F)+(float)Math.sin(t*.09F)*.045F;
         hammer.zRot=0;
         hammer.xRot=(float)Math.PI/2;
     }

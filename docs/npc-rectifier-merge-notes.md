@@ -94,14 +94,28 @@ physics changes are involved.
 RectifierCapeMotion reuses Minecraft 26.2 ClientAvatarState directly for cloak lag
 (25% position catch-up per tick and vanilla teleport reset) and walking bob.
 AvatarRenderer's flap/forward/lateral factors and clamps feed the model; the cape
-uses the vanilla six-degree resting tilt plus movement-driven lift/sway, adapted
-to this model's axes. Tick updates are independent of frame rate, and state is
+uses a reduced three-degree resting tilt, 15% forward lean and 30% flap, clamped
+to 1–18 degrees, with 25% lateral sway to suit the heavy cloth. These artistic
+angle gains differ from vanilla; the underlying cloak lag is vanilla. Tick updates
+are independent of frame rate, and state is
 separate for each entity, cleared on world change/removal. Stationary capes settle.
 Like vanilla, this is a hinged cape panel, not a multi-segment cloth simulation or
-cloth collision solver. There is no extra wind loop or cape mod dependency.
+cloth collision solver. There is no cape mod dependency.
+
+The cape has gold circuit-board embroidery on weathered red cloth. Both clasps
+extend into the torso/back plate, eliminating the former attachment gap. The
+front tabard, trim and hem now share an independent waist pivot (12 model parts
+total), with gentle idle sway plus movement-driven pitch and lateral motion.
+Pull the updated RectifierModel and regenerated RectifierMesh together: the model
+now requires the `tabard` child part. Front cloth motion is an authored animation,
+not a vanilla player-cape simulation.
 
 The standalone preview uses a virtual movement path with the same 20 Hz catch-up
 and angle equations. Patrol/Walk demonstrate movement; Rest/Repair allow it to settle.
 Its motion is illustrative because the preview character remains in place.
-Client checks exercise cape lift, lateral sway and return to rest, and capture the
+Client checks exercise bounded cape lift, lateral sway, return to rest and independent
+front cloth sway, and capture the
 cape from behind as well as the usual day/night views.
+The hammer shaft is inset through the fist so its rotated face cannot coincide with the hand bottom and cause z-fighting.
+Grounded poses are the preview default: Rest and Repair plant both feet, Patrol uses the walking cycle, and Walk remains available. Uncheck Grounded poses to preview flight. In-game RectifierModel already uses the grounded render-state flag for planted feet and composes repair/head/cloth animation over that stance. Tabor must change navigation separately if he wants the entity to walk by default; existing flight AI is preserved.
+Validation note: the existing city_growth_tests_seed_grows_city_boat test intermittently timed out at 9000 ticks during this pass; the unchanged full rerun passed. No city-growth gameplay was modified.

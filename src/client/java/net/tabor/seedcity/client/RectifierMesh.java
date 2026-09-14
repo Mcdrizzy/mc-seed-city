@@ -26,8 +26,6 @@ public final class RectifierMesh {
 				.texOffs(170, 0).addBox(-1F, -9F, 5F, 2F, 8F, 1F) // back_spine
 				.texOffs(178, 0).addBox(-6F, 2F, -3.5F, 12F, 3F, 7F, new CubeDeformation(0.04F)) // belt
 				.texOffs(218, 0).addBox(-2F, 1.5F, -5F, 4F, 3F, 2F, new CubeDeformation(0.06F)) // buckle
-				.texOffs(232, 0).addBox(-2F, 4F, -4.5F, 4F, 14F, 1F) // tabard_trim
-				.texOffs(244, 0).addBox(-1.5F, 4.5F, -4.7F, 3F, 13F, 1F) // tabard
 				.texOffs(0, 23).addBox(-5F, 4F, -3F, 10F, 2F, 6F) // hip
 				.texOffs(124, 82).addBox(-4F, -10.5F, -5.7F, 8F, 1F, 1F, new CubeDeformation(0.03F)) // core_top_lip
 				.texOffs(144, 82).addBox(-4F, -1.5F, -5.7F, 8F, 1F, 1F, new CubeDeformation(0.05F)) // core_lower_lip
@@ -40,13 +38,17 @@ public final class RectifierMesh {
 				.texOffs(220, 82).addBox(-5F, 2.8F, -4.5F, 1F, 1F, 1F, new CubeDeformation(0.005F)) // waist_pin_right
 				.texOffs(226, 82).addBox(4F, 2.8F, -4.5F, 1F, 1F, 1F, new CubeDeformation(0.008F)) // waist_pin_left
 				.texOffs(232, 82).addBox(-2F, 1F, -5.2F, 4F, 1F, 1F, new CubeDeformation(0.02F)) // belt_clasp_top
-				.texOffs(244, 82).addBox(-1.5F, 18F, -4.5F, 3F, 1F, 1F, new CubeDeformation(0.01F)) // cloth_tail
-				.texOffs(214, 102).addBox(-5F, -11F, 5.5F, 2F, 2F, 2F) // cape_clasp_right
-				.texOffs(224, 102).addBox(3F, -11F, 5.5F, 2F, 2F, 2F) // cape_clasp_left
+				.texOffs(214, 102).addBox(-4.8F, -10.5F, 3.5F, 2F, 2F, 4F) // cape_clasp_right
+				.texOffs(228, 102).addBox(2.8F, -10.5F, 3.5F, 2F, 2F, 4F) // cape_clasp_left
 				, PartPose.offset(0F, -3F, 0F));
 		PartDefinition cape = body.addOrReplaceChild("cape", CubeListBuilder.create()
 				.texOffs(186, 102).addBox(-6F, 0F, 0F, 12F, 28F, 1F) // cape_cloth
 				, PartPose.offset(0F, -10F, 6F));
+		PartDefinition tabard = body.addOrReplaceChild("tabard", CubeListBuilder.create()
+				.texOffs(232, 0).addBox(-2F, 0F, 0F, 4F, 14F, 1F) // tabard_trim
+				.texOffs(244, 0).addBox(-1.5F, 0.5F, -0.2F, 3F, 13F, 1F) // tabard
+				.texOffs(244, 82).addBox(-1.5F, 14F, 0F, 3F, 1F, 1F, new CubeDeformation(0.01F)) // cloth_tail
+				, PartPose.offset(0F, 4F, -4.5F));
 		PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create()
 				.texOffs(34, 23).addBox(-4.5F, -9F, -4F, 9F, 9F, 8F) // helmet
 				.texOffs(70, 23).addBox(-4.5F, -9F, -4.5F, 9F, 3F, 9F, new CubeDeformation(0.04F)) // crown
@@ -114,7 +116,7 @@ public final class RectifierMesh {
 				.texOffs(128, 102).addBox(0.75F, 6F, -2.4F, 1F, 2F, 1F, new CubeDeformation(0.015F)) // left_finger_2
 				, PartPose.offset(0F, 10F, 0F));
 		PartDefinition hammer = left_forearm.addOrReplaceChild("hammer", CubeListBuilder.create()
-				.texOffs(0, 82).addBox(-1F, -7F, -1F, 2F, 16F, 2F) // hammer_handle
+				.texOffs(0, 82).addBox(-1F, -7F, -1F, 2F, 16F, 2F, new CubeDeformation(-0.04F)) // hammer_handle
 				.texOffs(10, 82).addBox(-1.5F, -4F, -1.5F, 3F, 4F, 3F, new CubeDeformation(0.04F)) // hammer_grip
 				.texOffs(24, 82).addBox(-1.5F, -5F, -1.5F, 3F, 1F, 3F, new CubeDeformation(0.06F)) // hammer_collar
 				.texOffs(38, 82).addBox(-2.5F, -9F, -4F, 5F, 4F, 8F) // hammer_head
