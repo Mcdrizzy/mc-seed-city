@@ -5,7 +5,7 @@
 	"name": "Seed City Gametests",
 	"environment": "*",
 	"entrypoints": {
-		"fabric-client-gametest": ["net.tabor.seedcity.gametest.BuilderClientTest"],
+		"fabric-client-gametest": ["net.tabor.seedcity.gametest.BuilderClientTest", "net.tabor.seedcity.gametest.RectifierClientTest"],
 		"fabric-gametest": [
 			"net.tabor.seedcity.gametest.CellVerifyTests",
 			"net.tabor.seedcity.gametest.CityGrowthTests",

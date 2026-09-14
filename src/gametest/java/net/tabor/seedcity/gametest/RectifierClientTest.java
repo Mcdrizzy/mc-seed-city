@@ -1,0 +1,57 @@
+package net.tabor.seedcity.gametest;
+
+import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
+import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
+import net.fabricmc.fabric.api.client.gametest.v1.screenshot.TestScreenshotOptions;
+import net.tabor.seedcity.client.RectifierMesh;
+import net.tabor.seedcity.client.RectifierModel;
+import net.tabor.seedcity.client.RectifierRenderState;
+import net.tabor.seedcity.entity.SeedCityEntities;
+
+/** Explicit opt-in client check: gradlew runClientGameTest. Needs a graphics device. */
+public final class RectifierClientTest implements FabricClientGameTest {
+    @Override
+    public void runTest(ClientGameTestContext context) {
+        context.runOnClient(mc -> {
+            var root=RectifierMesh.createLayer().bakeRoot();
+            var model=new RectifierModel(root);
+            var state=new RectifierRenderState();
+            state.ageInTicks=12;
+            state.repairing=true;
+            state.yRot=30;
+            model.setupAnim(state);
+            var body=root.getChild("body");
+            if(body.getChild("left_arm").xRot>=-.5F) throw new AssertionError("Repair tool must lift");
+            if(Math.abs(body.getChild("head").yRot-(float)Math.PI/6)>.001F)
+                throw new AssertionError("Head must follow independent look direction");
+            state.repairing=false; state.grounded=true; state.walkAnimationSpeed=.6F; state.walkAnimationPos=2;
+            model.setupAnim(state);
+            if(body.getChild("right_leg").xRot*body.getChild("left_leg").xRot>=0)
+                throw new AssertionError("Walking legs must alternate");
+            state.walkAnimationSpeed=0;
+            model.setupAnim(state);
+            if(body.y!=2) throw new AssertionError("Grounded boots must rest at floor level");
+        });
+        try (var world=context.worldBuilder().create()) {
+            var server=world.getServer();
+            server.runCommand("time set noon");
+            server.runCommand("weather clear");
+            server.runCommand("fill -12 63 -12 12 64 12 minecraft:smooth_stone");
+            server.runCommand("fill -12 65 -12 12 75 12 minecraft:air");
+            server.runCommand("gamemode creative @a");
+            server.runCommand("tp @p -3 65 -6 -26.565 0");
+            server.runCommand("summon seedcity:warden 0 65 0 {NoAI:1b,Rotation:[180f,0f]}");
+            world.getConnection().waitForClientboundEntityUpdates(SeedCityEntities.WARDEN);
+            context.runOnClient(mc -> {
+                if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+                mc.options.fov().set(40);
+            });
+            world.getConnection().waitForChunksRender();
+            context.waitTicks(10);
+            context.takeScreenshot(TestScreenshotOptions.of("rectifier-day").withSize(1280,900));
+            server.runCommand("time set midnight");
+            context.waitTicks(10);
+            context.takeScreenshot(TestScreenshotOptions.of("rectifier-night").withSize(1280,900));
+        }
+    }
+}

@@ -1,6 +1,9 @@
 package net.tabor.seedcity.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -27,6 +30,7 @@ import java.util.Optional;
  * until the Core sends another, five minutes later.
  */
 public final class WardenEntity extends FlyingCityMob {
+	private static final EntityDataAccessor<Boolean> REPAIRING = SynchedEntityData.defineId(WardenEntity.class, EntityDataSerializers.BOOLEAN);
 	private enum Phase { PATROL, TO_SITE, REPAIR }
 
 	private String district = "core";
@@ -53,6 +57,14 @@ public final class WardenEntity extends FlyingCityMob {
 	public String district() {
 		return district;
 	}
+
+	@Override
+	protected void defineSynchedData(SynchedEntityData.Builder builder) {
+		super.defineSynchedData(builder);
+		builder.define(REPAIRING, false);
+	}
+
+	public boolean isRepairing() { return entityData.get(REPAIRING); }
 
 	public String status() {
 		return district + " " + phase + (task == null ? "" : " " + task.placement() + " " + (int) (task.progress() * 100) + "%");
@@ -88,6 +100,7 @@ public final class WardenEntity extends FlyingCityMob {
 			task = null;
 			phase = Phase.PATROL;
 		}
+		entityData.set(REPAIRING, task != null && phase == Phase.REPAIR && city(level).isPresent());
 	}
 
 	private void work(ServerLevel level) {

@@ -11,7 +11,8 @@ public final class SeedCityClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		ModelLayerRegistry.registerModelLayer(BuilderRenderer.LAYER, BuilderMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.BUILDER, BuilderRenderer::new);
-		EntityRendererRegistry.register(SeedCityEntities.WARDEN, WardenRenderer::new);
+		ModelLayerRegistry.registerModelLayer(RectifierRenderer.LAYER, RectifierMesh::createLayer);
+		EntityRendererRegistry.register(SeedCityEntities.WARDEN, RectifierRenderer::new);
 		EntityRendererRegistry.register(SeedCityEntities.SENTINEL, SentinelRenderer::new);
 	}
 }
