@@ -1,5 +1,19 @@
 # Rectifier: integration notes
 
+## Java playtest correction: grounded by default
+
+WardenEntity now extends PathfinderMob directly. It uses gravity, ordinary ground
+navigation and the iron golem's movement attribute (0.25) and stroll multiplier (0.6),
+without inheriting IronGolem or any village-defense/combat goals. The Builder still flies.
+Unbound Rectifiers wander; assigned workers keep district patrol, damage scanning and
+BuildTask repair. City spawns require clear supported floor outside the Core pillars.
+Repair waypoints use reachable standing positions and wait for the worker to be within
+four blocks before placing; unreachable work times out instead of being repaired remotely.
+Follow range is 48 to cover district routes. Existing saved NoGravity/movement values
+are migrated when loaded. Grounded landing/walking and city repair tests pass.
+The optional fly pose remains a presentation-only exhibit, not default movement.
+Restart the Java client/server to apply this code update to an existing showcase save.
+
 The former Warden now displays as **Rectifier** and uses a custom stone-and-copper
 repair guardian model inspired by the second character in the supplied lineup.
 Builder's approved assets remain unchanged.

@@ -15,7 +15,7 @@ public final class ShowcaseRoaming {
                 var random = new java.util.Random(seed);
                 double x = 5 + random.nextInt(24), z = 6 + random.nextInt(22);
                 double y = entity instanceof BuilderEntity ? 66 + random.nextDouble()*2 : 65;
-                mob.getNavigation().moveTo(x,y,z,.8);
+                mob.getNavigation().moveTo(x,y,z,entity instanceof WardenEntity ? WardenEntity.WALK_SPEED : .8);
             }
         });
     }

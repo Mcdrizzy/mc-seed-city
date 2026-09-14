@@ -14,8 +14,11 @@ Minecraft 26.2, Fabric Loader 0.19.5, Fabric API 0.160.0+26.2, Java 25.
 and adds them to the Spawn Eggs tab. `rectifier_spawn_egg` spawns the unchanged
 `seedcity:warden` entity ID. Spawn eggs do not bind city tasks automatically.
 
-Actual inheritance remains Builder/Warden -> FlyingCityMob -> PathfinderMob;
-Courier/Collector/Sentinel -> PathfinderMob; RedstoneRat -> Cat. Builder is allay-like
+Actual inheritance is Builder -> FlyingCityMob -> PathfinderMob;
+Warden/Courier/Collector/Sentinel -> PathfinderMob; RedstoneRat -> Cat. Rectifier now
+walks with gravity at movement attribute 0.25 and stroll multiplier 0.6, matching the
+iron golem's stroll without any protector AI. Old flying saves migrate on load.
+Builder is allay-like
 in flight, not an Allay subclass. Sentinel retains signal control, player targeting at
 15, and knockback resistance 0.5 as a golem-like trait. It does not adopt IronGolem AI.
 Rat taming/sitting are intentionally omitted; Tabor decides whether to add them later.

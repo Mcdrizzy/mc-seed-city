@@ -1047,7 +1047,9 @@ public final class CityState {
 	}
 
 	public void spawnWarden(ServerLevel level, String district) {
-		WardenEntity w = SeedCityEntities.WARDEN.spawn(level, seedPos.above(5), EntitySpawnReason.MOB_SUMMONED);
+		Optional<BlockPos> feet = WardenEntity.groundSpawn(level, seedPos);
+		if (feet.isEmpty()) return; // Retry on the next posting pass when floor space opens up.
+		WardenEntity w = SeedCityEntities.WARDEN.spawn(level, feet.get(), EntitySpawnReason.MOB_SUMMONED);
 		if (w != null) {
 			w.assign(seedPos, district);
 			SeedCity.LOGGER.info("City {}: Warden posted to {}", seedPos.toShortString(), district);

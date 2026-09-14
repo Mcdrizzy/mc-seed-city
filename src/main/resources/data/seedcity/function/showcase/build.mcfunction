@@ -73,23 +73,23 @@ summon minecraft:text_display 68 65.3 3 {Tags:["seedcity_showcase"],billboard:"c
 summon minecraft:text_display 39 69 15 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"Rectifier",transformation:{scale:[0.85f,0.85f,0.85f]}}
 fill 42 65 14 44 65 16 minecraft:polished_deepslate
 setblock 43 65 15 minecraft:sea_lantern
-summon seedcity:warden 43 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:idle",Rotation:[180f,0f],NoGravity:1b}
+summon seedcity:warden 43 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:idle",Rotation:[180f,0f]}
 summon minecraft:text_display 43 65.3 13 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"IDLE",transformation:{scale:[0.65f,0.65f,0.65f]}}
 fill 47 65 14 49 65 16 minecraft:polished_deepslate
 setblock 48 65 15 minecraft:sea_lantern
-summon seedcity:warden 48 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:walk",Rotation:[180f,0f],NoGravity:1b}
+summon seedcity:warden 48 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:walk",Rotation:[180f,0f]}
 summon minecraft:text_display 48 65.3 13 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"WALK",transformation:{scale:[0.65f,0.65f,0.65f]}}
 fill 52 65 14 54 65 16 minecraft:polished_deepslate
 setblock 53 65 15 minecraft:sea_lantern
-summon seedcity:warden 53 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:repair",Rotation:[180f,0f],NoGravity:1b}
+summon seedcity:warden 53 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:repair",Rotation:[180f,0f]}
 summon minecraft:text_display 53 65.3 13 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"REPAIR",transformation:{scale:[0.65f,0.65f,0.65f]}}
 fill 57 65 14 59 65 16 minecraft:polished_deepslate
 setblock 58 65 15 minecraft:sea_lantern
-summon seedcity:warden 58 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:fly",Rotation:[180f,0f],NoGravity:1b}
+summon seedcity:warden 58 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:fly",Rotation:[180f,0f]}
 summon minecraft:text_display 58 65.3 13 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"FLY",transformation:{scale:[0.65f,0.65f,0.65f]}}
 fill 62 65 14 64 65 16 minecraft:polished_deepslate
 setblock 63 65 15 minecraft:sea_lantern
-summon seedcity:warden 63 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:look",Rotation:[180f,0f],NoGravity:1b}
+summon seedcity:warden 63 66 15 {NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:"SC:look",Rotation:[180f,0f]}
 summon minecraft:text_display 63 65.3 13 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"LOOK",transformation:{scale:[0.65f,0.65f,0.65f]}}
 summon minecraft:text_display 39 69 25 {Tags:["seedcity_showcase"],billboard:"center",background:1073741824,line_width:220,text:"Courier",transformation:{scale:[0.85f,0.85f,0.85f]}}
 fill 42 65 24 44 65 26 minecraft:polished_deepslate

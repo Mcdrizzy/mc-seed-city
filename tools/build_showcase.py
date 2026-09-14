@@ -49,7 +49,7 @@ for row,(name,poses) in enumerate(POSES.items()):
         x=43+col*5
         fill(x-1,65,z-1,x+1,65,z+1,'polished_deepslate')
         cmd(f'setblock {x} 65 {z} minecraft:sea_lantern')
-        extra=',NoGravity:1b' if name in ('builder','warden') else ''
+        extra=',NoGravity:1b' if name=='builder' else ''
         cmd(f'summon seedcity:{name} {x} 66 {z} '+'{NoAI:1b,PersistenceRequired:1b,Invulnerable:1b,Tags:["seedcity_showcase"],CustomName:'+json.dumps('SC:'+pose)+',Rotation:[180f,0f]'+extra+'}')
         if pose=='chop':cmd(f'item replace entity @e[type=seedcity:collector,sort=nearest,limit=1,x={x},y=66,z={z}] weapon.mainhand with minecraft:iron_axe')
         label(x,65.3,z-2,pose.upper(),.65)

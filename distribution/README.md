@@ -12,4 +12,6 @@ Read the [integration notes](../docs/mob-showcase-v1.md) and
 [five-page PDF](../docs/Tabor-Integration-Guide.pdf). Tabor must review the complete
 integration code, including BuildTask.java, not only copy model assets.
 
-These builds were generated from NPC/showcase implementation commit `da2ddd6`.
+Includes the Java playtest correction: Rectifier walks with gravity at iron-golem
+stroll speed, retaining repair logic and no protector AI. Saved flying Rectifiers
+migrate on load. Restart Minecraft to apply the updated JAR. All 34 server tests passed.
