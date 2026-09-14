@@ -5,14 +5,14 @@ import net.minecraft.client.model.geom.ModelPart;
 
 /** Heavy repair guardian; head follows the mob's existing look control. */
 public final class RectifierModel extends EntityModel<RectifierRenderState> {
-    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm;
+    private final ModelPart body, head, rightArm, leftArm, rightLeg, leftLeg, lantern, hammer, forearm, toolForearm;
 
     public RectifierModel(ModelPart root) {
         super(root);
         body=root.getChild("body"); head=body.getChild("head");
         rightArm=body.getChild("right_arm"); leftArm=body.getChild("left_arm");
         rightLeg=body.getChild("right_leg"); leftLeg=body.getChild("left_leg");
-        forearm=rightArm.getChild("right_forearm"); lantern=forearm.getChild("lantern"); hammer=leftArm.getChild("hammer");
+        forearm=rightArm.getChild("right_forearm"); lantern=forearm.getChild("lantern"); toolForearm=leftArm.getChild("left_forearm"); hammer=toolForearm.getChild("hammer");
     }
 
     @Override
@@ -24,7 +24,7 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
         head.yRot=state.yRot*((float)Math.PI/180F);
         head.xRot=Math.max(-.45F,Math.min(.6F,state.xRot*((float)Math.PI/180F)));
         rightArm.xRot=-.22F+bob*.015F; forearm.xRot=-.65F; rightArm.zRot=.035F;
-        leftArm.xRot=-.10F; leftArm.zRot=-.035F;
+        leftArm.xRot=-.15F; toolForearm.xRot=-.70F; leftArm.zRot=-.035F;
         rightLeg.xRot=.035F+flight*.1F+bob*.02F;
         leftLeg.xRot=.035F+flight*.1F-bob*.02F;
         if(state.grounded) {
@@ -40,6 +40,6 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
         }
         lantern.xRot=-rightArm.xRot-forearm.xRot+(float)Math.sin(t*.09F)*.04F;
         hammer.zRot=0;
-        hammer.xRot=-.35F;
+        hammer.xRot=1.10F;
     }
 }

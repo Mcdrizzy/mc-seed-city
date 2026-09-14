@@ -25,3 +25,6 @@ Revision 4 follows the close-up reference silhouette, removes shoulder lids, res
 the chest/gauntlets and restores long legs. Hammer faces align with the arm swing;
 current model has 58 cuboids. The club hammer remains the requested tool even
 though the visual reference shows a wrench.
+
+Revision 5: hammer explicitly held head-up, ready to strike. Add reference-inspired
+armor fittings, articulated-looking hands, boot trim and patterned tabard; 89 cuboids.

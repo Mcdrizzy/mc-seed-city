@@ -30,13 +30,17 @@ before merging that prerequisite. Use matching client/server builds for the new 
 
 ## Model and animation
 
-58 cuboids in nine parts, approximately 2.94 blocks tall. Revision 4 follows the
+89 cuboids in ten parts, approximately 2.94 blocks tall. Revision 4 follows the
 close-up reference silhouette: long armored legs, compact inset chest/core with
 thick flanking plates, exposed copper shoulder blocks, larger gauntlets and a
 narrow tabard. Earlier broad slab-like chest and shoulder lids have been removed.
 The user's requested club hammer replaces the wrench visible in the reference.
-Its striking faces run front-to-back in the repair arm's swing plane; its handle
-leans downward/forward from the closed hand, without an independent sideways roll.
+Its striking faces run front-to-back in the repair arm's swing plane. Following
+explicit clarification, revision 5 holds the hammer head-up above the closed fist,
+ready to strike, with no independent sideways roll. A separate tool-side forearm
+joint bends the elbow and gives the raised hammer clearance from the gauntlet. Added details include chest
+edge plates, waist fittings/rivets, gauntlet ridges, fingers and thumbs, shin panels,
+boot trim and a stepped gold tabard motif. Copper patina uses smaller patches.
 The articulated forward-held lantern and player-height marker remain.
 
 The palette uses stone armor, weathered
