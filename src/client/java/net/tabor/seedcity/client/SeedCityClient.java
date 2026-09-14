@@ -15,6 +15,7 @@ public final class SeedCityClient implements ClientModInitializer {
 		ModelLayerRegistry.registerModelLayer(CourierRenderer.LAYER, CourierMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.COURIER, CourierRenderer::new);
 		ClientTickEvents.END_CLIENT_TICK.register(RectifierCapeMotion::tick);
+        ClientTickEvents.END_CLIENT_TICK.register(CollectorLanternMotion::tick);
 		ModelLayerRegistry.registerModelLayer(BuilderRenderer.LAYER, BuilderMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.BUILDER, BuilderRenderer::new);
 		ModelLayerRegistry.registerModelLayer(RectifierRenderer.LAYER, RectifierMesh::createLayer);

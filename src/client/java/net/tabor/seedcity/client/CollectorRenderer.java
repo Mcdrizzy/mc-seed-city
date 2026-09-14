@@ -13,20 +13,21 @@ import net.minecraft.resources.Identifier;
 import net.tabor.seedcity.SeedCity;
 import net.tabor.seedcity.entity.CollectorEntity;
 
-public final class CollectorRenderer extends MobRenderer<CollectorEntity,ArmedEntityRenderState,CollectorModel> {
+public final class CollectorRenderer extends MobRenderer<CollectorEntity,CollectorRenderState,CollectorModel> {
     public static final ModelLayerLocation LAYER=new ModelLayerLocation(SeedCity.id("collector"),"main");
     private final ItemModelResolver items;
     public CollectorRenderer(EntityRendererProvider.Context context) {
         super(context,new CollectorModel(context.bakeLayer(LAYER)),.45F);items=context.getItemModelResolver();
         addLayer(new ItemInHandLayer<>(this));
-        addLayer(new EyesLayer<ArmedEntityRenderState,CollectorModel>(this) {
+        addLayer(new EyesLayer<CollectorRenderState,CollectorModel>(this) {
             @Override public RenderType renderType() { return RenderTypes.eyes(SeedCity.id("textures/entity/collector_glow.png")); }
         });
     }
-    @Override public Identifier getTextureLocation(ArmedEntityRenderState state) { return SeedCity.id("textures/entity/collector.png"); }
-    @Override public ArmedEntityRenderState createRenderState() { return new ArmedEntityRenderState(); }
-    @Override public void extractRenderState(CollectorEntity entity,ArmedEntityRenderState state,float partialTick) {
+    @Override public Identifier getTextureLocation(CollectorRenderState state) { return SeedCity.id("textures/entity/collector.png"); }
+    @Override public CollectorRenderState createRenderState() { return new CollectorRenderState(); }
+    @Override public void extractRenderState(CollectorEntity entity,CollectorRenderState state,float partialTick) {
         super.extractRenderState(entity,state,partialTick);
+        CollectorLanternMotion.extract(entity,state,partialTick);
         ArmedEntityRenderState.extractArmedEntityRenderState(entity,state,items,partialTick);
     }
 }

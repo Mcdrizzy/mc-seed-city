@@ -34,6 +34,25 @@ group('right_arm',[-7,4,0],'torso')
 group('left_arm',[7,4,0],'torso')
 group('right_leg',[-3,14,0],'body')
 group('left_leg',[3,14,0],'body')
+group('lantern',[7.5,0,9],'torso')
+# Riveted mounting plate, supported arm and a separate swinging bail handle.
+box('lantern_mount_plate','body',[4.6,-2,7.5],[1,4,3],'copper')
+box('lantern_mount_rivet_top','body',[5.45,-1.6,8.5],[1,1,1],'brass')
+box('lantern_mount_rivet_bottom','body',[5.45,.5,8.5],[1,1,1],'brass')
+box('lantern_bracket_arm','body',[5,-.75,8.5],[3,1,1],'joint')
+box('lantern_bracket_brace_lower','body',[5,.5,8.5],[1,1,1],'joint')
+box('lantern_bracket_brace_upper','body',[5.8,-.05,8.5],[1,1,1],'joint')
+# Same cap, glass, base and four corner posts as the Rectifier, scaled after UVs.
+box('lantern_bail_top','lantern',[6,-.3,8.5],[3,1,1],'joint')
+box('lantern_bail_left','lantern',[6,.5,8.5],[1,3,1],'joint')
+box('lantern_bail_right','lantern',[8,.5,8.5],[1,3,1],'joint')
+box('lantern_cap','lantern',[5,3,6.5],[5,1,5],'brass')
+box('lantern_cap_crown','lantern',[6,2.5,7.5],[3,1,3],'joint')
+box('lantern_light','lantern',[6,4,7.5],[3,4,3],'lantern_glass')
+box('lantern_base','lantern',[5,8,6.5],[5,1,5],'brass')
+for lx in (5,9):
+    for lz in (6.5,10.5):
+        box(f'lantern_post_{lx}_{lz}','lantern',[lx,4,lz],[1,4,1],'joint')
 box('torso','body',[-5,3,-3],[10,11,7],'copper')
 box('apron','body',[-4,5,-3.5],[8,7,1],'leather')
 box('apron_center','body',[-3,6,-3.7],[6,4,1],'patina')
@@ -93,7 +112,7 @@ palette = {
     'redstone': (150,22,15), 'redglow': (255,54,20), 'stone': (115,119,114), 'rough_stone': (106,112,110),
     'joint': (44,49,47), 'copper': (111,111,81), 'patina': (77,119,106),
     'leather': (102,65,40), 'brass': (146,109,68), 'wood': (89,61,36),
-    'cyan': (255,199,78), 'eye': (255,135,38), 'cloth': (115,51,40),
+    'lantern_glass': (255,157,40), 'cyan': (255,199,78), 'eye': (255,135,38), 'cloth': (115,51,40),
 }
 image = Image.new('RGBA', (256,256), (0,0,0,0))
 rng = random.Random(812)
@@ -125,6 +144,9 @@ for c in cubes:
                     color = (72,113,99) if patch>.1 else (133,100,72)
                 if px == 0 or py == 0: delta += 12
                 if px == fw-1 or py == fh-1: delta -= 13
+                if mat == 'lantern_glass':
+                    color=(255,230,139) if 0<px<fw-1 else (233,124,26)
+                    delta=0
                 if mat == 'eye':
                     color = (255,222,128) if px == 0 else (235,99,22)
                     delta = 0
@@ -160,7 +182,7 @@ image.save(TEX/'collector.png')
 image.save(ART/'collector.png')
 glow = Image.new('RGBA', image.size, (0,0,0,0))
 for c in cubes:
-    if c['material'] in ('eye', 'cyan', 'redglow'):
+    if c['material'] in ('eye', 'cyan', 'redglow', 'lantern_glass'):
         for face,(u,v,w,h) in c['faces'].items():
             for y in range(v*DENSITY,(v+h)*DENSITY):
                 for x in range(u*DENSITY,(u+w)*DENSITY):
@@ -168,6 +190,12 @@ for c in cubes:
                     glow.putpixel((x,y),pixel)
 glow.save(TEX/'collector_glow.png')
 glow.save(ART/'collector_glow.png')
+# Keep full-size UVs for the familiar Rectifier pattern while shrinking the actual mesh.
+for c in cubes:
+    if c['part']=='lantern':
+        c['pos']=[pivot+(v-pivot)*.7 for v,pivot in zip(c['pos'],[7.5,0,9])]
+        c['size']=[v*.7 for v in c['size']]
+        c['inflate']*=.7
 spec = dict(modelScale=.8,textureWidth=256,textureHeight=256,groups=groups,cubes=cubes)
 (ART/'collector.geometry.json').write_text(json.dumps(spec,indent=2)+'\n')
 
@@ -181,9 +209,14 @@ for g in groups:
     lines.append(f'\t\tPartDefinition {g["name"]} = {g["parent"] or "root"}.addOrReplaceChild("{g["name"]}", CubeListBuilder.create()')
     for c in (c for c in cubes if c['part']==g['name']):
         pos = [a-b for a,b in zip(c['pos'],g['pivot'])]
-        deformation = f', new CubeDeformation({f(c["inflate"])})' if c['inflate'] else ''
-        lines.append(f'\t\t\t\t.texOffs({c["uv"][0]}, {c["uv"][1]}).addBox({vector(pos+c["size"])}{deformation}) // {c["name"]}')
-    lines.append(f'\t\t\t\t, PartPose.offset({vector(pivot)}));')
+        scale=.7 if g['name']=='lantern' else 1
+        # Vanilla computes UV faces from cube sizes. Scale the part, preserving source UVs.
+        pos=[v/scale for v in pos]
+        size=[round(v/scale,6) for v in c['size']]
+        deformation = f', new CubeDeformation({f(c["inflate"]/scale)})' if c['inflate'] else ''
+        lines.append(f'\t\t\t\t.texOffs({c["uv"][0]}, {c["uv"][1]}).addBox({vector(pos+size)}{deformation}) // {c["name"]}')
+    scale_pose='.withScale(.7F)' if g['name']=='lantern' else ''
+    lines.append(f'\t\t\t\t, PartPose.offset({vector(pivot)}){scale_pose});')
 java = '''package net.tabor.seedcity.client;
 
 import net.minecraft.client.model.geom.PartPose;

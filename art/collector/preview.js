@@ -45,6 +45,7 @@ const itemMaterial=new THREE.MeshLambertMaterial({map:itemTextures.pickaxe,trans
 const heldTool=new THREE.Mesh(new THREE.PlaneGeometry(13,13),itemMaterial);groups.right_arm.add(heldTool);heldTool.position.set(-.5,10,-3);heldTool.rotation.set(0,Math.PI/2,-.5);
 document.getElementById('pickaxe').onclick=()=>itemMaterial.map=itemTextures.pickaxe;
 document.getElementById('axe').onclick=()=>itemMaterial.map=itemTextures.axe;
+let lampPitch=0,lampRoll=0,lampPV=0,lampRV=0,lampPhase=0,lastVelocity=0,lastAttack=0;
 let gaitPos=0,gaitSpeed=0,walkVelocity=0,gaitAccumulator=0;
 function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(play.checked)time+=dt*20;if(spin.checked&&!drag)yaw+=dt*.3;
  const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);const half=Math.max(23,26*h/w)/zoom;camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();camera.position.set(Math.sin(yaw)*70,8-Math.sin(pitch)*70,-Math.cos(yaw)*70);camera.lookAt(0,8,0);
@@ -53,8 +54,15 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
    walkVelocity=walkVelocity*.546+(moving?.098:0);
    gaitSpeed+=(Math.min(walkVelocity*4,1)-gaitSpeed)*.4;
    gaitPos+=gaitSpeed;gaitAccumulator-=.05;
+   lampPhase+=walkVelocity*7;
+   const attack=pose==='mine'?(time%6)/6:0, impulse=attack>0&&(lastAttack===0||attack<lastAttack)?.035:0;
+   lampPV+=-lampPitch*.18-lampPV*.22+(walkVelocity-lastVelocity)*.7+Math.sin(lampPhase)*Math.min(walkVelocity,.2)*.10+impulse;
+   lampRV+=-lampRoll*.21-lampRV*.25+Math.sin(lampPhase*.5)*Math.min(walkVelocity,.2)*.04;
+   lampPitch=Math.max(-.22,Math.min(.22,lampPitch+lampPV));lampRoll=Math.max(-.07,Math.min(.07,lampRoll+lampRV));
+   lastVelocity=walkVelocity;lastAttack=attack;
  }}
  const gait=Math.cos(gaitPos*.6662)*gaitSpeed;
+ groups.lantern.rotation.set(lampPitch,0,lampRoll);
  groups.body.position.y=24;groups.torso.rotation.y=0;
  groups.right_leg.rotation.x=gait*1.4;groups.left_leg.rotation.x=-gait*1.4;
  groups.right_arm.rotation.set(-gait,0,0);groups.left_arm.rotation.set(gait,0,0);

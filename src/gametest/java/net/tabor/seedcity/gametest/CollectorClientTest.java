@@ -10,7 +10,7 @@ public final class CollectorClientTest implements FabricClientGameTest {
         context.runOnClient(mc->{
             var root=net.tabor.seedcity.client.CollectorMesh.createLayer().bakeRoot();
             var model=new net.tabor.seedcity.client.CollectorModel(root);
-            var state=new net.minecraft.client.renderer.entity.state.ArmedEntityRenderState();
+            var state=new net.tabor.seedcity.client.CollectorRenderState();
             state.attackArm=net.minecraft.world.entity.HumanoidArm.RIGHT;state.attackTime=.3F;
             model.setupAnim(state);
             var torso=root.getChild("body").getChild("torso");var arm=torso.getChild("right_arm");

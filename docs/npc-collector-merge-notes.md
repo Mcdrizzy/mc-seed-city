@@ -4,7 +4,7 @@ The reference-inspired Collector has weathered copper armor, stone gauntlets,
 work boots, an apron, a loaded pack and a miner's helmet with a warm headlamp.
 The model is approximately 1.70 blocks tall including cargo; collision dimensions
 are 0.95 wide by 1.80 high. It walks through a one-wide, two-high cave passage.
-There are 38 cuboids and seven articulated parts. The separate torso lets the
+There are 55 cuboids and eight articulated parts. The separate torso lets the
 shoulders and pack turn into a strike while the legs remain independent. The face
 uses a square 8×8×8 head, a lower helmet crown and widely spaced, flush square
 amber eyes in a continuous weathered copper faceplate matching the armor, following the reference's simple expression.
@@ -87,3 +87,7 @@ preservation of a solid block, plus measured player walking pace. CollectorClien
 checks multi-axis swing and return to idle, and captures both actual item types
 and the illuminated enclosed cave. Run `./gradlew build runClientGameTest`.
 Local motion revision validation: Collector movement, tunnel, equipment and light tests passed, including the measured player-pace test. The unrelated city-growth boat test timed out again. Separate assemble and all four NPC client checks passed. Collector changes remain uncommitted and unpushed pending user approval.
+
+Backpack lantern revision: a small brass-capped, dark-framed glowing lantern hangs from a fixed side bracket, matching the Rectifier lantern design. CollectorLanternMotion runs a damped spring once per client tick, driven by displacement changes, footfalls and attack starts. It interpolates between ticks and settles when stopped; it resets on teleport and clears unloaded entities. Include CollectorRenderState and its client tick registration as well as the model/assets. Existing cave illumination remains in place.
+
+Lantern refinement: riveted copper mounting plate, stepped support brace and loop handle. Use the Rectifier-sized glass and cage proportions at 70 percent scale. The Java lantern part carries the scale to preserve vanilla box UVs; preview and Blockbench bake the same scale into their geometry. Existing pendulum motion is preserved.
