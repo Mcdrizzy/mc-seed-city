@@ -38,11 +38,11 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.body.position.y=10+bob*.22;groups.body.rotation.x=flight*.08;
  groups.head.rotation.x=pose==='build'?.16:0;
  groups.right_arm.rotation.set(pose==='build'?-.55+Math.sin(time*.65)*.28:pose==='carry'?-.32:.03+bob*.035,0,.04);
- groups.left_arm.rotation.set(pose==='build'?-.65:-.60,0,-.05);
+ groups.left_arm.rotation.set(.03+bob*.035,0,-.05);
  groups.right_leg.rotation.x=.08+flight*.22+bob*.04;groups.left_leg.rotation.x=.08+flight*.22-bob*.04;
- groups.blueprint.rotation.y=Math.PI;groups.blueprint.rotation.x=-.90;groups.cargo.visible=pose==='carry'||pose==='build';
+ groups.cargo.visible=pose==='carry'||pose==='build';
  const walk=pose==='walk';grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
- if(walk){const stride=Math.sin(time*.32)*.55;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=18-8*Math.cos(stride)-3*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-stride*.65;groups.left_arm.rotation.x=-.60+stride*.08;}
+ if(walk){const stride=Math.sin(time*.32)*.55;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=18-8*Math.cos(stride)-3*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-stride*.65;groups.left_arm.rotation.x=stride*.65;}
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;
  renderer.render(scene,camera);requestAnimationFrame(frame)}
 requestAnimationFrame(frame);

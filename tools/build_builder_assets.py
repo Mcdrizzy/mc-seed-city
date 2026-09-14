@@ -35,7 +35,6 @@ group('left_arm', [6, 8, 0], 'body')
 group('right_leg', [-2.4, 16, 0], 'body')
 group('left_leg', [2.4, 16, 0], 'body')
 group('cargo', [-6, 15, -4], 'right_arm')
-group('blueprint', [7, 16.5, -1.5], 'left_arm')
 
 box('neck_joint', 'body', [-2, 5, -2], [4, 3, 4], 'joint')
 box('torso', 'body', [-4, 8, -2.5], [8, 7, 5], 'copper')
@@ -86,16 +85,13 @@ for side, sign in [('right', -1), ('left', 1)]:
     box(side+'_boot_cuff', part, [x-1.5, 20, -2.2], [3, 1, 4], 'brass')
 
 box('carried_stone', 'cargo', [-8.5, 12.5, -6.5], [5, 5, 5], 'rough_stone')
-box('blueprint_frame', 'blueprint', [7, 10, -2.5], [6, 8, 1], 'blue_frame')
-box('blueprint_surface', 'blueprint', [7.5, 10.5, -2.65], [5, 7, 1], 'blueprint')
-box('blueprint_grip', 'left_arm', [6.5, 16, -2.8], [1, 1, 2], 'stone')
 
 # Separate armor/decorative shells from the faces beneath them. Deformation keeps
 # the authored box UVs intact and is exported identically to all three viewers.
 shells = {
     'strap_front': .04, 'strap_back': .04, 'strap_clasp': .08,
     'belt': .04, 'pouch_flap_left': .04, 'pouch_flap_right': .04,
-    'brow': .04, 'jaw': .04, 'nose_bridge': .04, 'blueprint_grip': .06,
+    'brow': .04, 'jaw': .04, 'nose_bridge': .04,
 }
 for side in ('right', 'left'):
     for suffix, amount in (('shoulder_band', .04), ('cuff', .04),
@@ -126,7 +122,6 @@ palette = {
     'joint': (44,49,47), 'copper': (111,111,81), 'patina': (77,119,106),
     'leather': (102,65,40), 'brass': (146,109,68), 'wood': (89,61,36),
     'cyan': (69,225,235), 'eye': (80,240,248),
-    'blue_frame': (80,168,186), 'blueprint': (20,66,103)
 }
 image = Image.new('RGBA', (256,256), (0,0,0,0))
 rng = random.Random(812)
@@ -162,13 +157,6 @@ for c in cubes:
                     color = (177,255,255) if px == 0 else (46,203,225)
                     delta = 0
                 image.putpixel((fx+px,fy+py),tuple(max(0,min(255,k+delta)) for k in color)+(255,))
-        if mat == 'blueprint':
-            draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(15,62,98,255))
-            if face=='north' and fw>=5 and fh>=7:
-                draw.line([(fx+1,fy+1),(fx+3,fy+1),(fx+3,fy+4),(fx+1,fy+4),(fx+1,fy+1)], fill=(108,224,237,255))
-                draw.point((fx+2,fy+2),fill=(195,255,255,255))
-                draw.line([(fx+2,fy+4),(fx+2,fy+5),(fx+4,fy+5)], fill=(73,173,205,255))
-                draw.point((fx,fy+6),fill=(108,224,237,255))
 
 # Four texels per model unit: keep broad pixel-art patches, with fine worn edges.
 # UV coordinates remain in logical 256x256 units, as in Minecraft's model layer.
@@ -185,7 +173,7 @@ for c in cubes:
                 delta=rng.choice([-5,-3,0,0,0,2,4])
                 if x==fx or y==fy: delta+=10
                 if x==fx+fw-1 or y==fy+fh-1: delta-=12
-                if mat in ('eye','cyan','blueprint'): delta=0
+                if mat in ('eye','cyan'): delta=0
                 image.putpixel((x,y),tuple(max(0,min(255,k+delta)) for k in rgb)+(255,))
         if mat=='stone' and fw>=8 and fh>=8:
             draw.line([(fx+1,fy+1),(fx+fw-2,fy+1)],fill=(144,149,141,255))
@@ -194,29 +182,16 @@ for c in cubes:
             draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(24,151,180,255))
             draw.rectangle((fx+1,fy+1,fx+fw-2,fy+fh-2),fill=(89,240,248,255))
             draw.line([(fx+1,fy+1),(fx+1,fy+fh-3)],fill=(206,255,255,255))
-        if mat=='blueprint' and face=='north' and fw>=20 and fh>=28:
-            draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(16,57,88,255))
-            for gx in range(fx+2,fx+fw,4): draw.line((gx,fy,gx,fy+fh-1),fill=(23,75,104,255))
-            for gy in range(fy+2,fy+fh,4): draw.line((fx,gy,fx+fw-1,gy),fill=(23,75,104,255))
-            draw.rectangle((fx+4,fy+5,fx+14,fy+17),outline=(114,223,234,255),width=1)
-            draw.rectangle((fx+7,fy+8,fx+11,fy+13),outline=(80,185,211,255),width=1)
-            draw.line([(fx+9,fy+1),(fx+9,fy+8)],fill=(160,250,250,255))
-            draw.line([(fx+11,fy+11),(fx+17,fy+11)],fill=(160,250,250,255))
-            draw.line([(fx+9,fy+13),(fx+9,fy+21),(fx+16,fy+21)],fill=(160,250,250,255))
-            draw.rectangle((fx+15,fy+20,fx+17,fy+22),fill=(94,216,228,255))
-            draw.line((fx+3,fy+25,fx+8,fy+25),fill=(79,169,193,255))
-            draw.line((fx+11,fy+25,fx+15,fy+25),fill=(79,169,193,255))
 image.save(TEX/'builder.png')
 image.save(ART/'builder.png')
 glow = Image.new('RGBA', image.size, (0,0,0,0))
 for c in cubes:
-    if c['material'] in ('eye', 'cyan', 'blueprint'):
+    if c['material'] in ('eye', 'cyan'):
         for u,v,w,h in c['faces'].values():
             for y in range(v*DENSITY,(v+h)*DENSITY):
                 for x in range(u*DENSITY,(u+w)*DENSITY):
                     pixel=image.getpixel((x,y))
-                    if c['material'] != 'blueprint' or pixel[1] > 120:
-                        glow.putpixel((x,y),pixel)
+                    glow.putpixel((x,y),pixel)
 glow.save(TEX/'builder_glow.png')
 glow.save(ART/'builder_glow.png')
 spec = dict(textureWidth=256,textureHeight=256,groups=groups,cubes=cubes)

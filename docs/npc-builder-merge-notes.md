@@ -53,16 +53,14 @@ Builders receive the new appearance without a new mob type.
 
 Existing hover navigation and construction scheduling remain. This is not a
 conversion to a walking Builder. The held stone is a visual material-load symbol,
-not the precise block currently being placed. The blueprint is an opaque blue panel
-with emissive schematic lines, not a transparent hologram. Work arm motion is a
+not the precise block currently being placed. The final Builder has no held tablet. Work arm motion is a
 continuous animation during the BUILD phase, not synchronized to each individual
 placement sound. Existing block placement sounds come from BuildTask; there is no
 new sound pack or particle system in this version. Emission stays visible in the
 dark but does not cast dynamic light or require shaders. No other mob was redesigned
 or renamed; the replacement name for Warden is still undecided.
 
-The second revision moves the blueprint into the hand and adds a visible stone
-grip. An optional alternating-leg walking cycle runs only when the render snapshot
+An optional alternating-leg walking cycle runs only when the render snapshot
 is grounded, using Minecraft's walk position and speed. Flight AI is unchanged;
 the preview's Walk button demonstrates the cycle independently so Tabor can choose
 whether to use it. The grounded pose removes the hover bob and keeps the feet at
@@ -71,10 +69,11 @@ floor level. No ground navigation or walking behavior has been added.
 Revision 3 fixes coplanar armor/detail faces that could cause depth flicker in both
 the preview and Minecraft. Small CubeDeformation offsets preserve the original UVs;
 the same offsets are exported to the viewer and Blockbench mesh. Regeneration now
-rejects overlapping coplanar outward faces within each rigid part. The left arm holds
-the blueprint in front of the body, with its schematic facing inward and tilted up
-for reading. Only the inward face has schematic lines; the back is plain. Take the
-updated model animation, generated mesh and both textures together for this revision.
+rejects overlapping coplanar outward faces within each rigid part.
+The final revision removes the blueprint tablet and grip entirely,
+relaxes the empty left hand and gives it a natural opposing swing during walking.
+Take the generated mesh, model animation and both updated textures together.
+
 
 ## Editable source and reproduction
 
@@ -92,11 +91,11 @@ updated model animation, generated mesh and both textures together for this revi
   no added Minecraft mod dependency and no runtime network requests from the preview.
 
 The texture has 1024 x 1024 pixels with a logical 256 x 256 UV grid (four texels per
-model unit). It is deliberately pixel-filtered. The model has 55 cuboids in eight
+model unit). It is deliberately pixel-filtered. The model has 52 cuboids in seven
 groups. Blockbench edits are not automatically imported into Java: mirror geometry
 changes back into the authoring script before regenerating. Animations live in
-BuilderModel.java; the Blockbench file is an editable mesh, not an animation export
-(including the held blueprint's reading pose). The preview uses Minecraft's ZYX
+BuilderModel.java; the Blockbench file is an editable mesh, not an animation export.
+The preview uses Minecraft's ZYX
 part rotation order to match poses involving more than one axis.
 
 ## Validation and trying it

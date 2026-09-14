@@ -61,7 +61,6 @@ public final class BuilderMesh {
 				.texOffs(132, 28).addBox(-1.5F, 5F, -2F, 3F, 3F, 4F) // left_forearm
 				.texOffs(148, 28).addBox(-1.5F, 7F, -2.2F, 3F, 1F, 4F, new CubeDeformation(0.04F)) // left_cuff
 				.texOffs(164, 28).addBox(-1.5F, 8F, -2F, 3F, 2F, 3F) // left_hand
-				.texOffs(68, 39).addBox(0.5F, 8F, -2.8F, 1F, 1F, 2F, new CubeDeformation(0.06F)) // blueprint_grip
 				, PartPose.offset(6F, -2F, 0F));
 		PartDefinition right_leg = body.addOrReplaceChild("right_leg", CubeListBuilder.create()
 				.texOffs(0, 28).addBox(-1.5F, 0F, -1.5F, 3F, 3F, 3F) // right_thigh
@@ -80,10 +79,6 @@ public final class BuilderMesh {
 		PartDefinition cargo = right_arm.addOrReplaceChild("cargo", CubeListBuilder.create()
 				.texOffs(16, 39).addBox(-2.5F, -2.5F, -2.5F, 5F, 5F, 5F) // carried_stone
 				, PartPose.offset(0F, 7F, -4F));
-		PartDefinition blueprint = left_arm.addOrReplaceChild("blueprint", CubeListBuilder.create()
-				.texOffs(38, 39).addBox(0F, -6.5F, -1F, 6F, 8F, 1F) // blueprint_frame
-				.texOffs(54, 39).addBox(0.5F, -6F, -1.15F, 5F, 7F, 1F) // blueprint_surface
-				, PartPose.offset(1F, 8.5F, -1.5F));
         return LayerDefinition.create(mesh, 256, 256);
     }
 }
