@@ -29,5 +29,6 @@ public final class CollectorRenderer extends MobRenderer<CollectorEntity,Collect
         super.extractRenderState(entity,state,partialTick);
         CollectorLanternMotion.extract(entity,state,partialTick);
         ArmedEntityRenderState.extractArmedEntityRenderState(entity,state,items,partialTick);
+        ShowcaseAnimation.apply(entity,state);
     }
 }

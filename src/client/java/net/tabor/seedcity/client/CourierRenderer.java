@@ -22,4 +22,8 @@ public final class CourierRenderer extends MobRenderer<CourierEntity,LivingEntit
     }
     @Override public Identifier getTextureLocation(LivingEntityRenderState state) { return TEXTURE; }
     @Override public LivingEntityRenderState createRenderState() { return new LivingEntityRenderState(); }
+    @Override public void extractRenderState(CourierEntity entity, LivingEntityRenderState state, float partialTicks) {
+        super.extractRenderState(entity,state,partialTicks);
+        ShowcaseAnimation.apply(entity,state);
+    }
 }

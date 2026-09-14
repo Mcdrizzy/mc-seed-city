@@ -185,6 +185,7 @@ public final class CityState {
 	).apply(i, CityState::new));
 
 	private final BlockPos seedPos;
+	private long nextRatSpawnAttempt;
 	private final long citySeed;
 	private boolean frozen;
 	private int builtCount;
@@ -976,6 +977,11 @@ public final class CityState {
 		if (builders.size() < desired) {
 			spawnBuilder(level);
 		}
+        if(level.getGameTime()>=nextRatSpawnAttempt) {
+            nextRatSpawnAttempt=level.getGameTime()+1200;
+            if(level.getNearestPlayer(seedPos.getX(),seedPos.getY(),seedPos.getZ(),64,false)!=null)
+                net.tabor.seedcity.entity.RedstoneRatSpawning.trySpawn(level,seedPos,cfg.maxRedstoneRats);
+        }
 		keepWardensPosted(level);
 		if (cfg.sentinelsOnRegisters) {
 			postSentinels(level);

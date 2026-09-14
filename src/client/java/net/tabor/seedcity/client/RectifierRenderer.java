@@ -28,5 +28,6 @@ public final class RectifierRenderer extends MobRenderer<WardenEntity, Rectifier
         state.repairing=entity.isRepairing(); state.grounded=entity.onGround();
         state.flightSpeed=(float)entity.getDeltaMovement().length();
         RectifierCapeMotion.extract(entity,state,partialTicks);
+        ShowcaseAnimation.apply(entity,state);
     }
 }

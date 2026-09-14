@@ -37,5 +37,6 @@ public final class BuilderRenderer extends MobRenderer<BuilderEntity, BuilderRen
         state.carrying = entity.isCarryingMaterials();
         state.flightSpeed = (float) entity.getDeltaMovement().length();
         state.grounded = entity.onGround();
+        ShowcaseAnimation.apply(entity,state);
     }
 }

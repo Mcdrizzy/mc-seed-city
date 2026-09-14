@@ -31,5 +31,6 @@ public final class SentinelRenderer extends MobRenderer<SentinelEntity,SentinelR
         super.extractRenderState(entity,state,partialTicks);
         state.alertness=entity.alertness();state.attackTime=entity.getAttackAnim(partialTicks);
         state.jogging=entity.isSprinting();
+        ShowcaseAnimation.apply(entity,state);
     }
 }

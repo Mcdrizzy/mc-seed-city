@@ -10,6 +10,8 @@ import net.tabor.seedcity.entity.SeedCityEntities;
 public final class SeedCityClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+        ModelLayerRegistry.registerModelLayer(RedstoneRatRenderer.LAYER,RedstoneRatMesh::createLayer);
+        EntityRendererRegistry.register(SeedCityEntities.REDSTONE_RAT,RedstoneRatRenderer::new);
 		ModelLayerRegistry.registerModelLayer(CollectorRenderer.LAYER,CollectorMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.COLLECTOR,CollectorRenderer::new);
 		ModelLayerRegistry.registerModelLayer(CourierRenderer.LAYER, CourierMesh::createLayer);
