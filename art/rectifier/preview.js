@@ -38,7 +38,7 @@ function save(blob,name){const url=URL.createObjectURL(blob),a=document.createEl
 document.getElementById('saveViewer').onclick=()=>save(new Blob([standaloneDocument],{type:'text/html'}),'Seed-City-Rectifier.html');
 document.getElementById('saveImage').onclick=()=>canvas.toBlob(b=>{if(b)save(b,'Rectifier-'+pose+'-preview.png')});
 function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(play.checked)time+=dt*20;if(spin.checked&&!drag)yaw+=dt*.3;
- const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);let half=Math.max(26,27*h/w)/zoom;camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();camera.position.set(Math.sin(yaw)*70,3-Math.sin(pitch)*70,-Math.cos(yaw)*70);camera.lookAt(0,3,0);
+ const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);let half=Math.max(29,30*h/w)/zoom;camera.left=-half*w/h;camera.right=half*w/h;camera.top=half;camera.bottom=-half;camera.updateProjectionMatrix();camera.position.set(Math.sin(yaw)*70,-Math.sin(pitch)*70,-Math.cos(yaw)*70);camera.lookAt(0,0,0);
  const bob=Math.sin(time*.075),flight=pose==='carry'?1:0,repair=pose==='build',walk=pose==='walk';
  groups.body.position.y=-3+bob*.14;groups.body.rotation.x=flight*.035;
  groups.head.rotation.y=document.getElementById('looking').checked?Math.sin(time*.035)*.6:0;
@@ -46,9 +46,9 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.right_arm.rotation.set(-.22+Math.sin(time*.075)*.015,0,.035);groups.right_forearm.rotation.x=-.65;
  groups.left_arm.rotation.set(repair?-.8+Math.sin(time*.5)*.25:.04,0,-.035);
  groups.right_leg.rotation.x=.035+flight*.1+bob*.02;groups.left_leg.rotation.x=.035+flight*.1-bob*.02;
- if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=16-19*Math.cos(stride)-4*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
+ if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=13-16*Math.cos(stride)-5*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
  groups.lantern.rotation.x=-groups.right_arm.rotation.x-groups.right_forearm.rotation.x+Math.sin(time*.09)*.04;
- groups.wrench.rotation.z=-.32;
+ groups.hammer.rotation.z=-.18;
  material.emissiveIntensity=1;
  grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;

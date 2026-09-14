@@ -26,7 +26,7 @@ public final class SeedCityEntities {
 
 		ResourceKey<EntityType<?>> wardenKey = ResourceKey.create(Registries.ENTITY_TYPE, SeedCity.id("warden"));
 		WARDEN = Registry.register(BuiltInRegistries.ENTITY_TYPE, wardenKey,
-				EntityType.Builder.of(WardenEntity::new, MobCategory.MISC).sized(1.4F, 2.82F).clientTrackingRange(10).build(wardenKey));
+				EntityType.Builder.of(WardenEntity::new, MobCategory.MISC).sized(1.4F, 2.95F).clientTrackingRange(10).build(wardenKey));
 		FabricDefaultAttributeRegistry.register(WARDEN, WardenEntity.createAttributes());
 
 		ResourceKey<EntityType<?>> sentinelKey = ResourceKey.create(Registries.ENTITY_TYPE, SeedCity.id("sentinel"));

@@ -27,129 +27,82 @@ def group(name, pivot, parent=None):
 def box(name, part, pos, size, material):
     cubes.append(dict(name=name, part=part, pos=pos, size=size, material=material))
 
-group('body', [0, 2, 0])
-group('head', [0, -8, 0], 'body')
-group('right_arm', [-9, -5, 0], 'body')
-group('left_arm', [9, -5, 0], 'body')
-group('right_leg', [-3.5, 10, 0], 'body')
-group('left_leg', [3.5, 10, 0], 'body')
-group('lantern', [-9, 12, 0], 'right_arm')
-group('wrench', [9, 12, -1], 'left_arm')
-box('neck', 'body', [-2,-10,-2], [4,5,4], 'joint')
-box('torso', 'body', [-5,-6,-3], [10,14,6], 'stone')
-box('chest_rim', 'body', [-4,-5,-4], [8,9,2], 'brass')
-box('chest_socket', 'body', [-3,-4,-4.4], [6,7,1], 'joint')
-box('core', 'body', [-2,-3,-4.65], [4,5,1], 'eye')
-box('core_center', 'body', [-1,-2,-4.8], [2,3,1], 'cyan')
-box('chest_left', 'body', [4,-5,-4], [2,8,2], 'stone')
-box('chest_right', 'body', [-6,-5,-4], [2,8,2], 'stone')
-box('back_plate', 'body', [-4,-5,3], [8,10,1], 'stone')
-box('back_spine', 'body', [-1,-4,4], [2,8,1], 'joint')
-box('belt', 'body', [-5.5,7,-3.5], [11,3,7], 'joint')
-box('buckle', 'body', [-2,7.5,-4.5], [4,2,1], 'brass')
-box('tabard_trim', 'body', [-2,9,-4], [4,12,1], 'brass')
-box('tabard', 'body', [-1.5,9.5,-4.2], [3,11,1], 'cloth')
-box('tabard_mark', 'body', [-.5,12,-4.4], [1,5,1], 'brass')
-box('hip', 'body', [-4.5,10,-2.5], [9,2,5], 'joint')
-box('helmet', 'head', [-4,-18,-3.5], [8,10,7], 'stone')
-box('crown', 'head', [-4.5,-18,-4], [9,3,8], 'stone')
-box('face_shadow', 'head', [-3,-15,-3.7], [6,5,1], 'joint')
-box('vertical_visor', 'head', [-.5,-15,-3.9], [1,5,1], 'eye')
-box('cheek_right', 'head', [-3.5,-14,-4], [2,6,1], 'stone')
-box('cheek_left', 'head', [1.5,-14,-4], [2,6,1], 'stone')
-for side,sign in [('right',-1),('left',1)]:
-    x=sign*9; part=side+'_arm'
-    box(side+'_shoulder',part,[x-3,-7,-3],[6,7,6],'copper')
-    box(side+'_shoulder_cap',part,[x-3.5,-7,-3.5],[7,2,7],'stone')
-    box(side+'_upper_arm',part,[x-2,0,-2],[4,4,4],'stone')
-    box(side+'_elbow',part,[x-1.5,3,-1.5],[3,2,3],'joint')
-    box(side+'_forearm',part,[x-2.5,5,-2.5],[5,5,5],'stone')
-    box(side+'_wrist_band',part,[x-2.5,9,-2.5],[5,1,5],'brass')
-    box(side+'_hand',part,[x-2,10,-2],[4,3,4],'stone')
-    x=sign*3.5; part=side+'_leg'
-    box(side+'_thigh',part,[x-2,10,-2],[4,6,4],'stone')
-    box(side+'_knee',part,[x-2,16,-2],[4,2,4],'joint')
-    box(side+'_greave',part,[x-2.5,17,-2.5],[5,5,5],'stone')
-    box(side+'_greave_band',part,[x-2.5,17,-2.5],[5,2,5],'copper')
-    box(side+'_boot',part,[x-3,22,-4],[6,2,7],'stone')
-box('lantern_handle_top','lantern',[-10.5,12,-.5],[3,1,1],'joint')
-box('lantern_handle_left','lantern',[-10.5,13,-.5],[1,2,1],'joint')
-box('lantern_handle_right','lantern',[-8.5,13,-.5],[1,2,1],'joint')
-box('lantern_cap','lantern',[-11.5,15,-2.5],[5,1,5],'brass')
-box('lantern_light','lantern',[-10.5,16,-1.5],[3,4,3],'eye')
-box('lantern_base','lantern',[-11.5,20,-2.5],[5,1,5],'brass')
-for x in (-11.5,-7.5):
-    for z in (-2.5,1.5):
-        box('lantern_post_'+str(x)+'_'+str(z),'lantern',[x,16,z],[1,4,1],'joint')
-box('wrench_shaft','wrench',[8,10,-2],[2,9,2],'stone')
-box('wrench_grip','wrench',[7.5,11,-2.5],[3,5,3],'wood')
-box('wrench_collar','wrench',[7.5,16,-2.5],[3,1,3],'brass')
-box('wrench_neck','wrench',[7.5,18,-2.5],[3,2,3],'stone')
-box('wrench_head_base','wrench',[5.5,20,-2.5],[7,2,3],'stone')
-box('wrench_jaw_left','wrench',[5.5,22,-2.5],[2,3,3],'stone')
-box('wrench_jaw_right','wrench',[10.5,22,-2.5],[2,3,3],'stone')
-box('wrench_tooth_left','wrench',[6.5,25,-2.5],[2,1,3],'stone')
-box('wrench_tooth_right','wrench',[9.5,25,-2.5],[2,1,3],'stone')
+group('body', [0, -3, 0], None)
+group('head', [0, -13, 0], 'body')
+group('right_arm', [-11, -10, 0], 'body')
+group('left_arm', [11, -10, 0], 'body')
+group('right_leg', [-4.5, 8, 0], 'body')
+group('left_leg', [4.5, 8, 0], 'body')
+group('right_forearm', [-11, 0, 0], 'right_arm')
+group('lantern', [-11, 7, 0], 'right_forearm')
+group('hammer', [11, 7, -1], 'left_arm')
 
-# Longer legs support a broader, deeper upper body. Keep the boot floor at y=24.
-for g in groups:
-    if g['name'] in ('right_leg','left_leg'):
-        g['pivot'][0] += -1 if g['name']=='right_leg' else 1
-    elif g['name'] in ('right_arm','lantern'):
-        g['pivot'][0]-=2
-    elif g['name'] in ('left_arm','wrench'):
-        g['pivot'][0]+=2
-    g['pivot'][1]-=5
-for c in cubes:
-    name,part=c['name'],c['part']
-    if part.endswith('_leg'):
-        c['pos'][0] += -1 if part=='right_leg' else 1
-        if name.endswith('_thigh'):
-            c['pos'][1]=5; c['size'][1]=9
-        elif name.endswith('_knee'):
-            c['pos'][1]=14
-        elif name.endswith('_greave'):
-            c['pos'][1]=15; c['size'][1]=7
-        elif name.endswith('_greave_band'):
-            c['pos'][1]=15
-        continue
-    c['pos'][1]-=5
-    if part in ('right_arm','lantern'):
-        c['pos'][0]-=2
-    elif part in ('left_arm','wrench'):
-        c['pos'][0]+=2
-    if part=='head' and name!='neck':
-        c['pos'][1]+=2
-        if name!='crown': c['size'][1]-=2
-    if part=='body':
-        if name=='torso': c['pos'][0]=-7; c['size'][0]=14; c['pos'][2]=-4.5; c['size'][2]=9
-        elif name in ('chest_rim','chest_socket'):
-            c['pos'][0]-=1; c['size'][0]+=2; c['pos'][2]-=2
-        elif name in ('core','core_center','buckle','tabard_trim','tabard','tabard_mark'):
-            c['pos'][2]-=2
-        elif name in ('chest_left','chest_right'):
-            c['pos'][0]+=2 if name=='chest_left' else -2; c['pos'][2]-=2
-        elif name=='back_plate': c['pos'][0]-=2; c['size'][0]+=4; c['pos'][2]+=1.5
-        elif name=='back_spine': c['pos'][2]+=1.5
-        elif name in ('belt','hip'):
-            c['pos'][0]-=1; c['size'][0]+=2; c['pos'][2]-=1; c['size'][2]+=2
+box('neck', 'body', [-2, -15, -2], [4, 5, 4], 'joint')
+box('torso', 'body', [-7, -11, -4.5], [14, 17, 9], 'stone')
+box('chest_rim', 'body', [-5, -10, -6], [10, 12, 2], 'brass')
+box('chest_socket', 'body', [-4, -9, -6.4], [8, 10, 1], 'joint')
+box('core', 'body', [-2, -7, -6.65], [4, 5, 1], 'eye')
+box('core_center', 'body', [-1, -6, -6.8], [2, 3, 1], 'cyan')
+box('chest_left', 'body', [6, -10, -6], [2, 11, 2], 'stone')
+box('chest_right', 'body', [-8, -10, -6], [2, 11, 2], 'stone')
+box('back_plate', 'body', [-6, -10, 4.5], [12, 13, 1], 'stone')
+box('back_spine', 'body', [-1, -9, 5.5], [2, 11, 1], 'joint')
+box('belt', 'body', [-6.5, 5, -4.5], [13, 3, 9], 'joint')
+box('buckle', 'body', [-2, 5.5, -6.5], [4, 2, 1], 'brass')
+box('tabard_trim', 'body', [-2, 7, -6], [4, 12, 1], 'brass')
+box('tabard', 'body', [-1.5, 7.5, -6.2], [3, 11, 1], 'cloth')
+box('tabard_mark', 'body', [-0.5, 10, -6.4], [1, 5, 1], 'brass')
+box('hip', 'body', [-5.5, 8, -3.5], [11, 2, 7], 'joint')
+box('helmet', 'head', [-4, -23, -3.5], [8, 10, 7], 'stone')
+box('crown', 'head', [-4.5, -23, -4], [9, 3, 8], 'stone')
+box('face_shadow', 'head', [-3, -20, -3.7], [6, 5, 1], 'joint')
+box('vertical_visor', 'head', [-0.5, -20, -3.9], [1, 5, 1], 'eye')
+box('cheek_right', 'head', [-3.5, -19, -4], [2, 6, 1], 'stone')
+box('cheek_left', 'head', [1.5, -19, -4], [2, 6, 1], 'stone')
+box('right_shoulder', 'right_arm', [-14, -12, -3], [6, 7, 6], 'copper')
+box('right_shoulder_cap', 'right_arm', [-14.5, -12, -3.5], [7, 2, 7], 'stone')
+box('right_upper_arm', 'right_arm', [-13, -5, -2], [4, 4, 4], 'stone')
+box('right_elbow', 'right_arm', [-12.5, -2, -1.5], [3, 2, 3], 'joint')
+box('right_forearm', 'right_forearm', [-13.5, 0, -2.5], [5, 5, 5], 'stone')
+box('right_wrist_band', 'right_forearm', [-13.5, 4, -2.5], [5, 1, 5], 'brass')
+box('right_hand', 'right_forearm', [-13, 5, -2], [4, 3, 4], 'stone')
+box('right_thigh', 'right_leg', [-7.5, 8, -3], [6, 6, 6], 'stone')
+box('right_knee', 'right_leg', [-7.5, 14, -3], [6, 2, 6], 'joint')
+box('right_greave', 'right_leg', [-8.0, 15, -3.5], [7, 7, 7], 'stone')
+box('right_greave_band', 'right_leg', [-8.0, 15, -3.5], [7, 2, 7], 'copper')
+box('right_boot', 'right_leg', [-8.5, 22, -5], [8, 2, 9], 'stone')
+box('left_shoulder', 'left_arm', [8, -12, -3], [6, 7, 6], 'copper')
+box('left_shoulder_cap', 'left_arm', [7.5, -12, -3.5], [7, 2, 7], 'stone')
+box('left_upper_arm', 'left_arm', [9, -5, -2], [4, 4, 4], 'stone')
+box('left_elbow', 'left_arm', [9.5, -2, -1.5], [3, 2, 3], 'joint')
+box('left_forearm', 'left_arm', [8.5, 0, -2.5], [5, 5, 5], 'stone')
+box('left_wrist_band', 'left_arm', [8.5, 4, -2.5], [5, 1, 5], 'brass')
+box('left_hand', 'left_arm', [9, 5, -2], [4, 3, 4], 'stone')
+box('left_thigh', 'left_leg', [1.5, 8, -3], [6, 6, 6], 'stone')
+box('left_knee', 'left_leg', [1.5, 14, -3], [6, 2, 6], 'joint')
+box('left_greave', 'left_leg', [1.0, 15, -3.5], [7, 7, 7], 'stone')
+box('left_greave_band', 'left_leg', [1.0, 15, -3.5], [7, 2, 7], 'copper')
+box('left_boot', 'left_leg', [0.5, 22, -5], [8, 2, 9], 'stone')
+box('lantern_handle_top', 'lantern', [-12.5, 7, -0.5], [3, 1, 1], 'joint')
+box('lantern_handle_left', 'lantern', [-12.5, 8, -0.5], [1, 2, 1], 'joint')
+box('lantern_handle_right', 'lantern', [-10.5, 8, -0.5], [1, 2, 1], 'joint')
+box('lantern_cap', 'lantern', [-13.5, 10, -2.5], [5, 1, 5], 'brass')
+box('lantern_light', 'lantern', [-12.5, 11, -1.5], [3, 4, 3], 'eye')
+box('lantern_base', 'lantern', [-13.5, 15, -2.5], [5, 1, 5], 'brass')
+box('lantern_post_-11.5_-2.5', 'lantern', [-13.5, 11, -2.5], [1, 4, 1], 'joint')
+box('lantern_post_-11.5_1.5', 'lantern', [-13.5, 11, 1.5], [1, 4, 1], 'joint')
+box('lantern_post_-7.5_-2.5', 'lantern', [-9.5, 11, -2.5], [1, 4, 1], 'joint')
+box('lantern_post_-7.5_1.5', 'lantern', [-9.5, 11, 1.5], [1, 4, 1], 'joint')
+box('hammer_handle', 'hammer', [10, 6, -2], [2, 8, 2], 'wood')
+box('hammer_grip', 'hammer', [9.5, 7, -2.5], [3, 4, 3], 'leather')
+box('hammer_collar', 'hammer', [9.5, 11, -2.5], [3, 1, 3], 'brass')
+box('hammer_head', 'hammer', [7, 12, -3.5], [8, 4, 5], 'stone')
+box('hammer_striking_left', 'hammer', [6, 12, -3.5], [1, 4, 5], 'joint')
+box('hammer_striking_right', 'hammer', [15, 12, -3.5], [1, 4, 5], 'joint')
 
-# A real elbow bend carries the lantern ahead of the chest without rotating it flat.
-at=next(i for i,g in enumerate(groups) if g['name']=='lantern')
-groups.insert(at,dict(name='right_forearm',pivot=[-11,0,0],parent='right_arm'))
-for g in groups:
-    if g['name']=='lantern':g['parent']='right_forearm'
+shells = {'chest_left': 0.04, 'chest_right': 0.04, 'belt': 0.04, 'buckle': 0.06, 'crown': 0.04, 'vertical_visor': 0.04, 'cheek_right': 0.06, 'cheek_left': 0.06, 'right_shoulder_cap': 0.04, 'right_wrist_band': 0.04, 'right_greave_band': 0.04, 'left_shoulder_cap': 0.04, 'left_wrist_band': 0.04, 'left_greave_band': 0.04, 'hammer_grip': 0.04, 'hammer_collar': 0.06, 'hammer_striking_left': 0.04, 'hammer_striking_right': 0.04}
 for c in cubes:
-    if c['name'] in ('right_forearm','right_wrist_band','right_hand'):
-        c['part']='right_forearm'
-
-shells={'crown':.04,'chest_left':.04,'chest_right':.04,'belt':.04,
-        'vertical_visor':.04,'wrench_neck':.04,'wrench_grip':.04,'buckle':.06,'cheek_right':.06,'cheek_left':.06}
-for side in ('right','left'):
-    for suffix,amount in (('shoulder_cap',.04),('wrist_band',.04),('greave_band',.04)):
-        shells[side+'_'+suffix]=amount
-for c in cubes:
-    c['inflate']=shells.get(c['name'],0)
+    c['inflate'] = shells.get(c['name'], 0)
 
 def bounds(c):
     return ([v-c['inflate'] for v in c['pos']],

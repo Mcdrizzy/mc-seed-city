@@ -18,7 +18,7 @@ Builder's approved assets remain unchanged.
 
 The registry ID **`seedcity:warden`**, Java entity class, configuration keys, district
 data remain unchanged for save and code compatibility. The revised hitbox is
-1.4 by 2.82 blocks to accommodate the taller model.
+1.4 by 2.95 blocks to accommodate the taller model.
 Use `/summon seedcity:warden ~ ~ ~` to spawn the Rectifier. Minecraft's own Warden
 is untouched. The unused old placeholder WardenRenderer remains available in source;
 the client entrypoint now registers RectifierRenderer instead.
@@ -30,17 +30,19 @@ before merging that prerequisite. Use matching client/server builds for the new 
 
 ## Model and animation
 
-65 cuboids in nine parts, approximately 2.81 blocks tall. Revision 2 widens the
-chest from 10 to 14 model units and increases its depth from 6 to 9, lengthens the
-legs and shortens the helmet. The wrench has a thick grip, reinforced neck and
-stepped open jaws. A separate right forearm joint bends the elbow to hold the
-lantern forward and raised. The preview includes a 1.8-block player-height marker. The palette uses stone armor, weathered
+62 cuboids in nine parts, approximately 2.94 blocks tall. The latest pass thickens
+thighs, knees, greaves and boots by two model units in both width and depth, adds
+three units of torso length and two units of helmet height, and replaces the wrench
+with a short-handled club hammer. The broader, deeper chest and articulated lantern
+arm remain. The preview includes a 1.8-block player-height marker.
+
+ The palette uses stone armor, weathered
 copper shoulders and greaves, a red-brown tabard, an amber visor and chest core,
-a hanging lantern and a wrench. The base/emission atlases are 1024 square pixels
+a hanging lantern and a club hammer. The base/emission atlases are 1024 square pixels
 with a logical 256-square UV layout. Armor offsets avoid coplanar surface fighting.
 
 The head independently follows Minecraft's look state. The existing repair code
-already looks toward the damaged block. Repair mode moves the wrench arm; the
+already looks toward the damaged block. Repair mode moves the hammer arm; the
 lantern counter-rotates with both arm joints and gently swings. Emission remains visible at
 night but does not cast light, need shaders, or brighten dynamically during repairs.
 Tool motion is continuous during REPAIR, not timed to individual block placements.
