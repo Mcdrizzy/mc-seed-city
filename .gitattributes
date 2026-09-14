@@ -25,3 +25,7 @@ art/courier/courier-preview.html linguist-generated
 art/courier/courier.bbmodel linguist-generated
 art/courier/courier.geometry.json linguist-generated
 src/client/java/net/tabor/seedcity/client/CourierMesh.java linguist-generated
+art/collector/collector-preview.html linguist-generated
+art/collector/collector.bbmodel linguist-generated
+art/collector/collector.geometry.json linguist-generated
+src/client/java/net/tabor/seedcity/client/CollectorMesh.java linguist-generated

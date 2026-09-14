@@ -78,3 +78,16 @@ Keep the goggles, remove irises/pupils and restore warm amber emissive lens fron
 
 ## 2026-09-13: Center Courier head and remove goggles
 User rejects the goggles. Restore plain glowing amber eyes, remove the goggles and keep no smile. Move the head pivot back two model units and change the helmet from 10x5x6 to 8x6x6 so it is centered and squarer.
+
+## 2026-09-13: Collector model, real tools and cave illumination
+Add the reference-inspired ground Collector at 0.95x1.80 collision size with a miner headlamp. Equip actual iron pickaxe/axe stacks through vanilla item rendering; no tool clones in the mesh. User explicitly requests cave-wall illumination: use temporary level-12 invisible light blocks in air, with scheduled cleanup and no normal redstone-neighbor notifications. Gathering tasks, protected mining and deposits remain CityState integration work.
+Collector publication hold: user requests all Collector revisions remain local, uncommitted and unpushed until they approve the completed design.
+Collector local revision: adapt vanilla humanoid multi-axis attack easing to a separate torso, use player-normalized forward input with the 0.1 movement attribute, drive gait from actual displacement, and replace the dark face panel with patina and wider warm eyes. Publication remains on hold.
+Collector face revision: user clarified square, not circular. Use an 8x8x8 player-like head with a lower helmet crown, square glowing eyes and a compact lower face. Keep this revision local.
+Collector face refinement: widen the eye spacing, set the glowing eyes almost flush into a warmer continuous bronze faceplate, and remove the separate protruding jaw. Preserve the square head and approved animations. Assemble and client game tests pass; publication remains on hold.
+Collector palette correction: replace the separate bronze face material with the same weathered copper used on the armor and helmet. Keep geometry and eye spacing unchanged; publication remains on hold.
+
+## 2026-09-13: Sentinel reference model and signal display
+Collector design approved by the user. Begin the Sentinel as a local first pass: dark iron armor, red power channels, 2.63-block body and upright spear. Sync and persist the existing alertness value so client glow and grounded sleep/walk/strike poses reflect the bound port. The spear is model geometry with a separate wrist pivot; existing melee damage/reach is unchanged. Collider is 1.10 by 2.63, requiring broader passages than the old placeholder. Full build and all 31 server tests passed; client tests verify signal synchronization and animation reset.
+Sentinel revision: remove projecting nose and excess trim, use a square eight-unit helmet and reference-like iron palette. Articulate the carrying elbow and compensate the wrist so the spear stays ahead of the shoulder during idle/walk. Replace the sweeping strike with a level, extending jab and retraction. Assemble and all client game tests pass.
+Sentinel revision: four red chest indicators, a short villager-style nose and rectangular 7x8 helmet front per user correction. Add separate restrained walk/light-jog variants, selected in game by the sprint flag; leave gameplay speed selection to Tabor.

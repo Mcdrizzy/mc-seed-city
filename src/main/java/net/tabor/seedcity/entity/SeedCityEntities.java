@@ -9,17 +9,22 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.tabor.seedcity.SeedCity;
 
-/** Planned city mobs: Builder, Warden, Sentinel and Courier registered; Collector later. */
+/** The five planned city mob types. */
 public final class SeedCityEntities {
 	public static EntityType<BuilderEntity> BUILDER;
 	public static EntityType<WardenEntity> WARDEN;
 	public static EntityType<SentinelEntity> SENTINEL;
 	public static EntityType<CourierEntity> COURIER;
+	public static EntityType<CollectorEntity> COLLECTOR;
 
 	private SeedCityEntities() {
 	}
 
 	public static void init() {
+		ResourceKey<EntityType<?>> collectorKey=ResourceKey.create(Registries.ENTITY_TYPE,SeedCity.id("collector"));
+		COLLECTOR=Registry.register(BuiltInRegistries.ENTITY_TYPE,collectorKey,
+				EntityType.Builder.of(CollectorEntity::new,MobCategory.MISC).sized(.95F,1.8F).clientTrackingRange(8).build(collectorKey));
+		FabricDefaultAttributeRegistry.register(COLLECTOR,CollectorEntity.createAttributes());
 		ResourceKey<EntityType<?>> courierKey = ResourceKey.create(Registries.ENTITY_TYPE, SeedCity.id("courier"));
 		COURIER = Registry.register(BuiltInRegistries.ENTITY_TYPE, courierKey,
 				EntityType.Builder.of(CourierEntity::new, MobCategory.MISC).sized(.48F, .48F).clientTrackingRange(8).build(courierKey));
@@ -36,7 +41,7 @@ public final class SeedCityEntities {
 
 		ResourceKey<EntityType<?>> sentinelKey = ResourceKey.create(Registries.ENTITY_TYPE, SeedCity.id("sentinel"));
 		SENTINEL = Registry.register(BuiltInRegistries.ENTITY_TYPE, sentinelKey,
-				EntityType.Builder.of(SentinelEntity::new, MobCategory.MONSTER).sized(0.6F, 1.95F).clientTrackingRange(8).build(sentinelKey));
+				EntityType.Builder.of(SentinelEntity::new, MobCategory.MONSTER).sized(1.1F, 2.63F).clientTrackingRange(8).build(sentinelKey));
 		FabricDefaultAttributeRegistry.register(SENTINEL, SentinelEntity.createAttributes());
 	}
 }

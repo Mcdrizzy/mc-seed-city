@@ -83,7 +83,8 @@ public final class BuildTask {
                 cursor++;
                 continue;
             }
-            if (!repair && b.pos().getY() != 0 && !actual.isAir()) {
+            if (!repair && b.pos().getY() != 0 && !actual.isAir()
+                    && !actual.is(net.tabor.seedcity.SeedCityBlocks.COLLECTOR_LIGHT)) {
                 throw new IllegalStateException("Construction obstructed at " + pos.toShortString());
             }
             if (!level.setBlock(pos, b.state(), Block.UPDATE_ALL | Block.UPDATE_SUPPRESS_DROPS)) {

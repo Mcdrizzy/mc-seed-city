@@ -10,6 +10,8 @@ import net.tabor.seedcity.entity.SeedCityEntities;
 public final class SeedCityClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ModelLayerRegistry.registerModelLayer(CollectorRenderer.LAYER,CollectorMesh::createLayer);
+		EntityRendererRegistry.register(SeedCityEntities.COLLECTOR,CollectorRenderer::new);
 		ModelLayerRegistry.registerModelLayer(CourierRenderer.LAYER, CourierMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.COURIER, CourierRenderer::new);
 		ClientTickEvents.END_CLIENT_TICK.register(RectifierCapeMotion::tick);
@@ -17,6 +19,7 @@ public final class SeedCityClient implements ClientModInitializer {
 		EntityRendererRegistry.register(SeedCityEntities.BUILDER, BuilderRenderer::new);
 		ModelLayerRegistry.registerModelLayer(RectifierRenderer.LAYER, RectifierMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.WARDEN, RectifierRenderer::new);
+		ModelLayerRegistry.registerModelLayer(SentinelRenderer.LAYER, SentinelMesh::createLayer);
 		EntityRendererRegistry.register(SeedCityEntities.SENTINEL, SentinelRenderer::new);
 	}
 }
