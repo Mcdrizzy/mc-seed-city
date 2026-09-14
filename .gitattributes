@@ -10,3 +10,10 @@ gradlew text eol=lf
 *.png binary
 *.jar binary
 *.pdf binary
+
+# Keep merge review focused on authored changes; these remain expandable on GitHub.
+tools/vendor/** linguist-vendored
+art/builder/builder-preview.html linguist-generated
+art/builder/builder.bbmodel linguist-generated
+art/builder/builder.geometry.json linguist-generated
+src/client/java/net/tabor/seedcity/client/BuilderMesh.java linguist-generated
