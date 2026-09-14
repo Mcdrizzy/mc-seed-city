@@ -24,14 +24,14 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
         head.yRot=state.yRot*((float)Math.PI/180F);
         head.xRot=Math.max(-.45F,Math.min(.6F,state.xRot*((float)Math.PI/180F)));
         rightArm.xRot=-.22F+bob*.015F; forearm.xRot=-.65F; rightArm.zRot=.035F;
-        leftArm.xRot=.04F; leftArm.zRot=-.035F;
+        leftArm.xRot=-.10F; leftArm.zRot=-.035F;
         rightLeg.xRot=.035F+flight*.1F+bob*.02F;
         leftLeg.xRot=.035F+flight*.1F-bob*.02F;
         if(state.grounded) {
             float stride=(float)Math.sin(state.walkAnimationPos*.6662F)
                     *Math.min(state.walkAnimationSpeed*1.8F,1)*.4F;
             rightLeg.xRot=stride; leftLeg.xRot=-stride; body.xRot=0;
-            body.y=13-16*(float)Math.cos(stride)-5*Math.abs((float)Math.sin(stride));
+            body.y=20-23*(float)Math.cos(stride)-4.5F*Math.abs((float)Math.sin(stride));
             rightArm.xRot=-.22F-stride*.10F; leftArm.xRot=stride*.45F;
         }
         if(state.repairing) {
@@ -39,6 +39,7 @@ public final class RectifierModel extends EntityModel<RectifierRenderState> {
             head.xRot=Math.max(head.xRot,.2F);
         }
         lantern.xRot=-rightArm.xRot-forearm.xRot+(float)Math.sin(t*.09F)*.04F;
-        hammer.zRot=-.18F;
+        hammer.zRot=0;
+        hammer.xRot=-.35F;
     }
 }

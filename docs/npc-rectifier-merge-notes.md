@@ -30,13 +30,16 @@ before merging that prerequisite. Use matching client/server builds for the new 
 
 ## Model and animation
 
-62 cuboids in nine parts, approximately 2.94 blocks tall. The latest pass thickens
-thighs, knees, greaves and boots by two model units in both width and depth, adds
-three units of torso length and two units of helmet height, and replaces the wrench
-with a short-handled club hammer. The broader, deeper chest and articulated lantern
-arm remain. The preview includes a 1.8-block player-height marker.
+58 cuboids in nine parts, approximately 2.94 blocks tall. Revision 4 follows the
+close-up reference silhouette: long armored legs, compact inset chest/core with
+thick flanking plates, exposed copper shoulder blocks, larger gauntlets and a
+narrow tabard. Earlier broad slab-like chest and shoulder lids have been removed.
+The user's requested club hammer replaces the wrench visible in the reference.
+Its striking faces run front-to-back in the repair arm's swing plane; its handle
+leans downward/forward from the closed hand, without an independent sideways roll.
+The articulated forward-held lantern and player-height marker remain.
 
- The palette uses stone armor, weathered
+The palette uses stone armor, weathered
 copper shoulders and greaves, a red-brown tabard, an amber visor and chest core,
 a hanging lantern and a club hammer. The base/emission atlases are 1024 square pixels
 with a logical 256-square UV layout. Armor offsets avoid coplanar surface fighting.
@@ -68,3 +71,4 @@ stored under `art/rectifier/screenshots/` after visual review.
 The packaged JAR is the whole Seed City mod with Builder and Rectifier, replacing
 the original JAR. It is not a standalone resource pack. Versions remain Minecraft
 26.2, Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
+`build runClientGameTest` passed for revision 4 on rerun. The first run timed out in the existing city-growth test; the unchanged rerun passed all 25 server tests and both NPC client checks. Day/night captures were inspected.

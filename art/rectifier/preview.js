@@ -44,11 +44,11 @@ function frame(now){const dt=Math.min((now-previous)/1000,.05);previous=now;if(p
  groups.head.rotation.y=document.getElementById('looking').checked?Math.sin(time*.035)*.6:0;
  groups.head.rotation.x=repair?.2:0;
  groups.right_arm.rotation.set(-.22+Math.sin(time*.075)*.015,0,.035);groups.right_forearm.rotation.x=-.65;
- groups.left_arm.rotation.set(repair?-.8+Math.sin(time*.5)*.25:.04,0,-.035);
+ groups.left_arm.rotation.set(repair?-.8+Math.sin(time*.5)*.25:-.10,0,-.035);
  groups.right_leg.rotation.x=.035+flight*.1+bob*.02;groups.left_leg.rotation.x=.035+flight*.1-bob*.02;
- if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=13-16*Math.cos(stride)-5*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
+ if(walk){const stride=Math.sin(time*.23)*.4;groups.right_leg.rotation.x=stride;groups.left_leg.rotation.x=-stride;groups.body.rotation.x=0;groups.body.position.y=20-23*Math.cos(stride)-4.5*Math.abs(Math.sin(stride));groups.right_arm.rotation.x=-.22-stride*.1;groups.left_arm.rotation.x=stride*.45;}
  groups.lantern.rotation.x=-groups.right_arm.rotation.x-groups.right_forearm.rotation.x+Math.sin(time*.09)*.04;
- groups.hammer.rotation.z=-.18;
+ groups.hammer.rotation.z=0;groups.hammer.rotation.x=-.35;
  material.emissiveIntensity=1;
  grid.position.y=walk?24:25;shadow.position.y=grid.position.y-.1;
  ambient.intensity=night.checked?.10:1.6;sun.intensity=night.checked?.16:2.4;fill.intensity=night.checked?.10:.45;

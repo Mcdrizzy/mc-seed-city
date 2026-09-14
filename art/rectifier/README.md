@@ -20,3 +20,8 @@ about 2.81 blocks; the preview includes a player-height comparison marker.
 
 Revision 3: thicker legs and boots, taller helmet, longer chest and a club hammer
 in place of the wrench. Current model: 62 cuboids, nine parts, about 2.94 blocks tall.
+
+Revision 4 follows the close-up reference silhouette, removes shoulder lids, reshapes
+the chest/gauntlets and restores long legs. Hammer faces align with the arm swing;
+current model has 58 cuboids. The club hammer remains the requested tool even
+though the visual reference shows a wrench.
