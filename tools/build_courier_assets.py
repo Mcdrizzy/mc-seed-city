@@ -46,10 +46,17 @@ box('pack_buckle','body',[-1,16,6.4],[2,2,1],'stone')
 box('helmet','head',[-5,12,-6],[10,5,6],'copper')
 box('helmet_brow','head',[-5,12,-6.5],[10,1,1],'patina')
 box('face_inset','head',[-4,13,-6.2],[8,3,1],'joint')
-box('eye_right','head',[-3,13.5,-6.5],[2,2,1],'eye')
-box('eye_left','head',[1,13.5,-6.5],[2,2,1],'eye')
+for side,x in [('right',-2.25),('left',2.25)]:
+    # Stepped octagonal rims: rounded silhouettes built from Minecraft cuboids.
+    box(side+'_goggle_top','head',[x-1,12.5,-7.3],[2,1,2],'silver')
+    box(side+'_goggle_bottom','head',[x-1,15.5,-7.3],[2,1,2],'silver')
+    box(side+'_goggle_outer','head',[x-2,13.5,-7.3],[1,2,2],'silver')
+    box(side+'_goggle_inner','head',[x+1,13.5,-7.3],[1,2,2],'silver')
+    box(side+'_goggle_lens','head',[x-1,13.5,-7.1],[2,2,1],'goggle_lens')
+box('goggle_bridge','head',[-.5,14,-7],[1,1,1],'silver')
+box('goggle_strap_right','head',[-5.1,14,-5.5],[1,1,5],'leather')
+box('goggle_strap_left','head',[4.1,14,-5.5],[1,1,5],'leather')
 box('jaw','head',[-4,16,-6.4],[8,1,1],'stone')
-box('smile','head',[-1,16,-6.6],[2,1,1],'stone')
 box('cheek_right','head',[-4,15,-6.5],[1,1,1],'brass')
 box('cheek_left','head',[3,15,-6.5],[1,1,1],'brass')
 for side,x in [('right',-3),('left',3)]:
@@ -82,6 +89,7 @@ for a,b in combinations(cubes, 2):
             assert not (coplanar and overlap), f'Z-fighting: {a["name"]} / {b["name"]}'
 
 palette = {
+    'silver': (166,174,170), 'goggle_lens': (239,230,192),
     'redstone': (150,22,15), 'redglow': (255,54,20), 'stone': (115,119,114), 'rough_stone': (106,112,110),
     'joint': (44,49,47), 'copper': (111,111,81), 'patina': (77,119,106),
     'leather': (102,65,40), 'brass': (146,109,68), 'wood': (89,61,36),
@@ -148,9 +156,11 @@ for c in cubes:
             draw.line([(fx+1,fy+1),(fx+1,fy+fh-3)],fill=(255,233,155,255))
             # Bright upper catchlight and an amber lower edge soften the square eyes.
             draw.rectangle((fx+1,fy+1,fx+2,fy+2),fill=(255,255,224,255))
-        if c['name']=='smile' and face in ('north','south'):
-            draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(115,119,114,255))
-            draw.line([(fx+1,fy),(fx+1,fy+2),(fx+fw-2,fy+2),(fx+fw-2,fy)],fill=(40,47,43,255),width=1)
+        if mat=='goggle_lens' and face=='north':
+            draw.rectangle((fx,fy,fx+fw-1,fy+fh-1),fill=(244,235,204,255))
+            draw.ellipse((fx+1,fy+1,fx+6,fy+6),fill=(173,109,40,255))
+            draw.rectangle((fx+3,fy+2,fx+4,fy+5),fill=(30,35,31,255))
+            draw.rectangle((fx+2,fy+1,fx+3,fy+2),fill=(255,255,243,255))
 image.save(TEX/'courier.png')
 image.save(ART/'courier.png')
 glow = Image.new('RGBA', image.size, (0,0,0,0))

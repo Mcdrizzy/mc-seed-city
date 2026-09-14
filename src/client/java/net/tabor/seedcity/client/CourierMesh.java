@@ -23,38 +23,48 @@ public final class CourierMesh {
 				.texOffs(140, 0).addBox(-4F, -11F, 6.2F, 1F, 8F, 1F, new CubeDeformation(0.015F)) // pack_band_right
 				.texOffs(146, 0).addBox(3F, -11F, 6.2F, 1F, 8F, 1F, new CubeDeformation(0.0155F)) // pack_band_left
 				.texOffs(152, 0).addBox(-1F, -8F, 6.4F, 2F, 2F, 1F, new CubeDeformation(0.016F)) // pack_buckle
-				.texOffs(140, 15).addBox(-3F, -13F, 2F, 6F, 2F, 4F, new CubeDeformation(0.025F)) // signal_socket
+				.texOffs(0, 23).addBox(-3F, -13F, 2F, 6F, 2F, 4F, new CubeDeformation(0.03F)) // signal_socket
 				, PartPose.offset(0F, 24F, 0F));
 		PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create()
 				.texOffs(160, 0).addBox(-5F, -4F, -3F, 10F, 5F, 6F, new CubeDeformation(0.0165F)) // helmet
 				.texOffs(194, 0).addBox(-5F, -4F, -3.5F, 10F, 1F, 1F, new CubeDeformation(0.017F)) // helmet_brow
 				.texOffs(218, 0).addBox(-4F, -3F, -3.2F, 8F, 3F, 1F, new CubeDeformation(0.0175F)) // face_inset
-				.texOffs(238, 0).addBox(-3F, -2.5F, -3.5F, 2F, 2F, 1F, new CubeDeformation(0.018F)) // eye_right
-				.texOffs(246, 0).addBox(1F, -2.5F, -3.5F, 2F, 2F, 1F, new CubeDeformation(0.0185F)) // eye_left
-				.texOffs(0, 15).addBox(-4F, 0F, -3.4F, 8F, 1F, 1F, new CubeDeformation(0.019F)) // jaw
-				.texOffs(20, 15).addBox(-1F, 0F, -3.6F, 2F, 1F, 1F, new CubeDeformation(0.0195F)) // smile
-				.texOffs(28, 15).addBox(-4F, -1F, -3.5F, 1F, 1F, 1F, new CubeDeformation(0.02F)) // cheek_right
-				.texOffs(34, 15).addBox(3F, -1F, -3.5F, 1F, 1F, 1F, new CubeDeformation(0.0205F)) // cheek_left
+				.texOffs(238, 0).addBox(-3.25F, -3.5F, -4.3F, 2F, 1F, 2F, new CubeDeformation(0.018F)) // right_goggle_top
+				.texOffs(0, 15).addBox(-3.25F, -0.5F, -4.3F, 2F, 1F, 2F, new CubeDeformation(0.0185F)) // right_goggle_bottom
+				.texOffs(10, 15).addBox(-4.25F, -2.5F, -4.3F, 1F, 2F, 2F, new CubeDeformation(0.019F)) // right_goggle_outer
+				.texOffs(18, 15).addBox(-1.25F, -2.5F, -4.3F, 1F, 2F, 2F, new CubeDeformation(0.0195F)) // right_goggle_inner
+				.texOffs(26, 15).addBox(-3.25F, -2.5F, -4.1F, 2F, 2F, 1F, new CubeDeformation(0.02F)) // right_goggle_lens
+				.texOffs(34, 15).addBox(1.25F, -3.5F, -4.3F, 2F, 1F, 2F, new CubeDeformation(0.0205F)) // left_goggle_top
+				.texOffs(44, 15).addBox(1.25F, -0.5F, -4.3F, 2F, 1F, 2F, new CubeDeformation(0.021F)) // left_goggle_bottom
+				.texOffs(54, 15).addBox(0.25F, -2.5F, -4.3F, 1F, 2F, 2F, new CubeDeformation(0.0215F)) // left_goggle_outer
+				.texOffs(62, 15).addBox(3.25F, -2.5F, -4.3F, 1F, 2F, 2F, new CubeDeformation(0.022F)) // left_goggle_inner
+				.texOffs(70, 15).addBox(1.25F, -2.5F, -4.1F, 2F, 2F, 1F, new CubeDeformation(0.0225F)) // left_goggle_lens
+				.texOffs(78, 15).addBox(-0.5F, -2F, -4F, 1F, 1F, 1F, new CubeDeformation(0.023F)) // goggle_bridge
+				.texOffs(84, 15).addBox(-5.1F, -2F, -2.5F, 1F, 1F, 5F, new CubeDeformation(0.0235F)) // goggle_strap_right
+				.texOffs(98, 15).addBox(4.1F, -2F, -2.5F, 1F, 1F, 5F, new CubeDeformation(0.024F)) // goggle_strap_left
+				.texOffs(112, 15).addBox(-4F, 0F, -3.4F, 8F, 1F, 1F, new CubeDeformation(0.0245F)) // jaw
+				.texOffs(132, 15).addBox(-4F, -1F, -3.5F, 1F, 1F, 1F, new CubeDeformation(0.025F)) // cheek_right
+				.texOffs(138, 15).addBox(3F, -1F, -3.5F, 1F, 1F, 1F, new CubeDeformation(0.0255F)) // cheek_left
 				, PartPose.offset(0F, -8F, -3F));
 		PartDefinition right_leg = body.addOrReplaceChild("right_leg", CubeListBuilder.create()
-				.texOffs(40, 15).addBox(-1F, 0F, -1F, 2F, 1F, 2F, new CubeDeformation(0.021F)) // right_hip
-				.texOffs(50, 15).addBox(-1.5F, 1F, -2F, 3F, 2F, 4F, new CubeDeformation(0.0215F)) // right_foot
+				.texOffs(144, 15).addBox(-1F, 0F, -1F, 2F, 1F, 2F, new CubeDeformation(0.026F)) // right_hip
+				.texOffs(154, 15).addBox(-1.5F, 1F, -2F, 3F, 2F, 4F, new CubeDeformation(0.0265F)) // right_foot
 				, PartPose.offset(-3F, -3F, 0F));
 		PartDefinition left_leg = body.addOrReplaceChild("left_leg", CubeListBuilder.create()
-				.texOffs(66, 15).addBox(-1F, 0F, -1F, 2F, 1F, 2F, new CubeDeformation(0.022F)) // left_hip
-				.texOffs(76, 15).addBox(-1.5F, 1F, -2F, 3F, 2F, 4F, new CubeDeformation(0.0225F)) // left_foot
+				.texOffs(170, 15).addBox(-1F, 0F, -1F, 2F, 1F, 2F, new CubeDeformation(0.027F)) // left_hip
+				.texOffs(180, 15).addBox(-1.5F, 1F, -2F, 3F, 2F, 4F, new CubeDeformation(0.0275F)) // left_foot
 				, PartPose.offset(3F, -3F, 0F));
 		PartDefinition right_arm = body.addOrReplaceChild("right_arm", CubeListBuilder.create()
-				.texOffs(92, 15).addBox(-2F, 0F, -1F, 2F, 2F, 3F, new CubeDeformation(0.023F)) // right_shoulder
-				.texOffs(104, 15).addBox(-2F, 2F, -1.5F, 2F, 2F, 3F, new CubeDeformation(0.0235F)) // right_hand
+				.texOffs(196, 15).addBox(-2F, 0F, -1F, 2F, 2F, 3F, new CubeDeformation(0.028F)) // right_shoulder
+				.texOffs(208, 15).addBox(-2F, 2F, -1.5F, 2F, 2F, 3F, new CubeDeformation(0.0285F)) // right_hand
 				, PartPose.offset(-5F, -7F, 0F));
 		PartDefinition left_arm = body.addOrReplaceChild("left_arm", CubeListBuilder.create()
-				.texOffs(116, 15).addBox(0F, 0F, -1F, 2F, 2F, 3F, new CubeDeformation(0.024F)) // left_shoulder
-				.texOffs(128, 15).addBox(0F, 2F, -1.5F, 2F, 2F, 3F, new CubeDeformation(0.0245F)) // left_hand
+				.texOffs(220, 15).addBox(0F, 0F, -1F, 2F, 2F, 3F, new CubeDeformation(0.029F)) // left_shoulder
+				.texOffs(232, 15).addBox(0F, 2F, -1.5F, 2F, 2F, 3F, new CubeDeformation(0.0295F)) // left_hand
 				, PartPose.offset(5F, -7F, 0F));
 		PartDefinition signal = body.addOrReplaceChild("signal", CubeListBuilder.create()
-				.texOffs(162, 15).addBox(-2F, -4F, -1F, 4F, 4F, 4F, new CubeDeformation(0.0255F)) // signal_crystal
-				.texOffs(180, 15).addBox(-0.5F, -4F, -1.2F, 1F, 4F, 1F, new CubeDeformation(0.026F)) // crystal_seam
+				.texOffs(22, 23).addBox(-2F, -4F, -1F, 4F, 4F, 4F, new CubeDeformation(0.0305F)) // signal_crystal
+				.texOffs(40, 23).addBox(-0.5F, -4F, -1.2F, 1F, 4F, 1F, new CubeDeformation(0.031F)) // crystal_seam
 				, PartPose.offset(0F, -12F, 3F));
         return LayerDefinition.create(mesh, 256, 256);
     }

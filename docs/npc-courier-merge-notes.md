@@ -2,7 +2,8 @@
 
 The Courier follows the supplied lineup: weathered copper shell, small pack,
 stubby arms/feet, amber eyes and a redstone parcel. No flag or pole. The friendly
-face has large square eyes, small cheeks and a tiny mouth. The model has 29 cuboids
+face now has stepped round silver goggles, cream lenses, amber irises and dark pupils
+with catchlights. The smile is removed. The model has 39 cuboids
 and seven articulated parts, with an independent head and alternating scurry cycle.
 
 ## Size and movement
@@ -56,3 +57,9 @@ Run `./gradlew build runClientGameTest` for the full suite.
 The first run hit the previously observed city-growth boat timeout; the unchanged
 city-growth code passed on rerun. See the current build log for final results.
 Final verification: full build, all 27 server game tests and all three NPC client checks passed after the upward-looking face update.
+
+Goggle revision: two raised octagonal rims, bridge and side straps replace the
+square eye plates. The lenses are non-emissive; the redstone parcel seam retains
+its glow. Head articulation, collision size and navigation are unchanged.
+Goggle validation: compilation and both Courier traversal tests passed; the full server suite again hit the existing city_growth_tests_seed_grows_city_boat 9000-tick timeout. Goggle client rendering is checked separately; no gameplay code changed in this revision.
+Final goggle verification: assemble and all three NPC client game tests passed.

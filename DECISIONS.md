@@ -69,3 +69,6 @@ Reduced the back cape's angle gains while retaining native cloak lag. Added circ
 ## 2026-09-13: Tiny Courier first pass
 User requests a reference-inspired Courier without the flag, with a cute face and half-block clearance. Add a 0.48-block ground entity, approximately 0.45-block model, scurry animation and collision-checked upper-slab/trapdoor path nodes. Signal route binding/delivery remains Phase 4 integration; no city scheduling or ports are changed.
 Courier follow-up: enlarge the eyes, add a curved smile and catchlights, and enable 55-degree upward player tracking with a five-block look range. Full build and all server/client checks passed.
+
+## 2026-09-13: Courier goggles
+Remove the smile and replace square eye plates with raised silver octagonal goggles, cream lenses, amber irises, pupils and catchlights. Keep the existing upward look and collision/navigation behavior. The goggle lenses are non-emissive; the parcel seam still glows.
