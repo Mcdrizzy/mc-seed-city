@@ -72,3 +72,9 @@ Courier follow-up: enlarge the eyes, add a curved smile and catchlights, and ena
 
 ## 2026-09-13: Courier goggles
 Remove the smile and replace square eye plates with raised silver octagonal goggles, cream lenses, amber irises, pupils and catchlights. Keep the existing upward look and collision/navigation behavior. The goggle lenses are non-emissive; the parcel seam still glows.
+
+## 2026-09-13: Restore Courier eye glow
+Keep the goggles, remove irises/pupils and restore warm amber emissive lens fronts at the user's request. No mesh or behavior changes.
+
+## 2026-09-13: Center Courier head and remove goggles
+User rejects the goggles. Restore plain glowing amber eyes, remove the goggles and keep no smile. Move the head pivot back two model units and change the helmet from 10x5x6 to 8x6x6 so it is centered and squarer.
